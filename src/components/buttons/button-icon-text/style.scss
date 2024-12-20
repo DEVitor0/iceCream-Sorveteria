@@ -9,9 +9,7 @@
 
   .btn-container__text {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include btn.flex-button;
 
     p {
       @include btn.button-font;
@@ -27,9 +25,7 @@
     background-color: colors.$background-icon-box;
     color: colors.$icon-color-box;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include btn.flex-button;
 
     font-size: 1.3rem;
   }
