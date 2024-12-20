@@ -1,0 +1,15 @@
+@use '../../forward' as *;
+
+@mixin anchor-font {
+  font-family: $font-family-primary;
+  font-weight: $font-weight-regular;
+  font-size: inherit;
+}
+
+@mixin anchor-color {
+  color: inherit;
+}
+
+@mixin anchor-configs {
+  text-decoration: none;
+}

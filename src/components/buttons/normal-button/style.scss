@@ -1,0 +1,11 @@
+@use '../../styles/scss/mixins/normalButton/button-style' as btn;
+
+.normal-button {
+  padding: 15px 25px 15px 25px;
+
+  @include btn.button-width(190px);
+  @include btn.button-font;
+  @include btn.normal-button-colors;
+  @include btn.button-border;
+  @include btn.all-buttons;
+}

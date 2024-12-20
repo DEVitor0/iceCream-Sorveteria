@@ -1,0 +1,43 @@
+@use '../../forward' as *;
+
+@mixin button-width($x) {
+  width: $x;
+  height: auto;
+}
+
+@mixin flex-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+@mixin button-border {
+  border-radius: 20px;
+  border: none;
+}
+
+@mixin button-font {
+  font-family: $font-family-primary;
+  font-size: $font-size-normal-button;
+  font-weight: $font-weight-regular;
+}
+
+@mixin normal-button-colors {
+  background-color: $background-color-normal-button;
+  color: $text-color-normal-button;
+}
+
+@mixin all-buttons {
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px;
+}
+
+@mixin button-icon-text-colors {
+  background-color: $background-color-button-inverted;
+  color: $text-color-button-inverted;
+
+  &:hover {
+    background-color: $background-color-button-inverted-hover;
+    color: $text-color-button-inverted;
+  }
+}
