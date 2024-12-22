@@ -1,0 +1,24 @@
+@use '../../../styles/scss/partials/forward' as *;
+
+.header-bar__inner__menu {
+  width: 60%;
+  height: 30px;
+
+  &__list {
+    width: inherit;
+    list-style: none;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    &__item {
+      font-size: $font-size-menu;
+      font-family: $font-family-primary;
+      font-weight: $font-weight-regular;
+
+      color: $text-color-menu;
+    }
+  }
+}

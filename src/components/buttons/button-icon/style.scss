@@ -1,5 +1,5 @@
 @use '../../../styles/scss/mixins/buttons/button-style' as btn;
-@use '../../../styles/scss/forward' as *;
+@use '../../../styles/scss/partials/forward' as *;
 
 .container-icon {
   @include btn.flex-button;

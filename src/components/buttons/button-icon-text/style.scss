@@ -1,5 +1,5 @@
 @use '../../../styles/scss/mixins/buttons/button-style' as btn;
-@use '../../../styles/scss/colors' as colors;
+@use '../../../styles/scss/partials/colors' as colors;
 
 .btn-container {
   @include btn.button-width(240px);
@@ -7,7 +7,7 @@
   @include btn.all-buttons;
   height: 60px;
 
-  .btn-container__text {
+  &__text {
     width: 100%;
     @include btn.flex-button;
 
@@ -17,7 +17,7 @@
     }
   }
 
-  .btn-container__icon {
+  &__icon {
     width: 20%;
     height: 60%;
     padding: 5px;
