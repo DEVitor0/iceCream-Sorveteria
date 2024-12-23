@@ -1,0 +1,14 @@
+@use '../../../styles/scss/partials/forward' as *;
+
+.main-screen__container__texts__title {
+  width: 200px;
+  font-size: 24px;
+  font-weight: $font-weight-emphasis;
+  font-family: $font-family-primary;
+
+  color: #000;
+
+  &__emphasis {
+    color: #52478c;
+  }
+}
