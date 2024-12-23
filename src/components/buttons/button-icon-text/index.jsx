@@ -9,7 +9,7 @@ const ButtonIconText = ({ text, icon }) => {
         <p>{text}</p>
       </div>
       <div className="btn-container__icon">
-        <FontAwesomeIcon icon={icon} />
+        <FontAwesomeIcon icon={icon} data-testid="svg-inline--fa" />
       </div>
     </div>
   );

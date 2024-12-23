@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import IconButton from './IconButton';
+import IconButton from './index';
 
 describe('IconButton Component', () => {
   it('renders the FontAwesomeIcon with the provided icon', () => {

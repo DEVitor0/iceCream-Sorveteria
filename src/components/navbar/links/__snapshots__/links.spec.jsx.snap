@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Links Component matches snapshot 1`] = `
+<DocumentFragment>
+  <nav
+    class="header-bar__inner__menu"
+  >
+    <ul
+      class="header-bar__inner__menu__list"
+    >
+      <li
+        class="header-bar__inner__menu__list__item"
+      >
+        <a
+          class="anchor-style"
+          href="#"
+        >
+          Reservas
+        </a>
+      </li>
+      <li
+        class="header-bar__inner__menu__list__item"
+      >
+        <a
+          class="anchor-style"
+          href="#"
+        >
+          Serviços
+        </a>
+      </li>
+      <li
+        class="header-bar__inner__menu__list__item"
+      >
+        <a
+          class="anchor-style"
+          href="#"
+        >
+          Cardápio
+        </a>
+      </li>
+      <li
+        class="header-bar__inner__menu__list__item"
+      >
+        <a
+          class="anchor-style"
+          href="#"
+        >
+          Depoimentos
+        </a>
+      </li>
+    </ul>
+  </nav>
+</DocumentFragment>
+`;

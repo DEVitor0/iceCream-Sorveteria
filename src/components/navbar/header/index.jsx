@@ -3,6 +3,7 @@ import Links from '../links/index';
 import ButtonIconText from '../../buttons/button-icon-text/index';
 
 import icons from '../../../styles/icons/fontawesome';
+import './style.scss';
 
 const HeaderBar = () => {
   return (

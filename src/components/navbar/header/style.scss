@@ -1,12 +1,12 @@
+@use '../../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+
 .header-bar {
   width: 100%;
   margin-top: 20px;
+  @include flex.flex-container;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .inner {
-    width: 80%;
+  &__inner {
+    width: 1150px;
+    @include flex.flex-container;
   }
 }

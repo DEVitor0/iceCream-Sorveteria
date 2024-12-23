@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeaderBar Component should render correctly and match the snapshot 1`] = `
+<div>
+  <header
+    class="header-bar"
+  >
+    <div
+      class="header-bar__inner"
+    >
+      <div
+        data-testid="brand"
+      >
+        Brand
+      </div>
+      <div
+        data-testid="links"
+      >
+        Links
+      </div>
+      <button
+        data-testid="button-icon-text"
+      >
+        <i
+          class="fa-bag-shopping"
+        />
+        Meu carrinho
+      </button>
+    </div>
+  </header>
+</div>
+`;

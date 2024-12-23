@@ -1,8 +1,8 @@
-import Brand from '../../components/navbar/brand/index';
+import HeaderBar from '../../components/navbar/header/index';
 export const Home = () => {
   return (
     <>
-      <Brand />
+      <HeaderBar />
     </>
   );
 };
