@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Text Component applies the class name from imported styles 1`] = `
+<DocumentFragment>
+  <p
+    class="paragraph"
+    style="font-size: 18px;"
+  >
+    Sample Text
+  </p>
+</DocumentFragment>
+`;
+
+exports[`Text Component applies the correct font size 1`] = `
+<DocumentFragment>
+  <p
+    class="paragraph"
+    style="font-size: 24px;"
+  >
+    Sample Text
+  </p>
+</DocumentFragment>
+`;
+
+exports[`Text Component renders the text correctly 1`] = `
+<DocumentFragment>
+  <p
+    class="paragraph"
+    style="font-size: 18px;"
+  >
+    Sample Text
+  </p>
+</DocumentFragment>
+`;

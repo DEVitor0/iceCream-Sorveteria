@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import Title from './index';
 
 describe('Title Component', () => {
-  test('renders the correct text', () => {
-    render(<Title />);
+  test('renders the correct text and matches snapshot', () => {
+    const { asFragment } = render(<Title />);
 
     const titleElement = screen.getByText(/Escolha sua sobremesa/i);
     expect(titleElement).toBeInTheDocument();
@@ -15,5 +15,7 @@ describe('Title Component', () => {
     expect(emphasisElement).toHaveClass(
       'main-screen__container__texts__title__emphasis',
     );
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });

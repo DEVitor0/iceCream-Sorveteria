@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`anchor has correct class for styling 1`] = `
+<DocumentFragment>
+  <a
+    class="anchor-style"
+    href="https://example.com"
+  >
+    Go to Example
+  </a>
+</DocumentFragment>
+`;
+
+exports[`renders anchor with correct text and href 1`] = `
+<DocumentFragment>
+  <a
+    class="anchor-style"
+    href="https://example.com"
+  >
+    Go to Example
+  </a>
+</DocumentFragment>
+`;

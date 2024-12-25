@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconProvider provides the correct context value 1`] = `
+<DocumentFragment>
+  <span>
+    Context provided
+  </span>
+</DocumentFragment>
+`;
+
+exports[`IconProvider renders children correctly 1`] = `
+<DocumentFragment>
+  <div>
+    Inner content
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`button has correct class for styling 1`] = `
+<DocumentFragment>
+  <button
+    class="normal-button"
+  >
+    Click Me
+  </button>
+</DocumentFragment>
+`;
+
+exports[`renders button and displays children correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="normal-button"
+  >
+    Click Me
+  </button>
+</DocumentFragment>
+`;
+
+exports[`renders button with children component (Anchor) correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="normal-button"
+  >
+    <a
+      href="https://test.com.br"
+    >
+      Go to Example
+    </a>
+  </button>
+</DocumentFragment>
+`;

@@ -4,10 +4,12 @@ import NormalButton from './index';
 import PropTypes from 'prop-types';
 
 test('renders button and displays children correctly', () => {
-  render(<NormalButton>Click Me</NormalButton>);
+  const { asFragment } = render(<NormalButton>Click Me</NormalButton>);
 
   const buttonElement = screen.getByText(/Click Me/i);
   expect(buttonElement).toBeInTheDocument();
+
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test('renders button with children component (Anchor) correctly', () => {
@@ -18,7 +20,7 @@ test('renders button with children component (Anchor) correctly', () => {
     text: PropTypes.string.isRequired,
   };
 
-  render(
+  const { asFragment } = render(
     <NormalButton>
       <AnchorLink href="https://test.com.br" text="Go to Example" />
     </NormalButton>,
@@ -26,11 +28,15 @@ test('renders button with children component (Anchor) correctly', () => {
 
   const linkElement = screen.getByText(/Go to Example/i);
   expect(linkElement).toBeInTheDocument();
+
+  expect(asFragment()).toMatchSnapshot();
 });
 
 test('button has correct class for styling', () => {
-  render(<NormalButton>Click Me</NormalButton>);
+  const { asFragment } = render(<NormalButton>Click Me</NormalButton>);
 
   const buttonElement = screen.getByText(/Click Me/i).closest('button');
   expect(buttonElement).toHaveClass('normal-button');
+
+  expect(asFragment()).toMatchSnapshot();
 });
