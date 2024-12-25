@@ -1,0 +1,24 @@
+@use '../../styles/scss/mixins/paragraph/style.scss' as text;
+@use '../../styles/scss/partials/forward' as *;
+
+.comment-block {
+  width: 380px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 15px -3px;
+  border-radius: 10px;
+  position: relative;
+
+  &__opinion {
+    @include text.paragraph;
+    font-size: $font-size-description;
+    display: inline-block;
+    width: 100%;
+
+    &__author {
+      color: $emphasis-color;
+      position: absolute;
+      right: 15px;
+      bottom: 10px;
+    }
+  }
+}

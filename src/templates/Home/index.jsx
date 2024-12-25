@@ -7,7 +7,6 @@ export const Home = () => {
     <div>
       <IconProvider>
         <HeaderBar />
-
         <MainScreen />
       </IconProvider>
     </div>

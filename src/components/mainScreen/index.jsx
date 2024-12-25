@@ -30,7 +30,10 @@ const MainScreen = () => {
             <ButtonIcon icon={icons.whatsapp} />
           </div>
         </div>
-        <div></div>
+        <div className="main-screen__container__visual">
+          <div className="main-screen__container__visual__block"></div>
+          <div className="main-screen__container__visual__image"></div>
+        </div>
       </div>
     </section>
   );
