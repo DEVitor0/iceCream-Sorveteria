@@ -1,0 +1,39 @@
+@use '../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+@use '../../styles/scss/partials/colors' as colors;
+
+.main-screen {
+  width: 100%;
+  @include flex.flex-container;
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+
+    &__texts {
+      margin-right: 60px;
+      margin-top: 80px;
+
+      &__text {
+        width: 580px;
+        margin-top: 20px;
+        color: colors.$description-color-heavy;
+      }
+
+      &__buttons {
+        width: 460px;
+        margin-top: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: row;
+      }
+
+      &__social {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        margin-top: 30px;
+      }
+    }
+  }
+}

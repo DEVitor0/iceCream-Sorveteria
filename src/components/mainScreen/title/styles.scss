@@ -1,14 +1,19 @@
 @use '../../../styles/scss/partials/forward' as *;
 
 .main-screen__container__texts__title {
-  width: 200px;
-  font-size: 24px;
+  width: 380px;
+  font-size: 58px;
   font-weight: $font-weight-emphasis;
   font-family: $font-family-primary;
+  line-height: 1.2;
 
-  color: #000;
+  color: #212121;
+}
 
-  &__emphasis {
-    color: #52478c;
-  }
+.main-screen__container__texts__emphasis {
+  color: $emphasis-color;
+  font-size: 58px;
+  font-weight: $font-weight-emphasis;
+  font-family: $font-family-primary;
+  line-height: 1.2;
 }

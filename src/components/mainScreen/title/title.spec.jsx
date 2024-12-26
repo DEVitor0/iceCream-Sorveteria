@@ -12,9 +12,6 @@ describe('Title Component', () => {
     expect(emphasisElement).toBeInTheDocument();
 
     expect(titleElement).toHaveClass('main-screen__container__texts__title');
-    expect(emphasisElement).toHaveClass(
-      'main-screen__container__texts__title__emphasis',
-    );
 
     expect(asFragment()).toMatchSnapshot();
   });

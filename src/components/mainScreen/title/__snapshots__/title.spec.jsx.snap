@@ -6,11 +6,11 @@ exports[`Title Component renders the correct text and matches snapshot 1`] = `
     class="main-screen__container__texts__title"
   >
     Escolha sua sobremesa
-    <span
-      class="main-screen__container__texts__title__emphasis"
-    >
-      favorita
-    </span>
   </h1>
+  <span
+    class="main-screen__container__texts__emphasis"
+  >
+    favorita.
+  </span>
 </DocumentFragment>
 `;
