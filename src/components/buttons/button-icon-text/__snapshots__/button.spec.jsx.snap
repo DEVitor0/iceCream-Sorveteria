@@ -9,7 +9,11 @@ exports[`ButtonIconText Component matches snapshot 1`] = `
       class="btn-container__text"
     >
       <p>
-        Snapshot Test
+        <a
+          href=""
+        >
+          Snapshot Test
+        </a>
       </p>
     </div>
     <div

@@ -4,13 +4,14 @@
 .main-screen {
   width: 100%;
   @include flex.flex-container;
+  margin-top: 30px;
 
   &__container {
     display: flex;
     flex-direction: row;
 
     &__texts {
-      margin-right: 60px;
+      margin-right: 100px;
       margin-top: 80px;
 
       &__text {
@@ -33,6 +34,41 @@
         flex-direction: row;
         gap: 30px;
         margin-top: 30px;
+      }
+    }
+
+    &__visual {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      &__block {
+        width: 420px;
+        height: 400px;
+        margin-top: 20px;
+        margin-right: 5px;
+        border-radius: 120px;
+        background-color: colors.$generic-background-color;
+        z-index: 2;
+      }
+
+      &__image {
+        margin-top: 100px;
+        width: 540px;
+        height: 540px;
+        background-image: url('../../styles/images/mainscreen/iceCream.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        position: absolute;
+        transform: translateX(-30px);
+        z-index: 3;
+      }
+
+      &__comment {
+        z-index: 4;
+        height: 0;
+        transform: translate(10px, 40px);
       }
     }
   }

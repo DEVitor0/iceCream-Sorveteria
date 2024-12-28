@@ -4,9 +4,11 @@
 .comment-block {
   width: 380px;
   padding: 10px;
+  background-color: #f7f1f1;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 15px -3px;
   border-radius: 10px;
   position: relative;
+  color: rgb(88, 86, 86);
 
   &__opinion {
     @include text.paragraph;

@@ -9,6 +9,7 @@ import './styles.scss';
 
 import { useContext } from 'react';
 import IconContext from '../../contexts/IconsContext/IconContext/index';
+import ErrorBoundary from '../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
 
 const MainScreen = () => {
   const icons = useContext(IconContext);
@@ -26,22 +27,34 @@ const MainScreen = () => {
           </div>
           <div className="main-screen__container__texts__buttons">
             <NormalButton>Ver cardápio</NormalButton>
-            <ButtonIconText
-              text="(11) 9 9876-5432"
-              icon={icons.phone}
-              href="tel:+5511998765432"
-            />
+            <ErrorBoundary>
+              <ButtonIconText
+                text="(11) 9 9876-5432"
+                icon={icons.phone}
+                href="tel:+5511998765432"
+              />
+            </ErrorBoundary>
           </div>
           <div className="main-screen__container__texts__social">
-            <ButtonIcon icon={icons.instagram} />
-            <ButtonIcon icon={icons.tiktok} />
-            <ButtonIcon icon={icons.whatsapp} />
+            <ErrorBoundary>
+              <ButtonIcon icon={icons.instagram} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <ButtonIcon icon={icons.tiktok} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <ButtonIcon icon={icons.whatsapp} />
+            </ErrorBoundary>
           </div>
         </div>
         <div className="main-screen__container__visual">
           <div className="main-screen__container__visual__block"></div>
           <div className="main-screen__container__visual__image"></div>
-          <Comment />
+          <div className="main-screen__container__visual__comment">
+            <ErrorBoundary>
+              <Comment />
+            </ErrorBoundary>
+          </div>
         </div>
       </div>
     </section>
