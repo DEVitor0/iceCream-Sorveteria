@@ -2,15 +2,19 @@
 
 exports[`Title Component renders the correct text and matches snapshot 1`] = `
 <DocumentFragment>
-  <h1
-    class="main-screen__container__texts__title"
+  <div
+    class=""
   >
-    Escolha sua sobremesa
-  </h1>
-  <span
-    class="main-screen__container__texts__emphasis"
-  >
-    favorita.
-  </span>
+    <h1
+      class="main-screen__container__texts__title"
+    >
+      Escolha sua sobremesa
+    </h1>
+    <span
+      class="main-screen__container__texts__emphasis"
+    >
+      favorita.
+    </span>
+  </div>
 </DocumentFragment>
 `;

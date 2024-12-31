@@ -15,4 +15,16 @@ describe('Title Component', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  test('applies the correct class when id is passed', () => {
+    const { container } = render(<Title id="test-id" />);
+    const divElement = container.querySelector('#test-id');
+    expect(divElement).toHaveClass('looking-main');
+  });
+
+  test('does not apply the class when no id is passed', () => {
+    render(<Title />);
+    const divElement = screen.getByText(/Escolha sua sobremesa/i).parentElement;
+    expect(divElement).not.toHaveClass('looking-main');
+  });
 });

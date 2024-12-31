@@ -3,7 +3,7 @@
 exports[`Comment Component should match the snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="comment-block"
+    class="comment-block "
   >
     <p
       class="comment-block__opinion"

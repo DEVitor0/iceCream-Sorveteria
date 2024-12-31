@@ -34,7 +34,7 @@ const MainScreen = () => {
             <ErrorBoundary>
               <ButtonIconText
                 text="(11) 9 9876-5432"
-                icon={icons.phone}
+                icon={icons?.phone || null}
                 href="tel:+5511998765432"
               />
             </ErrorBoundary>
@@ -44,13 +44,13 @@ const MainScreen = () => {
             className="main-screen__container__texts__social looking-main"
           >
             <ErrorBoundary>
-              <ButtonIcon icon={icons.instagram} />
+              <ButtonIcon icon={icons?.instagram || null} />
             </ErrorBoundary>
             <ErrorBoundary>
-              <ButtonIcon icon={icons.tiktok} />
+              <ButtonIcon icon={icons?.tiktok || null} />
             </ErrorBoundary>
             <ErrorBoundary>
-              <ButtonIcon icon={icons.whatsapp} />
+              <ButtonIcon icon={icons?.whatsapp || null} />
             </ErrorBoundary>
           </div>
         </div>

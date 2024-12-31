@@ -31,4 +31,31 @@ describe('Comment Component', () => {
     expect(opinionElement).toBeInTheDocument();
     expect(authorElement).toBeInTheDocument();
   });
+
+  it('should apply the correct id when passed as a prop', () => {
+    const { container } = render(<Comment id="main-comment" />);
+    expect(container.querySelector('.comment-block')).toHaveAttribute(
+      'id',
+      'main-comment',
+    );
+  });
+
+  it('should not have an id when not passed as a prop', () => {
+    const { container } = render(<Comment />);
+    expect(container.querySelector('.comment-block')).not.toHaveAttribute('id');
+  });
+
+  it('should apply the "looking-main" class when id is provided', () => {
+    const { container } = render(<Comment id="main-comment" />);
+    expect(container.querySelector('.comment-block')).toHaveClass(
+      'looking-main',
+    );
+  });
+
+  it('should not apply the "looking-main" class when id is not provided', () => {
+    const { container } = render(<Comment />);
+    expect(container.querySelector('.comment-block')).not.toHaveClass(
+      'looking-main',
+    );
+  });
 });
