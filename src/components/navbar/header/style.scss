@@ -1,4 +1,10 @@
 @use '../../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+@use '../../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
+  observer;
+
+#header {
+  @include observer.appear();
+}
 
 .header-bar {
   width: 100%;

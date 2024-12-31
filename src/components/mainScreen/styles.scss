@@ -1,5 +1,7 @@
 @use '../../styles/scss/mixins/flexContainer/flex.scss' as flex;
 @use '../../styles/scss/partials/colors' as colors;
+@use '../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
+  observer;
 
 .main-screen {
   width: 100%;
@@ -29,6 +31,14 @@
         flex-direction: row;
       }
 
+      #main-buttons {
+        @include observer.appear();
+      }
+
+      #main-button-icon {
+        @include observer.appear();
+      }
+
       &__social {
         display: flex;
         flex-direction: row;
@@ -43,6 +53,10 @@
       align-items: flex-end;
       justify-content: space-between;
 
+      #main-block {
+        @include observer.appear();
+      }
+
       &__block {
         width: 420px;
         height: 400px;
@@ -51,6 +65,10 @@
         border-radius: 120px;
         background-color: colors.$generic-background-color;
         z-index: 2;
+      }
+
+      #main-iceCream-image {
+        @include observer.appear();
       }
 
       &__image {

@@ -1,0 +1,36 @@
+@mixin appear($duration: 0.3s, $timing: ease-out) {
+  opacity: 0;
+  transition:
+    opacity $duration $timing,
+    transform $duration $timing;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+@mixin appear-from-left($duration: 0.5s, $timing: ease-out, $distance: 22%) {
+  opacity: 0;
+  transform: translateX(-$distance);
+  transition:
+    opacity $duration $timing,
+    transform $duration $timing;
+
+  &.visible-from-left {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@mixin appear-from-right($duration: 0.5s, $timing: ease-out, $distance: 50px) {
+  opacity: 0;
+  transform: translateX($distance);
+  transition:
+    opacity $duration $timing,
+    transform $duration $timing;
+
+  &.visible-from-right {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

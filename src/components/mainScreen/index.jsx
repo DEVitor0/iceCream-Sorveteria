@@ -18,14 +18,18 @@ const MainScreen = () => {
     <section className="main-screen">
       <div className="main-screen__container">
         <div className="main-screen__container__texts">
-          <Title />
+          <Title id="main-title" />
           <div className="main-screen__container__texts__text">
             <Text
+              id="main-title"
               text="Aproveite nosso cardápio! Escolha o que desejar e receba em sua casa de forma rápida e segura"
-              fontSize="20"
+              fontSize={20}
             />
           </div>
-          <div className="main-screen__container__texts__buttons">
+          <div
+            id="main-buttons"
+            className="main-screen__container__texts__buttons looking-main"
+          >
             <NormalButton>Ver cardápio</NormalButton>
             <ErrorBoundary>
               <ButtonIconText
@@ -35,7 +39,10 @@ const MainScreen = () => {
               />
             </ErrorBoundary>
           </div>
-          <div className="main-screen__container__texts__social">
+          <div
+            id="main-button-icon"
+            className="main-screen__container__texts__social looking-main"
+          >
             <ErrorBoundary>
               <ButtonIcon icon={icons.instagram} />
             </ErrorBoundary>
@@ -48,11 +55,17 @@ const MainScreen = () => {
           </div>
         </div>
         <div className="main-screen__container__visual">
-          <div className="main-screen__container__visual__block"></div>
-          <div className="main-screen__container__visual__image"></div>
+          <div
+            id="main-block"
+            className="main-screen__container__visual__block looking-main"
+          ></div>
+          <div
+            id="main-iceCream-image"
+            className="main-screen__container__visual__image looking-main"
+          ></div>
           <div className="main-screen__container__visual__comment">
             <ErrorBoundary>
-              <Comment />
+              <Comment id="main-comment" />
             </ErrorBoundary>
           </div>
         </div>

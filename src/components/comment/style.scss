@@ -1,5 +1,11 @@
 @use '../../styles/scss/mixins/paragraph/style.scss' as text;
 @use '../../styles/scss/partials/forward' as *;
+@use '../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
+  observer;
+
+#main-comment {
+  @include observer.appear-from-right;
+}
 
 .comment-block {
   width: 380px;

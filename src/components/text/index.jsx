@@ -1,15 +1,24 @@
 import PropTypes from 'prop-types';
 import './styles.scss';
 
-const Text = ({ text, fontSize }) => {
+const Text = ({ id, text, fontSize }) => {
   return (
-    <p className="paragraph" style={{ fontSize: `${fontSize}px` }}>
+    <p
+      id={id}
+      className={`paragraph ${id ? 'looking-main' : ''}`}
+      style={{ fontSize: `${fontSize}px` }}
+    >
       {text}
     </p>
   );
 };
 
+Text.defaultProps = {
+  id: '',
+};
+
 Text.propTypes = {
+  id: PropTypes.string,
   text: PropTypes.string.isRequired,
   fontSize: PropTypes.number.isRequired,
 };

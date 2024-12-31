@@ -1,4 +1,10 @@
 @use '../../../styles/scss/partials/forward' as *;
+@use '../../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
+  observer;
+
+#main-title {
+  @include observer.appear-from-left();
+}
 
 .main-screen__container__texts__title {
   width: 380px;

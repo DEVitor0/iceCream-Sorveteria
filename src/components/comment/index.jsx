@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import './style.scss';
-const Comment = () => {
+
+const Comment = ({ id }) => {
   return (
-    <div className="comment-block">
+    <div id={id} className={`comment-block ${id ? 'looking-main' : ''}`}>
       <p className="comment-block__opinion">
         &quot;Entrega rápida e funcionários simpáticos. <br />
         O sorvete chegou frio e <br />
@@ -10,6 +12,14 @@ const Comment = () => {
       </p>
     </div>
   );
+};
+
+Comment.defaultProps = {
+  id: '',
+};
+
+Comment.propTypes = {
+  id: PropTypes.string,
 };
 
 export default Comment;
