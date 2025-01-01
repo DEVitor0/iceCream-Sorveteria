@@ -1,0 +1,9 @@
+@use '../../styles/scss/partials/forward' as *;
+
+.subtitle {
+  font-size: $font-size-title;
+  font-weight: $font-weight-medium;
+  font-family: $font-family-primary;
+
+  color: $color-section-title;
+}

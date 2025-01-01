@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import IconContext from '../IconContext/index';
-import icons from '../../../styles/icons/fontawesome';
+import icons from '../../../media/icons/fontawesome';
 
 const IconProvider = ({ children }) => {
   if (!children) {

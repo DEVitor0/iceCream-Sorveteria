@@ -1,7 +1,12 @@
+//Components
 import MainScreen from '../../components/screens/mainScreen/index';
-import IconProvider from '../../contexts/IconsContext/IconProvider/index';
 import HeaderBar from '../../components/screens/navbar/header/index';
 
+//Contexts
+import IconProvider from '../../contexts/IconsContext/IconProvider/index';
+import ImageProvider from '../../contexts/ImagesContext/ImageProvider/index';
+
+//Utils
 import IntersectionObserverEffect from '../../utils/intersectionObserverApi/observer';
 
 export const Home = () => {
@@ -10,10 +15,12 @@ export const Home = () => {
 
   return (
     <div>
-      <IconProvider>
-        <HeaderBar id="header" />
-        <MainScreen />
-      </IconProvider>
+      <ImageProvider>
+        <IconProvider>
+          <HeaderBar id="header" />
+          <MainScreen />
+        </IconProvider>
+      </ImageProvider>
     </div>
   );
 };

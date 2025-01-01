@@ -1,4 +1,4 @@
-@mixin appear($duration: 0.3s, $timing: ease-out) {
+@mixin appear($duration: 0.4s, $timing: ease-out) {
   opacity: 0;
   transition:
     opacity $duration $timing,

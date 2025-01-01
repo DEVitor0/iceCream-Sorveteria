@@ -9,10 +9,12 @@ import './styles.scss';
 
 import { useContext } from 'react';
 import IconContext from '../../../contexts/IconsContext/IconContext/index';
+import ImageContext from '../../../contexts/ImagesContext/ImageContext/index';
 import ErrorBoundary from '../../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
 
 const MainScreen = () => {
   const icons = useContext(IconContext);
+  const images = useContext(ImageContext);
 
   return (
     <section className="main-screen">
@@ -62,6 +64,7 @@ const MainScreen = () => {
           <div
             id="main-iceCream-image"
             className="main-screen__container__visual__image looking-main"
+            style={{ backgroundImage: `url(${images.iceCream})` }}
           ></div>
           <div className="main-screen__container__visual__comment">
             <ErrorBoundary>
