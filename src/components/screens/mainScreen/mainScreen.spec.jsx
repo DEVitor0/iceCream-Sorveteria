@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import MainScreen from './index';
-import ErrorBoundary from '../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
-import IconContext from '../../contexts/IconsContext/IconContext/index';
+import ErrorBoundary from '../../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
+import IconContext from '../../../contexts/IconsContext/IconContext/index';
 import './styles.scss';
 
 describe('MainScreen Complex Test', () => {

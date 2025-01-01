@@ -1,4 +1,4 @@
-import Anchor from '../../anchor/index';
+import Anchor from '../../../anchor/index';
 import './style.scss';
 
 const Links = () => {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import Brand from './index';
-import brandImage from '../../../styles/images/navbar/brand.png';
+import brandImage from '../../../../styles/images/navbar/brand.png';
 
 describe('Brand Component', () => {
   it('renders without crashing', () => {

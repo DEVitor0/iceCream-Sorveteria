@@ -1,4 +1,4 @@
-import brandImage from '../../../styles/images/navbar/brand.png';
+import brandImage from '../../../../styles/images/navbar/brand.png';
 import './style.scss';
 
 const Brand = () => {

@@ -1,15 +1,15 @@
 import Title from './title/index';
-import Text from '../text/index';
-import NormalButton from '../buttons/normal-button/index';
-import ButtonIconText from '../buttons/button-icon-text/index';
-import ButtonIcon from '../buttons/button-icon/index';
-import Comment from '../comment/index';
+import Text from '../../text/index';
+import NormalButton from '../../buttons/normal-button/index';
+import ButtonIconText from '../../buttons/button-icon-text/index';
+import ButtonIcon from '../../buttons/button-icon/index';
+import Comment from '../../comment/index';
 
 import './styles.scss';
 
 import { useContext } from 'react';
-import IconContext from '../../contexts/IconsContext/IconContext/index';
-import ErrorBoundary from '../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
+import IconContext from '../../../contexts/IconsContext/IconContext/index';
+import ErrorBoundary from '../../../errors/ErrorBoundryIcons/ErrorBoundryIcons';
 
 const MainScreen = () => {
   const icons = useContext(IconContext);

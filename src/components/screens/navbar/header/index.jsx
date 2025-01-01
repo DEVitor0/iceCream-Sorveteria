@@ -1,7 +1,7 @@
 import Brand from '../brand/index';
 import Links from '../links/index';
-import ButtonIconText from '../../buttons/button-icon-text/index';
-import IconContext from '../../../contexts/IconsContext/IconContext/index';
+import ButtonIconText from '../../../buttons/button-icon-text/index';
+import IconContext from '../../../../contexts/IconsContext/IconContext/index';
 
 import { useContext } from 'react';
 import PropTypes from 'prop-types';

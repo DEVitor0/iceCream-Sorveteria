@@ -1,6 +1,6 @@
-@use '../../styles/scss/mixins/flexContainer/flex.scss' as flex;
-@use '../../styles/scss/partials/colors' as colors;
-@use '../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
+@use '../../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+@use '../../../styles/scss/partials/colors' as colors;
+@use '../../../styles/scss/mixins/intersecionObserverEffects/styles.scss' as
   observer;
 
 .main-screen {
@@ -75,7 +75,7 @@
         margin-top: 100px;
         width: 540px;
         height: 540px;
-        background-image: url('../../styles/images/mainscreen/iceCream.png');
+        background-image: url('../../../styles/images/mainscreen/iceCream.png');
         background-size: contain;
         background-repeat: no-repeat;
         position: absolute;
