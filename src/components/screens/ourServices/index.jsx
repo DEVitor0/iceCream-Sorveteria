@@ -10,12 +10,15 @@ const OurServices = () => {
   return (
     <section className="services">
       <div className="services__title">
-        <Subtitle text="Serviços" />
+        <Subtitle id="services-subtitle" text="Serviços" />
       </div>
       <div className="services__subtitle">
-        <TitleServices text="Sobre os nossos serviços" />
+        <TitleServices id="services-title" text="Sobre os nossos serviços" />
       </div>
-      <div className="services__container">
+      <div
+        className="services__container looking-services"
+        id="services-container"
+      >
         <KindOfServices
           title="Fácil de pedir"
           description="Peça sua sobremesa em segundos, sem complicação."

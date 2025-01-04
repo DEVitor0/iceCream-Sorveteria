@@ -1,7 +1,21 @@
 class IntersectionObserverEffect {
-  constructor(element) {
-    this.element = element;
+  constructor() {
     this.queue = Promise.resolve();
+    this.sections = {};
+  }
+
+  addAnimation(sectionName, id, callback) {
+    if (!this.sections[sectionName]) {
+      this.sections[sectionName] = { animations: {}, selector: null };
+    }
+    this.sections[sectionName].animations[id] = callback;
+  }
+
+  setSectionSelector(sectionName, selector) {
+    if (!this.sections[sectionName]) {
+      this.sections[sectionName] = { animations: {}, selector: null };
+    }
+    this.sections[sectionName].selector = selector;
   }
 
   addToQueue(callback, delay) {
@@ -16,80 +30,25 @@ class IntersectionObserverEffect {
     );
   }
 
-  // eslint-disable-next-line no-unused-vars
-  callback(entries, observer) {
+  callback(entries, animations) {
     let delayTime = 0;
 
-    const sortedEntries = Array.from(entries).sort((a, b) => {
-      const order = [
-        'header',
-        'main-title',
-        'main-block',
-        'main-iceCream-image',
-        'main-text',
-        'main-buttons',
-        'main-button-icon',
-        'main-comment',
-      ];
-      return order.indexOf(a.target.id) - order.indexOf(b.target.id);
-    });
+    const sortedEntries = Array.from(entries).sort(
+      (a, b) =>
+        Object.keys(animations).indexOf(a.target.id) -
+        Object.keys(animations).indexOf(b.target.id),
+    );
 
     sortedEntries.forEach((entry) => {
       if (entry.isIntersecting) {
-        const iten = entry.target;
+        const element = entry.target;
+        const animation = animations[element.id];
 
-        switch (iten.id) {
-          case 'header':
-            this.addToQueue(() => this.addVisible(iten), delayTime);
-            delayTime += 80;
-            break;
-
-          case 'main-title':
-            this.addToQueue(() => this.addVisibleFromLeft(iten), delayTime);
-            delayTime += 80;
-            break;
-
-          case 'main-block':
-            this.addToQueue(() => this.addVisible(iten), delayTime);
-            break;
-
-          case 'main-iceCream-image':
-            this.addToQueue(() => {
-              this.addVisible(iten);
-              if (iten.tagName === 'IMG' && !iten.complete) {
-                return new Promise((resolve) => {
-                  iten.onload = resolve;
-                  iten.onerror = resolve;
-                });
-              }
-            }, delayTime);
-            break;
-
-          case 'main-text':
-            this.addToQueue(() => this.addVisibleFromLeft(iten), delayTime);
-            delayTime += 80;
-            break;
-
-          case 'main-buttons':
-            this.addToQueue(() => this.addVisible(iten), delayTime);
-            break;
-
-          case 'main-button-icon':
-            this.addToQueue(() => this.addVisible(iten), delayTime);
-            delayTime += 100;
-            break;
-
-          case 'main-comment':
-            this.addToQueue(
-              () => iten.classList.add('visible-from-right'),
-              delayTime,
-            );
-            delayTime += 80;
-            break;
-
-          default:
-            console.error(`Undefined Id: ${iten.id}`);
-            break;
+        if (animation) {
+          this.addToQueue(() => animation(element), delayTime);
+          delayTime += 80;
+        } else {
+          console.warn(`No animation defined for ID: ${element.id}`);
         }
       } else {
         console.log(`Out of viewport: ${entry.target.id}`);
@@ -97,36 +56,95 @@ class IntersectionObserverEffect {
     });
   }
 
-  addVisible(iten) {
-    iten.classList.add('visible');
-  }
-
-  addVisibleFromLeft(iten) {
-    iten.classList.add('visible-from-left');
-  }
-
   startObserving() {
-    setTimeout(() => {
-      const observer = new IntersectionObserver(
-        (entries, observer) => {
-          this.callback(entries, observer);
-        },
-        {
-          rootMargin: '0px',
-          threshold: 0.1,
-        },
-      );
+    window.addEventListener('load', () => {
+      Object.keys(this.sections).forEach((sectionName) => {
+        const { animations, selector } = this.sections[sectionName];
+        if (!selector) {
+          console.error(`Selector not set for section: ${sectionName}`);
+          return;
+        }
 
-      const elements = document.querySelectorAll('.looking-main');
-      if (elements.length === 0) {
-        console.error('No elements found with the class .looking-main');
-      }
+        const elements = document.querySelectorAll(selector);
+        if (elements.length === 0) {
+          console.error(`No elements found with selector: ${selector}`);
+          return;
+        }
 
-      elements.forEach((element) => {
-        observer.observe(element);
+        const observer = new IntersectionObserver(
+          (entries) => this.callback(entries, animations),
+          {
+            rootMargin: '0px',
+            threshold: 0.1,
+          },
+        );
+
+        elements.forEach((element) => {
+          observer.observe(element);
+        });
       });
-    }, 100);
+    });
   }
 }
 
-export default IntersectionObserverEffect;
+const observerEffect = new IntersectionObserverEffect();
+
+// main section
+observerEffect.setSectionSelector('main', '.looking-main');
+observerEffect.addAnimation('main', 'header', (element) => {
+  element.classList.add('visible');
+});
+
+observerEffect.addAnimation('main', 'main-title', (element) => {
+  element.classList.add('visible-from-left');
+});
+
+observerEffect.addAnimation('main', 'main-block', (element) => {
+  element.classList.add('visible');
+});
+
+observerEffect.addAnimation('main', 'main-iceCream-image', (element) => {
+  element.classList.add('visible');
+  if (element.tagName === 'IMG' && !element.complete) {
+    return new Promise((resolve) => {
+      element.onload = resolve;
+      element.onerror = resolve;
+    });
+  }
+});
+
+observerEffect.addAnimation('main', 'main-text', (element) => {
+  element.classList.add('visible-from-left');
+});
+
+observerEffect.addAnimation('main', 'main-buttons', (element) => {
+  element.classList.add('visible');
+});
+
+observerEffect.addAnimation('main', 'main-button-icon', (element) => {
+  element.classList.add('visible');
+});
+
+observerEffect.addAnimation('main', 'main-comment', (element) => {
+  element.classList.add('visible-from-right');
+});
+
+// services section
+observerEffect.setSectionSelector('services', '.looking-services');
+observerEffect.addAnimation('services', 'services-subtitle', (element) => {
+  element.classList.add('visible-from-bottom');
+});
+
+observerEffect.addAnimation('services', 'services-title', (element) => {
+  element.classList.add('visible-from-bottom');
+});
+
+observerEffect.addAnimation('services', 'services-container', (element) => {
+  element.classList.add('visible');
+});
+
+const initializeObserver = () => {
+  observerEffect.startObserving();
+};
+
+export default initializeObserver;

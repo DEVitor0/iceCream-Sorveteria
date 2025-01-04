@@ -34,3 +34,16 @@
     transform: translateX(0);
   }
 }
+
+@mixin appear-from-bottom($duration: 0.5s, $timing: ease-out, $distance: 30px) {
+  opacity: 0;
+  transform: translateY($distance);
+  transition:
+    opacity $duration $timing,
+    transform $duration $timing;
+
+  &.visible-from-bottom {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
