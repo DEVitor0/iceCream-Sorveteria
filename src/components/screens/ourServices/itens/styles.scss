@@ -1,0 +1,41 @@
+@use '../../../../styles//scss/partials/forward' as *;
+
+.kindOfServices-container {
+  width: 300px;
+  margin-top: 60px;
+
+  &__image {
+    display: flex;
+    justify-content: center; // Centraliza horizontalmente
+    align-items: center; // Centraliza verticalmente
+    height: 250px;
+    overflow: hidden; // Garante que nada saia dos limites
+
+    &__element {
+      width: 250px;
+      height: 250px;
+      object-fit: contain; // Redimensiona a imagem sem cortar
+      vertical-align: middle; // Corrige desalinhamento interno
+      margin: 0; // Remove qualquer margem extra
+      padding: 0; // Remove qualquer padding extra
+    }
+  }
+
+  &__subheading {
+    margin-top: 20px;
+
+    &__element {
+      color: $subheading-color;
+      font-family: $font-family-primary;
+      font-weight: $font-weight-semiEmphasis;
+      font-size: $font-size-subheading;
+      text-align: center;
+    }
+  }
+
+  &__description {
+    color: $description-color-light;
+    text-align: center;
+    margin-top: 5px;
+  }
+}

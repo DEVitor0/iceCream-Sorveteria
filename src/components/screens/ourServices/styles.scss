@@ -1,0 +1,13 @@
+@use '../../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+
+.services {
+  width: 100%;
+  @include flex.flex-container();
+  flex-direction: column;
+  background-image: url('../../../media/images/background/services-bg.png');
+
+  .services__container {
+    width: 60%;
+    @include flex.flex-container();
+  }
+}

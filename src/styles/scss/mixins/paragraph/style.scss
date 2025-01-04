@@ -3,4 +3,5 @@
 @mixin paragraph {
   font-family: $font-family-primary;
   font-weight: $font-weight-regular;
+  color: inherit;
 }
