@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KindOfServices Component should match the snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="kindOfServices-container"
+  >
+    <div
+      class="kindOfServices-container__image"
+    >
+      <img
+        class="kindOfServices-container__image__element"
+        src="mocked-image.jpg"
+      />
+    </div>
+    <div
+      class="kindOfServices-container__subheading"
+    >
+      <h4
+        class="kindOfServices-container__subheading__element"
+      >
+        Fácil de pedir
+      </h4>
+    </div>
+    <div
+      class="kindOfServices-container__description"
+    >
+      <p
+        class="paragraph "
+        style="font-size: 20px;"
+      >
+        Peça sua sobremesa em segundos, sem complicação.
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TitleServices Component matches the snapshot 1`] = `
+<DocumentFragment>
+  <h3
+    class="title-services "
+  >
+    Test Title
+  </h3>
+</DocumentFragment>
+`;

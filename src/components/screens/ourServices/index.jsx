@@ -22,17 +22,17 @@ const OurServices = () => {
         <KindOfServices
           title="Fácil de pedir"
           description="Peça sua sobremesa em segundos, sem complicação."
-          image={images.easeToBuy2}
+          image={images.easeToBuy}
         />
         <KindOfServices
           title="Entrega rápida"
           description="Receba suas delícias com agilidade e segurança."
-          image={images.delivery2}
+          image={images.delivery}
         />
         <KindOfServices
           title="Melhor qualidade"
           description="Sabores premium feitos com os melhores ingredientes."
-          image={images.quality2}
+          image={images.quality}
         />
       </div>
     </section>

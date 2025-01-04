@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Subtitle Component should match the snapshot 1`] = `
+<DocumentFragment>
+  <h2
+    class="subtitle looking-services"
+    id="services-subtitle"
+  >
+    Serviços
+  </h2>
+</DocumentFragment>
+`;

@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImageProvider Component provides the image context value to the children 1`] = `
+<DocumentFragment>
+  <div>
+    Has Image Context
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ImageProvider Component renders children when passed 1`] = `
+<DocumentFragment>
+  <div>
+    Test Child
+  </div>
+</DocumentFragment>
+`;

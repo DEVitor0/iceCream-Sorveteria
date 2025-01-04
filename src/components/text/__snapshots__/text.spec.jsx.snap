@@ -3,7 +3,7 @@
 exports[`Text Component applies the class name from imported styles 1`] = `
 <DocumentFragment>
   <p
-    class="paragraph"
+    class="paragraph "
     style="font-size: 18px;"
   >
     Sample Text
@@ -14,7 +14,7 @@ exports[`Text Component applies the class name from imported styles 1`] = `
 exports[`Text Component applies the correct font size 1`] = `
 <DocumentFragment>
   <p
-    class="paragraph"
+    class="paragraph "
     style="font-size: 24px;"
   >
     Sample Text
@@ -25,7 +25,7 @@ exports[`Text Component applies the correct font size 1`] = `
 exports[`Text Component renders the text correctly 1`] = `
 <DocumentFragment>
   <p
-    class="paragraph"
+    class="paragraph "
     style="font-size: 18px;"
   >
     Sample Text
