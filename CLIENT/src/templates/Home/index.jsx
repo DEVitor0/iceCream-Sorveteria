@@ -2,6 +2,7 @@
 import MainScreen from '../../components/screens/mainScreen/index';
 import HeaderBar from '../../components/screens/navbar/header/index';
 import OurServices from '../../components/screens/ourServices/index';
+import OurProducts from '../../components/screens/ourProducts/index';
 
 // Contexts
 import IconProvider from '../../contexts/IconsContext/IconProvider/index';
@@ -11,7 +12,6 @@ import ImageProvider from '../../contexts/ImagesContext/ImageProvider/index';
 import initializeObserver from '../../utils/intersectionObserverApi/observer';
 
 export const Home = () => {
-  // Inicializar o Intersection Observer e animações
   initializeObserver();
 
   return (
@@ -23,6 +23,7 @@ export const Home = () => {
         </IconProvider>
         <OurServices />
       </ImageProvider>
+      <OurProducts />
     </div>
   );
 };
