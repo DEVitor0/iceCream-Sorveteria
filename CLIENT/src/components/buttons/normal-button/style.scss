@@ -1,4 +1,4 @@
-@use '../../../styles/scss/mixins/buttons/button-style' as btn;
+@use '../../../styles/scss/Home/mixins/buttons/button-style' as btn;
 
 .normal-button {
   @include btn.button-width(190px);

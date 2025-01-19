@@ -1,4 +1,4 @@
-@use '../../styles/scss/mixins/anchor/anchor-style' as anc;
+@use '../../styles/scss/Home/mixins/anchor/anchor-style' as anc;
 
 .anchor-style {
   @include anc.anchor-font;

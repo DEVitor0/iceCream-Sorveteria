@@ -1,5 +1,5 @@
-@use '../../../styles/scss/mixins/buttons/button-style' as btn;
-@use '../../../styles/scss/partials/colors' as colors;
+@use '../../../styles/scss/Home/mixins/buttons/button-style' as btn;
+@use '../../../styles/scss/Home/partials/colors' as colors;
 
 .btn-container {
   @include btn.button-width(240px);
