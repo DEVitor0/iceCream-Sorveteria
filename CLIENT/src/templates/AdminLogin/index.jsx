@@ -4,6 +4,7 @@ import icons from '../../media/icons/fontawesome';
 import image from '../../utils/imageManager/imageManager';
 
 import styles from './adminForm.module.scss';
+import { AdminLoginScript } from './script';
 
 export const AdminLogin = () => {
   return (
@@ -13,7 +14,7 @@ export const AdminLogin = () => {
           <div className={styles.loginForm__title}>
             <Link to="/home">Home/</Link> Login
           </div>
-          <form id="formL" method="post" className={styles.loginForm__form}>
+          <form id="form" method="post" className={styles.loginForm__form}>
             <div className={styles.loginForm__inputBox}>
               <FontAwesomeIcon
                 icon={icons.envelop}
@@ -22,7 +23,7 @@ export const AdminLogin = () => {
               />
               <input
                 type="text"
-                id="emailL"
+                id="email"
                 placeholder="Digite seu email"
                 autoComplete="email"
               />
@@ -35,7 +36,7 @@ export const AdminLogin = () => {
               />
               <input
                 type="password"
-                id="senhaL"
+                id="senha"
                 placeholder="Digite sua senha"
                 autoComplete="current-password"
               />
@@ -52,6 +53,7 @@ export const AdminLogin = () => {
           <img src={image.person} alt="teste" width="100%" />
         </div>
       </main>
+      <AdminLoginScript />
     </div>
   );
 };

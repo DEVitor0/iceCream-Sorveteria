@@ -41,7 +41,7 @@
   }
 
   .main {
-    width: 45vw;
+    width: clamp(53%, 55%, 57%);
     height: auto;
     background: #fff;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -129,14 +129,7 @@
         }
       }
 
-      &__signupText {
-        a {
-          color: $color-tertiary;
-          text-decoration: none;
-        }
-      }
-
-      &__errorMessage {
+      .errorMessage {
         width: 100%;
         height: max-content;
         background-color: $color-tertiary;
@@ -146,8 +139,9 @@
         padding: 3px;
 
         p {
+          font-size: 0.9vw;
           text-align: center;
-          color: $color-error;
+          color: #fff;
         }
       }
     }
