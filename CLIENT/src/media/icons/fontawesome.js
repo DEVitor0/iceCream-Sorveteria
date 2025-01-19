@@ -1,4 +1,10 @@
-import { faBagShopping, faPhone } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBagShopping,
+  faPhone,
+  faEnvelope,
+  faLock,
+} from '@fortawesome/free-solid-svg-icons';
+
 import {
   faInstagram,
   faWhatsapp,
@@ -8,6 +14,8 @@ import {
 const icons = {
   bagShopping: faBagShopping,
   phone: faPhone,
+  envelop: faEnvelope,
+  lock: faLock,
   instagram: faInstagram,
   whatsapp: faWhatsapp,
   tiktok: faTiktok,

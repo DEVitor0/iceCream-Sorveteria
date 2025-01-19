@@ -1,0 +1,158 @@
+@use '../../styles/scss/partials/forward' as *;
+
+.adminForm {
+  font-family: $font-family-primary;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #D4C8FF;
+  padding: 40px;
+
+  @keyframes error-appear {
+    0% {
+      display: none;
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+      display: block;
+    }
+  }
+
+  @keyframes error-disappear {
+    from {
+      opacity: 1;
+      display: block;
+    }
+
+    to {
+      opacity: 0;
+      display: none;
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .main {
+    width: 45vw;
+    height: auto;
+    background: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 40px 30px;
+    border-radius: 5px;
+
+    .loginForm {
+      width: 40%;
+
+      &__title {
+        position: relative;
+        font-size: 1.7vw;
+        font-weight: 500;
+        color: #927de0;
+
+        a {
+          text-decoration: none;
+          color: #52478c;
+
+          &:hover {
+            transition: all 0.3s ease;
+            color: #715fca;
+          }
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 3px;
+          width: 25px;
+          background-color: #52478c;
+        }
+      }
+
+      &__inputBox {
+        display: flex;
+        align-items: center;
+        height: 50px;
+        width: 100%;
+        margin: 15px 0;
+        position: relative;
+
+        input {
+          height: 100%;
+          width: 100%;
+          outline: none;
+          border: none;
+          padding: 0 30px;
+          font-size: 16px;
+          font-weight: 500;
+          border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+          transition: border-color 0.3s ease;
+
+          &:focus {
+            border-color: #927de0;
+          }
+        }
+
+        input[type='submit'] {
+          margin-top: 20px;
+          background-color: #8770da;
+          border: 0;
+          color: #fff;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        &__icons {
+          position: absolute;
+          color: #52478c;
+          font-size: 18px;
+        }
+      }
+
+      &__forgetPassword {
+        p {
+          margin-top: 20px;
+          color: #52478c;
+          text-decoration: none;
+        }
+      }
+
+      &__signupText {
+        a {
+          color: #52478c;
+          text-decoration: none;
+        }
+      }
+
+      &__errorMessage {
+        width: 100%;
+        height: max-content;
+        background-color: #52478c;
+        border-radius: 5px;
+        transition: opacity 0.2s ease-in;
+        animation: error-appear 1s ease-in 2s forwards, error-disappear 1.5s ease-out 1s forwards;
+        padding: 3px;
+
+        p {
+          text-align: center;
+          color: #52478c;
+        }
+      }
+    }
+
+    .loginImg {
+      width: 50%;
+    }
+  }
+}

@@ -9,12 +9,15 @@ import popsicle from '../../media/icons/navIcons/popsicle.png';
 import navIceCream from '../../media/icons/navIcons/navIceCream.png';
 import acai from '../../media/icons/navIcons/acai.png';
 
+import person from '../../media/images/login/person.png';
+
 const image = {
   brand,
   iceCream,
   delivery,
   easeToBuy,
   quality,
+  person,
   icons: {
     popsicle,
     navIceCream,
