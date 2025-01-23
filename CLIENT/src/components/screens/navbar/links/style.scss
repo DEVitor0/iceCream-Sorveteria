@@ -1,0 +1,22 @@
+@use '../../../../styles/scss/Home/partials/forward' as *;
+@use '../../../../styles/scss/Home/mixins/flexContainer/flex.scss' as flex;
+
+.header-bar__inner__menu {
+  width: 60%;
+  height: 30px;
+  @include flex.flex-container;
+
+  &__list {
+    width: 90%;
+    list-style: none;
+    @include flex.flex-container;
+
+    &__item {
+      font-size: $font-size-menu;
+      font-family: $font-family-primary;
+      font-weight: $font-weight-regular;
+
+      color: $text-color-menu;
+    }
+  }
+}

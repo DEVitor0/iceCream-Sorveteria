@@ -1,0 +1,11 @@
+@use '../../styles/scss/Home/mixins/paragraph/style.scss' as text;
+@use '../../styles/scss/Home/mixins/intersecionObserverEffects/styles.scss' as
+  observer;
+
+#main-text {
+  @include observer.appear-from-left();
+}
+
+.paragraph {
+  @include text.paragraph;
+}

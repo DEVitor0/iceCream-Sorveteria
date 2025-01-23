@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NavProducts Component should render correctly and match snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="nav-product-element"
+  >
+    <img
+      alt="Test Icon"
+      class="nav-product-element__image"
+      src="test-icon.png"
+    />
+    <p
+      class="nav-product-element__text"
+    >
+      Test Product
+    </p>
+  </div>
+</DocumentFragment>
+`;

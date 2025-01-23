@@ -1,7 +1,0 @@
-@use '../../styles/scss/mixins/anchor/anchor-style' as anc;
-
-.anchor-style {
-  @include anc.anchor-font;
-  @include anc.anchor-configs;
-  @include anc.anchor-color;
-}

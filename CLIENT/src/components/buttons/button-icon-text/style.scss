@@ -1,0 +1,39 @@
+@use '../../../styles/scss/Home/mixins/buttons/button-style' as btn;
+@use '../../../styles/scss/Home/partials/colors' as colors;
+
+.btn-container {
+  @include btn.button-width(240px);
+  @include btn.flex-button;
+  @include btn.all-buttons;
+  height: 60px;
+  border-radius: 15px;
+
+  &__text {
+    width: 100%;
+    @include btn.flex-button;
+
+    p {
+      @include btn.button-font;
+      margin: 0;
+
+      a {
+        color: colors.$font-button-icon-text;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &__icon {
+    width: 20%;
+    height: 70%;
+    padding: 12px;
+    margin-right: 15px;
+    border-radius: 10px;
+    background-color: colors.$background-icon-box;
+    color: colors.$icon-color-box;
+
+    @include btn.flex-button;
+
+    font-size: 1.4rem;
+  }
+}
