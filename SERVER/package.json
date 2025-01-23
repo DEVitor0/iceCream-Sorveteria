@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "csurf": "^1.10.0",
     "dompurify": "^3.2.3",
     "dotenv": "^16.4.7",

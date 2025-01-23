@@ -1,5 +1,4 @@
 import { useEffect, useCallback } from 'react';
-
 import styles from './adminForm.module.scss';
 
 export const AdminLoginScript = () => {
@@ -60,14 +59,12 @@ export const AdminLoginScript = () => {
     [showErrorMessage],
   );
 
-  useEffect(() => {
-    const form = document.querySelector('#form');
-
-    if (!form) return;
-
-    form.addEventListener('submit', (e) => {
+  const handleSubmit = useCallback(
+    async (e) => {
       e.preventDefault();
 
+      // eslint-disable-next-line no-unused-vars
+      const form = document.querySelector('#form');
       const emailInput = document.querySelector('input[type="text"]#email');
       const passwordInput = document.querySelector(
         'input[type="password"]#senha',
@@ -78,14 +75,6 @@ export const AdminLoginScript = () => {
       const isEmailEmpty = checkInputIsEmpty(emailInput);
       const isPasswordEmpty = checkInputIsEmpty(passwordInput);
 
-      if (emailInput && emailInput.value.length > 35) {
-        showErrorMessage('Endereço de email muito longo');
-      }
-
-      if (passwordInput && passwordInput.value.length > 25) {
-        showErrorMessage('Senha muito longa');
-      }
-
       if (
         isEmailValid &&
         isPasswordValid &&
@@ -94,10 +83,43 @@ export const AdminLoginScript = () => {
         emailInput.value.length <= 35 &&
         passwordInput.value.length <= 25
       ) {
-        form.submit();
+        try {
+          const response = await fetch('/api/validate-credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: emailInput.value,
+              password: passwordInput.value,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert('Login realizado com sucesso!');
+          } else {
+            showErrorMessage(result.message || 'Erro ao realizar login.');
+          }
+        } catch (error) {
+          console.error('Erro ao enviar os dados:', error);
+          showErrorMessage('Erro interno. Tente novamente mais tarde.');
+        }
       }
-    });
-  }, [checkInputIsEmpty, emailIsValid, passwordIsValid, showErrorMessage]);
+    },
+    [checkInputIsEmpty, emailIsValid, passwordIsValid, showErrorMessage],
+  );
+
+  useEffect(() => {
+    const form = document.querySelector('#form');
+    if (form) {
+      form.addEventListener('submit', handleSubmit);
+    }
+    return () => {
+      if (form) {
+        form.removeEventListener('submit', handleSubmit);
+      }
+    };
+  }, [handleSubmit]);
 
   return null;
 };
