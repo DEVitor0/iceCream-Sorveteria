@@ -1,63 +1,138 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import icons from '../../media/icons/fontawesome';
 import image from '../../utils/imageManager/imageManager';
 
 import styles from './adminForm.module.scss';
-import { AdminLoginScript } from './script';
+
+// Exporta a função para exibir mensagens de erro
+export const showErrorMessage = (message) => {
+  const form = document.querySelector('#form');
+  if (!form) return;
+
+  const existingMessage = Array.from(form.children).find((child) =>
+    child.classList.contains(styles.errorMessage),
+  );
+
+  if (existingMessage) existingMessage.remove();
+
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add(styles.errorMessage);
+  const messageText = document.createElement('p');
+  messageText.textContent = message;
+
+  messageDiv.appendChild(messageText);
+  form.appendChild(messageDiv);
+};
+
+// Exporta a função para validar o email
+export const emailIsValid = (email) => {
+  if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+    showErrorMessage('Endereço de email inválido');
+    return false;
+  }
+  return true;
+};
+
+// Exporta a função para validar a senha
+export const passwordIsValid = (password) => {
+  if (password && password.length > 25) {
+    showErrorMessage('Senha muito longa');
+    return false;
+  }
+  return true;
+};
+
+// Exporta a função de submit para testes, recebendo os parâmetros necessários
+export const handleSubmit = async (event, csrfToken, navigate) => {
+  event.preventDefault();
+  const email = event.target.email.value;
+  const password = event.target.senha.value;
+
+  // Validações
+  if (!email || !password) {
+    showErrorMessage('Preencha todos os campos!');
+    return;
+  }
+
+  if (!emailIsValid(email) || !passwordIsValid(password)) {
+    return;
+  }
+
+  if (email.length > 35 || password.length > 25) {
+    showErrorMessage('Campos excedem o tamanho máximo!');
+    return;
+  }
+
+  // Verifica se o CSRF token foi obtido antes de enviar a requisição
+  if (!csrfToken) {
+    showErrorMessage('CSRF Token não encontrado!');
+    return;
+  }
+
+  console.log('Token CSRF sendo enviado no cabeçalho:', csrfToken);
+
+  try {
+    const response = await fetch('/api/validate-credentials', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      credentials: 'include',
+      body: JSON.stringify({ username: email, password: password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      showErrorMessage(error.message || 'Erro ao realizar login.');
+      return;
+    }
+
+    // Redireciona para a página principal após login bem-sucedido
+    const result = await response.json();
+    if (result.redirectUrl) {
+      navigate(result.redirectUrl);
+    }
+  } catch (error) {
+    console.error('Erro ao enviar a requisição:', error);
+    showErrorMessage('Erro interno. Tente novamente mais tarde.');
+  }
+};
 
 export const AdminLogin = () => {
   const [csrfToken, setCsrfToken] = useState('');
+  const navigate = useNavigate();
 
+  // Busca o token CSRF ao montar o componente
   useEffect(() => {
-    // Buscar o token CSRF do cookie
-    const csrfTokenFromCookie = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('csrfToken='))
-      ?.split('=')[1];
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch('/csrf-token', {
+          method: 'GET',
+          credentials: 'include',
+        });
 
-    if (csrfTokenFromCookie) {
-      setCsrfToken(csrfTokenFromCookie); // Define o token CSRF no estado
-      console.log('Token CSRF recebido do cookie:', csrfTokenFromCookie); // Log para debug
-    } else {
-      console.error('Token CSRF não encontrado nos cookies');
-    }
+        if (!response.ok) {
+          console.error('Erro ao buscar token CSRF:', response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        setCsrfToken(data.csrfToken);
+        console.log('Token CSRF recebido:', data.csrfToken);
+      } catch (error) {
+        console.error('Erro ao buscar token CSRF:', error);
+      }
+    };
+
+    fetchCsrfToken();
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.senha.value;
-
-    // Verifique se os campos não estão vazios antes de enviar
-    if (!email || !password) {
-      console.error('Email e senha são obrigatórios!');
-      return; // Impede o envio se os campos estiverem vazios
-    }
-
-    try {
-      const response = await fetch('/api/validate-credentials', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'csrf-token': csrfToken, // Envia o token CSRF no cabeçalho
-        },
-        credentials: 'include', // Inclui os cookies (se necessário para CSRF)
-        body: JSON.stringify({ username: email, password: password }), // Use os nomes corretos no corpo
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Erro de login:', error.message || 'Erro desconhecido');
-        return;
-      }
-
-      const result = await response.json();
-      console.log('Login bem-sucedido:', result);
-    } catch (error) {
-      console.error('Erro ao enviar a requisição:', error);
-    }
+  // Wrapper interno para usar a função exportada handleSubmit
+  const internalHandleSubmit = async (event) => {
+    await handleSubmit(event, csrfToken, navigate);
   };
 
   return (
@@ -71,8 +146,10 @@ export const AdminLogin = () => {
             id="form"
             method="post"
             className={styles.loginForm__form}
-            onSubmit={handleSubmit}
+            onSubmit={internalHandleSubmit}
+            data-testid="form"
           >
+            <input type="hidden" name="csrfToken" value={csrfToken} />
             <div className={styles.loginForm__inputBox}>
               <FontAwesomeIcon
                 icon={icons.envelop}
@@ -85,7 +162,6 @@ export const AdminLogin = () => {
                 name="email"
                 placeholder="Digite seu email"
                 autoComplete="email"
-                required
               />
             </div>
             <div className={styles.loginForm__inputBox}>
@@ -100,13 +176,11 @@ export const AdminLogin = () => {
                 name="senha"
                 placeholder="Digite sua senha"
                 autoComplete="current-password"
-                required
               />
             </div>
             <div className={styles.loginForm__forgetPassword}>
               <p>Esqueceu a senha ?</p>
             </div>
-
             <div className={styles.loginForm__inputBox}>
               <input type="submit" value="Entrar" />
             </div>
@@ -116,7 +190,6 @@ export const AdminLogin = () => {
           <img src={image.person} alt="teste" width="100%" />
         </div>
       </main>
-      <AdminLoginScript />
     </div>
   );
 };
