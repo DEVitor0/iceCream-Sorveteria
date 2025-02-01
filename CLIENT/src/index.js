@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './styles/scss/global-style.scss';
 
 import { Home } from './templates/Home';
-import AdminLogin from './templates/AdminLogin';
+import Login from './templates/Account/LogIn';
+import SignUp from './templates/Account/SignUp';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,7 +13,8 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/admin-panel" element={<AdminLogin />} />
+        <Route path="/entrar" element={<Login />} />
+        <Route path="/cadastrar" element={<SignUp />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

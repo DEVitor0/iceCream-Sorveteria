@@ -1,0 +1,23 @@
+@use '../../../../../..../../..../../styles/scss/mixins/buttons/button-style' as buttons;
+@use '../../../../../..../../..../../styles/scss/partials/forward' as *;
+
+.nav-product-element {
+  padding: 10px;
+  @include buttons.flex-button();
+  @include buttons.button-border();
+  @include buttons.button-font();
+  @include buttons.all-buttons();
+
+  &__image {
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+  }
+
+  &__text {
+    font-family: $font-family-primary;
+    font-weight: $font-weight-medium;
+    font-size: $font-size-menu;
+    color: $text-color-menu;
+  }
+}
