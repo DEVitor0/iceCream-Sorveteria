@@ -4,16 +4,23 @@ const router = express.Router();
 
 const { validateUserCredentials } = require('./controllers/userController');
 const csrfProtection = require('./configs/csrfProtectionConfigs');
-
-router.post('/api/validate-credentials', csrfProtection, validateUserCredentials, (req, res) => {
-  console.log('Token CSRF do cabeçalho:', req.headers['x-csrf-token']);
-  console.log('Token CSRF do cookie:', req.cookies._csrf);
-  console.log('Token CSRF esperado:', req.csrfToken());
-  res.sendStatus(200);
-});
+const { login, register } = require('./controllers/authController');
+const authenticateJWT = require('./middlewares/authMiddleware');
 
 router.get("/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
+});
+
+router.post('/api/validate-credentials', csrfProtection, validateUserCredentials, (req, res) => {
+  res.sendStatus(200);
+});
+
+router.post('/entrar', csrfProtection, login);
+router.post('/registrar', csrfProtection, register);
+
+// Rota protegida com JWT
+router.get("/dashboard", authenticateJWT, (req, res) => {
+    res.json({ user: req.user });
 });
 
 module.exports = router;
