@@ -7,6 +7,10 @@ const csrfProtection = csrf({
     secure: process.env.NODE_ENV === "production",
     sameSite: 'strict',
   },
+  value: (req) => {
+    console.log('[CSRF] Received token:', req.headers['x-csrf-token']);
+    return req.headers['x-csrf-token'];
+  }
 });
 
 module.exports = csrfProtection;

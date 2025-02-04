@@ -1,71 +1,99 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import icons from '../../../media/icons/fontawesome';
 import image from '../../../utils/imageManager/imageManager';
 import Form from '../../../components/Account/form';
-import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 import {
   validateFields,
   showErrorMessage,
 } from '../../../utils/formValidations/formValidation';
 import styles from '../../../styles/scss/Account/account.module.scss';
+import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 
 export const Login = () => {
   const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getCsrfToken = async () => {
-      const token = await fetchCsrfToken();
-      if (token) {
-        setCsrfToken(token);
-      }
-    };
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await fetch('/csrf-token', {
+        credentials: 'include',
+        cache: 'no-store', // Evita cache problemático
+      });
 
-    getCsrfToken();
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return (await response.json()).csrfToken;
+    } catch (error) {
+      console.error('CSRF Error:', error);
+      return null;
+    }
+  };
+
+  // Use useCallback para evitar loops
+  const getCsrfToken = useCallback(async () => {
+    const token = await fetchCsrfToken();
+    token && setCsrfToken(token);
   }, []);
+
+  useEffect(() => {
+    getCsrfToken();
+  }, [getCsrfToken]);
 
   const internalHandleSubmit = async (event) => {
     event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.senha.value;
+    const form = event.target;
+    const formData = new FormData(form);
+    const email = formData.get('email');
+    const password = formData.get('senha');
 
-    if (!validateFields(email, password, styles)) {
-      return;
-    }
+    // Resetar mensagens de erro
+    form.querySelectorAll('.error-message').forEach((el) => el.remove());
 
-    if (!csrfToken) {
-      showErrorMessage('CSRF Token não encontrado!', styles);
-      return;
-    }
-
-    console.log('Token CSRF sendo enviado no cabeçalho:', csrfToken);
+    if (!validateFields(email, password, styles)) return;
 
     try {
-      const response = await fetch('/api/validate-credentials', {
+      const response = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
-        body: JSON.stringify({ username: email, password: password }),
+        body: JSON.stringify({ email, senha: password }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        const error = await response.json();
-        showErrorMessage(error.message || 'Erro ao realizar login.', styles);
+        // Caso específico de CAPTCHA requerido
+        if (data.requiresCaptcha) {
+          navigate(data.redirectTo || '/validate-captcha', {
+            state: {
+              captchaToken: data.captchaToken,
+              email, // Preserva email para autopreenchimento
+            },
+          });
+          return;
+        }
+
+        // Erros de validação comuns
+        showErrorMessage(data.message || 'Credenciais inválidas', styles);
         return;
       }
 
-      const result = await response.json();
-      if (result.redirectUrl) {
-        navigate(result.redirectUrl);
+      // Login bem-sucedido
+      if (data.redirectUrl) {
+        navigate(data.redirectUrl);
+      } else {
+        navigate('/'); // Fallback
       }
     } catch (error) {
-      console.error('Erro ao enviar a requisição:', error);
-      showErrorMessage('Erro interno. Tente novamente mais tarde.', styles);
+      console.error('[DEBUG] Erro completo:', error);
+      showErrorMessage(
+        error.message || 'Falha na comunicação com o servidor',
+        styles,
+      );
     }
   };
 

@@ -34,7 +34,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8443",
+  "proxy": "http://localhost:3000",
   "keywords": [],
   "author": "DEVitor0",
   "license": "ISC",

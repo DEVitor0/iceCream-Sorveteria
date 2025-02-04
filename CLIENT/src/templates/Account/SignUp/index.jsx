@@ -9,6 +9,7 @@ import {
   validateFields,
   showErrorMessage,
 } from '../../../utils/formValidations/formValidation';
+import { phoneIsValid } from '../../../utils/formValidations/signupValidations';
 import styles from '../../../styles/scss/Account/account.module.scss';
 
 const SignUp = () => {
@@ -28,11 +29,15 @@ const SignUp = () => {
 
   const internalHandleSubmit = async (event) => {
     event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.senha.value;
-    const username = event.target.username.value;
+    const email = event.target.email.value; // Corrigido: acessa event.target
+    const password = event.target.senha.value; // Corrigido: acessa event.target
+    const phone = event.target.phone.value; // Corrigido: acessa event.target
 
     if (!validateFields(email, password, styles)) {
+      return;
+    }
+
+    if (!phoneIsValid(phone, styles)) {
       return;
     }
 
@@ -51,7 +56,7 @@ const SignUp = () => {
           'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ email, password, phone }),
       });
 
       if (!response.ok) {
@@ -93,7 +98,7 @@ const SignUp = () => {
       }}
       image={{ person: image.person }}
       isLoginForm={true}
-    />
+    ></Form>
   );
 };
 
