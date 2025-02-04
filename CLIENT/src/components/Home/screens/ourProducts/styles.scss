@@ -1,0 +1,13 @@
+@use '../../../..../../..../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+
+.ourProducts {
+  margin-top: 20%;
+  width: 100%;
+  @include flex.flex-container();
+
+  &__title {
+    @include flex.flex-container();
+    width: 60%;
+    margin-bottom: 7%;
+  }
+}

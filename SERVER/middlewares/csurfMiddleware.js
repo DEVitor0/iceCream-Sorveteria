@@ -1,20 +1,9 @@
-const csurf = require('csurf');
-
-const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+const csrfErrorHandler = (err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    res.status(403).json({ error: "Invalid CSRF token" });
+  } else {
+    next(err);
   }
-});
-
-const exposeCsrfToken = (req, res, next) => {
-  res.cookie('csrf-token', req.csrfToken(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-  });
-  next();
 };
 
-module.exports = { csrfProtection, exposeCsrfToken };
+module.exports = csrfErrorHandler;

@@ -1,0 +1,10 @@
+@use '../../../../..../../..../../styles/scss/Home/mixins/buttons/button-style' as btn;
+
+.normal-button {
+  @include btn.button-width(190px);
+  @include btn.button-font;
+  @include btn.normal-button-colors;
+  @include btn.button-border;
+  @include btn.all-buttons;
+  height: 52px;
+}

@@ -1,8 +1,11 @@
 const corsOptions = {
   origin: 'http://localhost:3000',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-  credentials: true,
+  optionsSuccessStatus: 200,
+  exposedHeaders: [],
+  maxAge: 3600
 };
 
 module.exports = corsOptions;

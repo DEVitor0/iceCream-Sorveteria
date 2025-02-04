@@ -1,0 +1,23 @@
+@use '../../../../..../../..../../styles/scss/Home/mixins/buttons/button-style' as btn;
+@use '../../../../..../../..../../styles/scss/Home/partials/forward' as *;
+
+.container-icon {
+  @include btn.flex-button;
+  @include btn.all-buttons;
+
+  width: auto;
+  height: 45px;
+  padding: 12px;
+  font-size: $font-size-icon-button;
+
+  color: $social-color-box;
+  background-color: $background-social-color-box;
+  box-shadow: rgba(0, 0, 0, 0.11) 0px 10px 15px -3px;
+  border-radius: 8px;
+
+  &:hover {
+    transition: 0.2s ease-in;
+    background-color: $background-social-color-box-hover;
+    color: $social-color-box-hover;
+  }
+}
