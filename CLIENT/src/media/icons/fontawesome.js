@@ -3,6 +3,13 @@ import {
   faPhone,
   faEnvelope,
   faLock,
+  faChevronLeft,
+  faHouseChimney,
+  faCubes,
+  faBasketShopping,
+  faBoxOpen,
+  faUser,
+  faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -19,6 +26,13 @@ const icons = {
   instagram: faInstagram,
   whatsapp: faWhatsapp,
   tiktok: faTiktok,
+  arrowLeft: faChevronLeft,
+  houseChimney: faHouseChimney,
+  box: faBoxOpen,
+  cubes: faCubes,
+  user: faUser,
+  basketShopping: faBasketShopping,
+  goOut: faArrowRightFromBracket,
 };
 
 export default icons;

@@ -1,0 +1,64 @@
+.boardDashboard {
+  width: 250px;
+  height: 100vh; /* Faz com que o menu ocupe toda a altura da tela */
+  padding: 15px;
+  flex-direction: column;
+  box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra suave à direita */
+}
+
+.widgetsGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Espaçamento entre os widgets */
+  flex-wrap: wrap;
+}
+
+.divider {
+  margin-top: 10px;
+  padding-top: 10px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.divider::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* Gradiente suave */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.divider .text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 0 10px;
+  font-size: 14px;
+  color: #666;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.widgets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 12px;
+  background-color: #f4f4f4;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.widgets:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}

@@ -6,6 +6,7 @@ import './styles/scss/global-style.scss';
 import { Home } from './templates/Home';
 import Login from './templates/Account/LogIn';
 import SignUp from './templates/Account/SignUp';
+import Dashboard from './templates/Dashboard/Dashboard';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,6 +16,7 @@ root.render(
         <Route path="/" element={<Home />} />
         <Route path="/entrar" element={<Login />} />
         <Route path="/registrar" element={<SignUp />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
