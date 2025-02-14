@@ -73,7 +73,7 @@ export const Login = () => {
     <Form
       title="Login"
       linkText="Registrar/"
-      route="/cadastrar"
+      route="/registrar"
       emailPlaceholder="Digite seu email"
       passwordPlaceholder="Digite sua senha"
       forgetPasswordText="Esqueceu a senha ?"

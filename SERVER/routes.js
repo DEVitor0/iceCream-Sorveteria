@@ -18,7 +18,6 @@ router.post('/api/validate-credentials', csrfProtection, validateUserCredentials
 router.post('/entrar', csrfProtection, login);
 router.post('/registrar', csrfProtection, register);
 
-// Rota protegida com JWT
 router.get("/dashboard", authenticateJWT, (req, res) => {
     res.json({ user: req.user });
 });
