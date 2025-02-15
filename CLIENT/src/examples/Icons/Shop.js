@@ -1,23 +1,8 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // Soft UI Dashboard React base styles
-import colors from "assets/theme/base/colors";
+import colors from 'assets/theme/base/colors';
 
 function Shop({ color, size }) {
   return (
@@ -30,14 +15,23 @@ function Shop({ color, size }) {
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
       <title>shop</title>
-      <g id="Basic-Elements" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+      <g
+        id="Basic-Elements"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
         <g
           id="Rounded-Icons"
           transform="translate(-1716.000000, -439.000000)"
           fill={colors[color] ? colors[color].main : colors.dark.main}
           fillRule="nonzero"
         >
-          <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+          <g
+            id="Icons-with-opacity"
+            transform="translate(1716.000000, 291.000000)"
+          >
             <g id="shop-" transform="translate(0.000000, 148.000000)">
               <path
                 d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"
@@ -58,22 +52,22 @@ function Shop({ color, size }) {
 
 // Setting default values for the props of Shop
 Shop.defaultProps = {
-  color: "dark",
-  size: "16px",
+  color: 'dark',
+  size: '16px',
 };
 
 // Typechecking props for the Shop
 Shop.propTypes = {
   color: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "dark",
-    "light",
-    "white",
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'dark',
+    'light',
+    'white',
   ]),
   size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

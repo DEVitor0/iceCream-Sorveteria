@@ -1,36 +1,27 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// react-router-dom components
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 // prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // @mui material components
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
-import Tooltip from "@mui/material/Tooltip";
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Tooltip from '@mui/material/Tooltip';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-import SoftButton from "components/SoftButton";
-import SoftAvatar from "components/SoftAvatar";
+import SoftBox from 'components/SoftBox';
+import SoftTypography from 'components/SoftTypography';
+import SoftButton from 'components/SoftButton';
+import SoftAvatar from 'components/SoftAvatar';
 
-function DefaultProjectCard({ image, label, title, description, action, authors }) {
+function DefaultProjectCard({
+  image,
+  label,
+  title,
+  description,
+  action,
+  authors,
+}) {
   const renderAuthors = authors.map(({ image: media, name }) => (
     <Tooltip key={name} title={name} placement="bottom">
       <SoftAvatar
@@ -39,12 +30,12 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
         size="xs"
         sx={({ borders: { borderWidth }, palette: { white } }) => ({
           border: `${borderWidth[2]} solid ${white.main}`,
-          cursor: "pointer",
-          position: "relative",
+          cursor: 'pointer',
+          position: 'relative',
           ml: -1.25,
 
-          "&:hover, &:focus": {
-            zIndex: "10",
+          '&:hover, &:focus': {
+            zIndex: '10',
           },
         })}
       />
@@ -54,24 +45,29 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
   return (
     <Card
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "transparent",
-        boxShadow: "none",
-        overflow: "visible",
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        overflow: 'visible',
       }}
     >
-      <SoftBox position="relative" width="100.25%" shadow="xl" borderRadius="xl">
+      <SoftBox
+        position="relative"
+        width="100.25%"
+        shadow="xl"
+        borderRadius="xl"
+      >
         <CardMedia
           src={image}
           component="img"
           title={title}
           sx={{
-            maxWidth: "100%",
+            maxWidth: '100%',
             margin: 0,
             boxShadow: ({ boxShadows: { md } }) => md,
-            objectFit: "cover",
-            objectPosition: "center",
+            objectFit: 'cover',
+            objectPosition: 'center',
           }}
         />
       </SoftBox>
@@ -87,7 +83,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
           </SoftTypography>
         </SoftBox>
         <SoftBox mb={1}>
-          {action.type === "internal" ? (
+          {action.type === 'internal' ? (
             <SoftTypography
               component={Link}
               to={action.route}
@@ -114,8 +110,12 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
             {description}
           </SoftTypography>
         </SoftBox>
-        <SoftBox display="flex" justifyContent="space-between" alignItems="center">
-          {action.type === "internal" ? (
+        <SoftBox
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          {action.type === 'internal' ? (
             <SoftButton
               component={Link}
               to={action.route}
@@ -157,18 +157,18 @@ DefaultProjectCard.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   action: PropTypes.shape({
-    type: PropTypes.oneOf(["external", "internal"]),
+    type: PropTypes.oneOf(['external', 'internal']),
     route: PropTypes.string.isRequired,
     color: PropTypes.oneOf([
-      "primary",
-      "secondary",
-      "info",
-      "success",
-      "warning",
-      "error",
-      "light",
-      "dark",
-      "white",
+      'primary',
+      'secondary',
+      'info',
+      'success',
+      'warning',
+      'error',
+      'light',
+      'dark',
+      'white',
     ]).isRequired,
     label: PropTypes.string.isRequired,
   }).isRequired,

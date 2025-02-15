@@ -1,5 +1,5 @@
 // Images
-import backgroundImage from "assets/images/curved-images/white-curved.jpeg";
+import backgroundImage from 'assets/images/curved-images/white-curved.jpeg';
 
 function card(theme, ownerState) {
   const { borders, functions, transitions, breakpoints } = theme;
@@ -9,16 +9,16 @@ function card(theme, ownerState) {
   const { pxToRem } = functions;
 
   return {
-    minWidth: "auto",
+    minWidth: 'auto',
     backgroundImage: `url(${backgroundImage})`,
-    backgroundPosition: "50%",
-    backgroundSize: "cover",
+    backgroundPosition: '50%',
+    backgroundSize: 'cover',
     borderRadius: borderRadius.xl,
-    boxShadow: "none",
+    boxShadow: 'none',
 
-    [breakpoints.up("xl")]: {
+    [breakpoints.up('xl')]: {
       maxHeight: miniSidenav ? pxToRem(64) : pxToRem(192),
-      transition: transitions.create("max-height", {
+      transition: transitions.create('max-height', {
         easing: transitions.easing.easeInOut,
         duration: transitions.duration.standard,
       }),
@@ -36,44 +36,47 @@ function cardContent(theme, ownerState) {
 
   return {
     color: white.main,
-    position: "relative",
+    position: 'relative',
     zIndex: 2,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     p: 2,
 
-    "&::after": {
+    '&::after': {
       content: '""',
       backgroundImage:
-        sidenavColor === "default"
+        sidenavColor === 'default'
           ? linearGradient(gradients.secondary.main, gradients.secondary.state)
-          : linearGradient(gradients[sidenavColor].main, gradients[sidenavColor].state),
-      display: "block",
-      height: "100%",
-      width: "100%",
+          : linearGradient(
+              gradients[sidenavColor].main,
+              gradients[sidenavColor].state,
+            ),
+      display: 'block',
+      height: '100%',
+      width: '100%',
       borderRadius: borderRadius.xl,
-      position: "absolute",
+      position: 'absolute',
       top: 0,
       left: 0,
       opacity: 0.65,
       zIndex: -1,
     },
 
-    "& .MuiButton-root": {
+    '& .MuiButton-root': {
       color: dark.main,
     },
 
-    "&:last-child": {
+    '&:last-child': {
       pb: 2,
     },
   };
 }
 
 const cardIconBox = {
-  display: "grid",
-  placeItems: "center",
+  display: 'grid',
+  placeItems: 'center',
   transition: ({ transitions }) =>
-    transitions.create("margin", {
+    transitions.create('margin', {
       easing: transitions.easing.easeInOut,
       duration: transitions.duration.standard,
     }),
@@ -88,10 +91,13 @@ function cardIcon(theme, ownerState) {
 
   return {
     backgroundImage:
-      sidenavColor === "default"
+      sidenavColor === 'default'
         ? linearGradient(gradients.dark, gradients.dark.state)
-        : linearGradient(gradients[sidenavColor].main, gradients[sidenavColor].state),
-    WebkitBackgroundClip: "text",
+        : linearGradient(
+            gradients[sidenavColor].main,
+            gradients[sidenavColor].state,
+          ),
+    WebkitBackgroundClip: 'text',
     WebkitTextFillColor: transparent.main,
   };
 }

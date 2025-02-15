@@ -1,23 +1,8 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 // prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // Soft UI Dashboard React base styles
-import colors from "assets/theme/base/colors";
+import colors from 'assets/theme/base/colors';
 
 function Office({ color, size }) {
   return (
@@ -30,14 +15,23 @@ function Office({ color, size }) {
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
       <title>office</title>
-      <g id="Basic-Elements" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+      <g
+        id="Basic-Elements"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
         <g
           id="Rounded-Icons"
           transform="translate(-1869.000000, -293.000000)"
           fill={colors[color] ? colors[color].main : colors.dark.main}
           fillRule="nonzero"
         >
-          <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+          <g
+            id="Icons-with-opacity"
+            transform="translate(1716.000000, 291.000000)"
+          >
             <g id="office" transform="translate(153.000000, 2.000000)">
               <path
                 d="M12.25,17.5 L8.75,17.5 L8.75,1.75 C8.75,0.78225 9.53225,0 10.5,0 L31.5,0 C32.46775,0 33.25,0.78225 33.25,1.75 L33.25,12.25 L29.75,12.25 L29.75,3.5 L12.25,3.5 L12.25,17.5 Z"
@@ -55,22 +49,22 @@ function Office({ color, size }) {
 
 // Setting default values for the props of Office
 Office.defaultProps = {
-  color: "dark",
-  size: "16px",
+  color: 'dark',
+  size: '16px',
 };
 
 // Typechecking props for the Office
 Office.propTypes = {
   color: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "dark",
-    "light",
-    "white",
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'dark',
+    'light',
+    'white',
   ]),
   size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

@@ -1,38 +1,23 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
 // porp-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // react-chartjs-2 components
-import { Bar } from "react-chartjs-2";
+import { Bar } from 'react-chartjs-2';
 
 // @mui material components
-import Card from "@mui/material/Card";
+import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
+import SoftBox from 'components/SoftBox';
+import SoftTypography from 'components/SoftTypography';
 
 // VerticalBarChart configurations
-import configs from "examples/Charts/BarCharts/VerticalBarChart/configs";
+import configs from 'examples/Charts/BarCharts/VerticalBarChart/configs';
 
 // Soft UI Dashboard React base styles
-import colors from "assets/theme/base/colors";
+import colors from 'assets/theme/base/colors';
 
 function VerticalBarChart({ title, description, height, chart }) {
   const chartDatasets = chart.datasets
@@ -42,7 +27,7 @@ function VerticalBarChart({ title, description, height, chart }) {
         borderWidth: 0,
         borderRadius: 4,
         backgroundColor: colors[dataset.color]
-          ? colors[dataset.color || "dark"].main
+          ? colors[dataset.color || 'dark'].main
           : colors.dark.main,
         fill: false,
         maxBarThickness: 35,
@@ -61,7 +46,12 @@ function VerticalBarChart({ title, description, height, chart }) {
             </SoftBox>
           )}
           <SoftBox mb={2}>
-            <SoftTypography component="div" variant="button" fontWeight="regular" color="text">
+            <SoftTypography
+              component="div"
+              variant="button"
+              fontWeight="regular"
+              color="text"
+            >
               {description}
             </SoftTypography>
           </SoftBox>
@@ -73,7 +63,7 @@ function VerticalBarChart({ title, description, height, chart }) {
             <Bar data={data} options={options} />
           </SoftBox>
         ),
-        [chart, height]
+        [chart, height],
       )}
     </SoftBox>
   );
@@ -83,9 +73,9 @@ function VerticalBarChart({ title, description, height, chart }) {
 
 // Setting default values for the props of VerticalBarChart
 VerticalBarChart.defaultProps = {
-  title: "",
-  description: "",
-  height: "19.125rem",
+  title: '',
+  description: '',
+  height: '19.125rem',
 };
 
 // Typechecking props for the VerticalBarChart

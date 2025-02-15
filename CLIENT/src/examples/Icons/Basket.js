@@ -1,23 +1,7 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // Soft UI Dashboard React base styles
-import colors from "assets/theme/base/colors";
+import colors from 'assets/theme/base/colors';
 
 function Basket({ color, size }) {
   return (
@@ -30,14 +14,23 @@ function Basket({ color, size }) {
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
       <title>basket</title>
-      <g id="Basic-Elements" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+      <g
+        id="Basic-Elements"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
         <g
           id="Rounded-Icons"
           transform="translate(-1869.000000, -741.000000)"
           fill={colors[color] ? colors[color].main : colors.dark.main}
           fillRule="nonzero"
         >
-          <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)">
+          <g
+            id="Icons-with-opacity"
+            transform="translate(1716.000000, 291.000000)"
+          >
             <g id="basket" transform="translate(153.000000, 450.000000)">
               <path
                 className="color-background"
@@ -58,22 +51,22 @@ function Basket({ color, size }) {
 
 // Setting default values for the props of Basket
 Basket.defaultProps = {
-  color: "dark",
-  size: "16px",
+  color: 'dark',
+  size: '16px',
 };
 
 // Typechecking props for the Basket
 Basket.propTypes = {
   color: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "dark",
-    "light",
-    "white",
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'dark',
+    'light',
+    'white',
   ]),
   size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

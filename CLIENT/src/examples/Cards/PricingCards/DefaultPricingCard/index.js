@@ -1,33 +1,17 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// react-router-dom components
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 // prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // @mui material components
-import Card from "@mui/material/Card";
-import Icon from "@mui/material/Icon";
+import Card from '@mui/material/Card';
+import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-import SoftBadge from "components/SoftBadge";
-import SoftButton from "components/SoftButton";
+import SoftBox from 'components/SoftBox';
+import SoftTypography from 'components/SoftTypography';
+import SoftBadge from 'components/SoftBadge';
+import SoftButton from 'components/SoftButton';
 
 function DefaultPricingCard({ badge, price, specifications, action }) {
   const renderSpecifications = specifications.map(({ label, includes }) => (
@@ -40,12 +24,14 @@ function DefaultPricingCard({ badge, price, specifications, action }) {
         height="1.5rem"
         borderRadius="50%"
         shaodw="md"
-        bgColor={includes ? "success" : "secondary"}
+        bgColor={includes ? 'success' : 'secondary'}
         variant="gradient"
         mr={2}
       >
         <SoftTypography variant="button" color="white" sx={{ lineHeight: 0 }}>
-          <Icon sx={{ fontWeight: "bold" }}>{includes ? "done" : "remove"}</Icon>
+          <Icon sx={{ fontWeight: 'bold' }}>
+            {includes ? 'done' : 'remove'}
+          </Icon>
         </SoftTypography>
       </SoftBox>
       <SoftTypography variant="body2" color="text">
@@ -76,7 +62,7 @@ function DefaultPricingCard({ badge, price, specifications, action }) {
       </SoftBox>
       <SoftBox pb={3} px={3}>
         {renderSpecifications}
-        {action.type === "internal" ? (
+        {action.type === 'internal' ? (
           <SoftBox mt={3}>
             <SoftButton
               component={Link}
@@ -86,7 +72,7 @@ function DefaultPricingCard({ badge, price, specifications, action }) {
               fullWidth
             >
               {action.label}&nbsp;
-              <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
+              <Icon sx={{ fontWeight: 'bold' }}>arrow_forward</Icon>
             </SoftButton>
           </SoftBox>
         ) : (
@@ -101,7 +87,7 @@ function DefaultPricingCard({ badge, price, specifications, action }) {
               fullWidth
             >
               {action.label}&nbsp;
-              <Icon sx={{ fontWeight: "bold" }}>arrow_forward</Icon>
+              <Icon sx={{ fontWeight: 'bold' }}>arrow_forward</Icon>
             </SoftButton>
           </SoftBox>
         )}
@@ -114,14 +100,14 @@ function DefaultPricingCard({ badge, price, specifications, action }) {
 DefaultPricingCard.propTypes = {
   badge: PropTypes.shape({
     color: PropTypes.oneOf([
-      "primary",
-      "secondary",
-      "info",
-      "success",
-      "warning",
-      "error",
-      "light",
-      "dark",
+      'primary',
+      'secondary',
+      'info',
+      'success',
+      'warning',
+      'error',
+      'light',
+      'dark',
     ]).isRequired,
     label: PropTypes.string.isRequired,
   }).isRequired,
@@ -131,18 +117,18 @@ DefaultPricingCard.propTypes = {
   }).isRequired,
   specifications: PropTypes.arrayOf(PropTypes.object).isRequired,
   action: PropTypes.shape({
-    type: PropTypes.oneOf(["external", "internal"]).isRequired,
+    type: PropTypes.oneOf(['external', 'internal']).isRequired,
     route: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     color: PropTypes.oneOf([
-      "primary",
-      "secondary",
-      "info",
-      "success",
-      "warning",
-      "error",
-      "light",
-      "dark",
+      'primary',
+      'secondary',
+      'info',
+      'success',
+      'warning',
+      'error',
+      'light',
+      'dark',
     ]).isRequired,
   }).isRequired,
 };
