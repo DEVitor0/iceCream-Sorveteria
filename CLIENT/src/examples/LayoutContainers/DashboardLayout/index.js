@@ -19,7 +19,7 @@ function DashboardLayout({ children }) {
 
   useEffect(() => {
     setLayout(dispatch, 'dashboard');
-  }, [pathname]);
+  }, [pathname, dispatch]);
 
   return (
     <SoftBox

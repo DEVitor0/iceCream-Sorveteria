@@ -11,14 +11,14 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard React examples
-import BarReportsChartItem from 'examples/Charts/BarCharts/ReportsBarChart/ReportsBarChartItem';
+import BarReportsChartItem from '../../../../examples/Charts/BarCharts/ReportsBarChart/ReportsBarChartItem';
 
 // ReportsBarChart configurations
-import configs from 'examples/Charts/BarCharts/ReportsBarChart/configs';
+import configs from '../../../../examples/Charts/BarCharts/ReportsBarChart/configs';
 
 function ReportsBarChart({ color, title, description, chart, items }) {
   const { data, options } = configs(chart.labels || [], chart.datasets || {});
@@ -54,7 +54,7 @@ function ReportsBarChart({ color, title, description, chart, items }) {
               <Bar data={data} options={options} />
             </SoftBox>
           ),
-          [chart, color],
+          [color, data, options],
         )}
         <SoftBox px={1}>
           <SoftBox mb={2}>

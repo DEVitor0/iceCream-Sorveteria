@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React base styles
-import typography from 'assets/theme/base/typography';
+import typography from '../../../../media/theme/base/typography';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
-import SoftProgress from 'components/SoftProgress';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
+import SoftProgress from '../../../../components/Dashboard/SoftProgress';
 
 function ReportsBarChartItem({ color, icon, label, progress }) {
   const { size } = typography;

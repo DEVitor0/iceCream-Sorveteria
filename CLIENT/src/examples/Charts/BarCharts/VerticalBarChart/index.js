@@ -63,7 +63,7 @@ function VerticalBarChart({ title, description, height, chart }) {
             <Bar data={data} options={options} />
           </SoftBox>
         ),
-        [chart, height],
+        [data, height, options],
       )}
     </SoftBox>
   );

@@ -6,7 +6,7 @@ import './styles/scss/global-style.scss';
 import { Home } from './templates/Home';
 import Login from './templates/Account/LogIn';
 import SignUp from './templates/Account/SignUp';
-import Dashboard from './templates/Dashboard/Dashboard';
+import Dashboard from './templates/dashboard/index';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

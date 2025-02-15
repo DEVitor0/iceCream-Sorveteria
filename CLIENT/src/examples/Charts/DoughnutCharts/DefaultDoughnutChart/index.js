@@ -50,7 +50,7 @@ function DefaultDoughnutChart({ title, description, height, chart }) {
             <Doughnut data={data} options={options} />
           </SoftBox>
         ),
-        [chart, height],
+        [data, height, options],
       )}
     </SoftBox>
   );

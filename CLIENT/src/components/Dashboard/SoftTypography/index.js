@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
 // Custom styles for SoftTypography
-import SoftTypographyRoot from 'components/SoftTypography/SoftTypographyRoot';
+import SoftTypographyRoot from './SoftTypographyRoot';
 
 const SoftTypography = forwardRef(
   (
