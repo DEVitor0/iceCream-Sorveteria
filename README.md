@@ -24,4 +24,4 @@ Um projeto de loja online e sistema de gestão em andamento para a **IceCream So
 ![Imagem 3](./CLIENT/src/media/images/readme/Screenshot%20from%202025-02-04%2006-16-40.png)
 
 
-### 🚀 Desenvolvido por [Seu Nome ou Nome da Equipe]
+### 🚀 Desenvolvido por Vitor Moreira
