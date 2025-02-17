@@ -2,11 +2,11 @@ import Card from '@mui/material/Card';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // Images
-import ivancik from 'assets/images/ivancik.jpg';
+import ivancik from '../../../../media/images/dashboard/ivancik.jpg';
 
 function WorkWithTheRockets() {
   return (

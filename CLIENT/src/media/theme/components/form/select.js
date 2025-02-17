@@ -1,7 +1,7 @@
-import colors from 'assets/theme/base/colors';
+import colors from '../../base/colors';
 
 // Soft UI Dashboard React helper functions
-import pxToRem from 'assets/theme/functions/pxToRem';
+import pxToRem from '../../functions/pxToRem';
 
 const { transparent } = colors;
 

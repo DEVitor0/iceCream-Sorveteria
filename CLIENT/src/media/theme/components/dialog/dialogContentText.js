@@ -1,5 +1,5 @@
-import typography from 'assets/theme/base/typography';
-import colors from 'assets/theme/base/colors';
+import typography from '../../typography';
+import colors from '../../colors';
 
 // Soft UI Dashboard React helper functions
 // import pxToRem from "assets/theme/functions/pxToRem";

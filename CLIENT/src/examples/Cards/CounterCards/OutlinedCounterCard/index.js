@@ -56,7 +56,7 @@ OutlinedCounterCard.defaultProps = {
   suffix: '',
 };
 
-// Typechecking props for the BlogCard
+// Typechecking props for the BlogCardo
 OutlinedCounterCard.propTypes = {
   color: PropTypes.oneOf([
     'primary',

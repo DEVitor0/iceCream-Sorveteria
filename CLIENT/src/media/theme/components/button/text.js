@@ -1,8 +1,8 @@
-import colors from 'assets/theme/base/colors';
-import typography from 'assets/theme/base/typography';
+import colors from '../../base/colors';
+import typography from '../../base/typography';
 
 // Soft UI Dashboard React Helper Functions
-import pxToRem from 'assets/theme/functions/pxToRem';
+import pxToRem from '../../functions/pxToRem';
 
 const { transparent, info, secondary, grey } = colors;
 const { size } = typography;

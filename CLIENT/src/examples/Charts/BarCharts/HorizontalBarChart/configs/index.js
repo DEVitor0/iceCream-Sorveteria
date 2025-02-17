@@ -1,4 +1,4 @@
-import typography from 'assets/theme/base/typography';
+import typography from '../../../../../media/theme/base/typography';
 
 function configs(labels, datasets) {
   return {

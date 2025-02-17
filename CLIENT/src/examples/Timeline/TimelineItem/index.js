@@ -1,31 +1,27 @@
-// prop-types is a library for typechecking of props
 import PropTypes from 'prop-types';
 
 // @mui material components
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
-import SoftBadge from 'components/SoftBadge';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
+import SoftBadge from '../../../components/Dashboard/SoftBadge';
 
 // Timeline context
-import { useTimeline } from 'examples/Timeline/context';
+import { useTimeline } from '../context/index';
 
 // Custom styles for the TimelineItem
-import {
-  timelineItem,
-  timelineItemIcon,
-} from 'examples/Timeline/TimelineItem/styles';
+import { timelineItem, timelineItemIcon } from './styles.js';
 
 function TimelineItem({
-  color,
+  color = 'info',
   icon,
   title,
   dateTime,
-  description,
-  badges,
-  lastItem,
+  description = '',
+  badges = [],
+  lastItem = false,
 }) {
   const isDark = useTimeline();
 
@@ -102,14 +98,6 @@ function TimelineItem({
     </SoftBox>
   );
 }
-
-// Setting default values for the props of TimelineItem
-TimelineItem.defaultProps = {
-  color: 'info',
-  badges: [],
-  lastItem: false,
-  description: '',
-};
 
 // Typechecking props for the TimelineItem
 TimelineItem.propTypes = {

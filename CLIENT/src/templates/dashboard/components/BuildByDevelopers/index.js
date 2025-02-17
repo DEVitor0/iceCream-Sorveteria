@@ -3,12 +3,12 @@ import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // Images
-import wavesWhite from 'assets/images/shapes/waves-white.svg';
-import rocketWhite from 'assets/images/illustrations/rocket-white.png';
+import wavesWhite from '../../../../media/images/dashboard/shapes/waves-white.svg';
+import rocketWhite from '../../../../media/images/dashboard/rocket-white.png';
 
 function BuildByDevelopers() {
   return (

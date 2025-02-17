@@ -5,13 +5,21 @@ import Link from '@mui/material/Link';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../components/Dashboard/SoftBox';
+import SoftTypography from '../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard React base styles
-import typography from 'assets/theme/base/typography';
+import typography from '../../media/theme/base/typography';
 
-function Footer({ company, links }) {
+function Footer({
+  company = { href: 'https://www.creative-tim.com/', name: 'Creative Tim' },
+  links = [
+    { href: 'https://www.creative-tim.com/', name: 'Creative Tim' },
+    { href: 'https://www.creative-tim.com/presentation', name: 'About Us' },
+    { href: 'https://www.creative-tim.com/blog', name: 'Blog' },
+    { href: 'https://www.creative-tim.com/license', name: 'License' },
+  ],
+}) {
   const { href, name } = company;
   const { size } = typography;
 
@@ -80,17 +88,6 @@ function Footer({ company, links }) {
     </SoftBox>
   );
 }
-
-// Setting default values for the props of Footer
-Footer.defaultProps = {
-  company: { href: 'https://www.creative-tim.com/', name: 'Creative Tim' },
-  links: [
-    { href: 'https://www.creative-tim.com/', name: 'Creative Tim' },
-    { href: 'https://www.creative-tim.com/presentation', name: 'About Us' },
-    { href: 'https://www.creative-tim.com/blog', name: 'Blog' },
-    { href: 'https://www.creative-tim.com/license', name: 'License' },
-  ],
-};
 
 // Typechecking props for the Footer
 Footer.propTypes = {

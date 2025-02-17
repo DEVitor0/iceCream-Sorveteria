@@ -10,11 +10,11 @@ import { Doughnut } from 'react-chartjs-2';
 import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // DefaultDoughnutChart configurations
-import configs from 'examples/Charts/DoughnutCharts/DefaultDoughnutChart/configs';
+import configs from './configs/index';
 
 function DefaultDoughnutChart({ title, description, height, chart }) {
   const { data, options } = configs(

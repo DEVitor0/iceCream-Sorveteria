@@ -1,41 +1,26 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState, useMemo } from 'react';
 
 // porp-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // react-chartjs-2 components
-import { Line } from "react-chartjs-2";
+import { Line } from 'react-chartjs-2';
 
 // @mui material components
-import Card from "@mui/material/Card";
+import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard React helper functions
-import gradientChartLine from "assets/theme/functions/gradientChartLine";
+import gradientChartLine from '../../../media/theme/functions/gradientChartLine';
 
 // MixedChart configurations
-import configs from "examples/Charts/MixedChart/configs";
+import configs from './configs/index';
 
 // Soft UI Dashboard React base styles
-import colors from "assets/theme/base/colors";
+import colors from '../../../media/theme/base/colors';
 
 function MixedChart({ title, description, height, chart }) {
   const chartRef = useRef(null);
@@ -49,44 +34,46 @@ function MixedChart({ title, description, height, chart }) {
 
           const defaultLine = {
             ...dataset,
-            type: "line",
+            type: 'line',
             tension: 0.4,
             borderWidth: 3,
             pointRadius: 2,
             pointBackgroundColor: colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
+              ? colors[dataset.color || 'dark'].main
               : colors.dark.main,
             borderColor: colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
+              ? colors[dataset.color || 'dark'].main
               : colors.dark.main,
             maxBarThickness: 6,
           };
 
           const gradientLine = {
             ...dataset,
-            type: "line",
+            type: 'line',
             tension: 0.4,
             pointRadius: 0,
             borderWidth: 3,
             borderColor: colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
+              ? colors[dataset.color || 'dark'].main
               : colors.dark.main,
             fill: true,
             maxBarThickness: 6,
             backgroundColor: gradientChartLine(
               chartRef.current.children[0],
-              colors[dataset.color] ? colors[dataset.color || "dark"].main : colors.dark.main
+              colors[dataset.color]
+                ? colors[dataset.color || 'dark'].main
+                : colors.dark.main,
             ),
           };
 
           const bar = {
             ...dataset,
-            type: "bar",
+            type: 'bar',
             weight: 5,
             borderWidth: 0,
             borderRadius: 4,
             backgroundColor: colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
+              ? colors[dataset.color || 'dark'].main
               : colors.dark.main,
             fill: false,
             maxBarThickness: 35,
@@ -94,22 +81,22 @@ function MixedChart({ title, description, height, chart }) {
 
           const thinBar = {
             ...dataset,
-            type: "bar",
+            type: 'bar',
             weight: 5,
             borderWidth: 0,
             borderRadius: 4,
             backgroundColor: colors[dataset.color]
-              ? colors[dataset.color || "dark"].main
+              ? colors[dataset.color || 'dark'].main
               : colors.dark.main,
             fill: false,
             maxBarThickness: 10,
           };
 
-          if (dataset.chartType === "default-line") {
+          if (dataset.chartType === 'default-line') {
             finalConfigs = defaultLine;
-          } else if (dataset.chartType === "gradient-line") {
+          } else if (dataset.chartType === 'gradient-line') {
             finalConfigs = gradientLine;
-          } else if (dataset.chartType === "thin-bar") {
+          } else if (dataset.chartType === 'thin-bar') {
             finalConfigs = thinBar;
           } else {
             finalConfigs = bar;
@@ -132,7 +119,12 @@ function MixedChart({ title, description, height, chart }) {
             </SoftBox>
           )}
           <SoftBox mb={2}>
-            <SoftTypography component="div" variant="button" fontWeight="regular" color="text">
+            <SoftTypography
+              component="div"
+              variant="button"
+              fontWeight="regular"
+              color="text"
+            >
               {description}
             </SoftTypography>
           </SoftBox>
@@ -144,7 +136,7 @@ function MixedChart({ title, description, height, chart }) {
             <Line data={data} options={options} />
           </SoftBox>
         ),
-        [chartData, height]
+        [data, height, options],
       )}
     </SoftBox>
   );
@@ -154,9 +146,9 @@ function MixedChart({ title, description, height, chart }) {
 
 // Setting default values for the props of MixedChart
 MixedChart.defaultProps = {
-  title: "",
-  description: "",
-  height: "19.125rem",
+  title: '',
+  description: '',
+  height: '19.125rem',
 };
 
 // Typechecking props for the MixedChart

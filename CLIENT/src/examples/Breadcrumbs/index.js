@@ -11,7 +11,7 @@ import Icon from '@mui/material/Icon';
 import SoftBox from '../../components/Dashboard/SoftBox';
 import SoftTypography from '../../components/Dashboard/SoftTypography';
 
-function Breadcrumbs({ icon, title, route, light }) {
+function Breadcrumbs({ icon, title, route, light = false }) {
   const routes = route.slice(0, -1);
 
   return (
@@ -72,11 +72,6 @@ function Breadcrumbs({ icon, title, route, light }) {
     </SoftBox>
   );
 }
-
-// Setting default values for the props of Breadcrumbs
-Breadcrumbs.defaultProps = {
-  light: false,
-};
 
 // Typechecking props for the Breadcrumbs
 Breadcrumbs.propTypes = {

@@ -1,4 +1,4 @@
-import pxToRem from 'assets/theme/functions/pxToRem';
+import pxToRem from '../functions/pxToRem';
 
 const icon = {
   defaultProps: {

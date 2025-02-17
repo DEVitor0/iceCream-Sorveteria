@@ -1,7 +1,7 @@
-import typography from 'assets/theme/base/typography';
+import typography from '../../base/typography';
 
 // Soft UI Dashboard React helper functions
-import pxToRem from 'assets/theme/functions/pxToRem';
+import pxToRem from '../../functions/pxToRem';
 
 const { size } = typography;
 

@@ -14,9 +14,9 @@ import Menu from '@mui/material/Menu';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
-import SoftInput from 'components/SoftInput';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
+import SoftInput from '../../../components/Dashboard/SoftInput';
 
 // Soft UI Dashboard React examples
 import Breadcrumbs from 'examples/Breadcrumbs';
@@ -29,7 +29,7 @@ import {
   navbarRow,
   navbarIconButton,
   navbarMobileMenu,
-} from 'examples/Navbars/DashboardNavbar/styles';
+} from './styles';
 
 // Soft UI Dashboard React context
 import {
@@ -37,13 +37,13 @@ import {
   setTransparentNavbar,
   setMiniSidenav,
   setOpenConfigurator,
-} from 'context';
+} from '../../../contexts/Reducer/index';
 
 // Images
-import team2 from 'assets/images/team-2.jpg';
-import logoSpotify from 'assets/images/small-logos/logo-spotify.svg';
+import team2 from '../../../media/images/dashboard/team-2.jpg';
+import logoSpotify from '../../../media/images/logos/small-logos/logo-spotify.svg';
 
-function DashboardNavbar({ absolute, light, isMini }) {
+function DashboardNavbar({ absolute = false, light = false, isMini = false }) {
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useSoftUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator } =
@@ -213,13 +213,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </AppBar>
   );
 }
-
-// Setting default values for the props of DashboardNavbar
-DashboardNavbar.defaultProps = {
-  absolute: false,
-  light: false,
-  isMini: false,
-};
 
 // Typechecking props for the DashboardNavbar
 DashboardNavbar.propTypes = {

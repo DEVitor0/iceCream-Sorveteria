@@ -10,14 +10,14 @@ import { Bubble } from 'react-chartjs-2';
 import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
 
 // BubbleChart configurations
-import configs from 'examples/Charts/BubbleChart/configs';
+import configs from './configs/index';
 
 // Soft UI Dashboard React base styles
-import colors from 'assets/theme/base/colors';
+import colors from '../../../media/theme/base/colors';
 
 function BubbleChart({ title, description, height, chart }) {
   const chartDatasets = chart.datasets

@@ -10,14 +10,14 @@ import { Bar } from 'react-chartjs-2';
 import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // VerticalBarChart configurations
-import configs from 'examples/Charts/BarCharts/VerticalBarChart/configs';
+import configs from './configs/index';
 
 // Soft UI Dashboard React base styles
-import colors from 'assets/theme/base/colors';
+import colors from '../../../../media/theme/base/colors';
 
 function VerticalBarChart({ title, description, height, chart }) {
   const chartDatasets = chart.datasets

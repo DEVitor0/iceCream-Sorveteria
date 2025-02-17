@@ -1,4 +1,4 @@
-import colors from 'assets/theme/base/colors';
+import colors from './colors';
 
 const { info, dark } = colors;
 

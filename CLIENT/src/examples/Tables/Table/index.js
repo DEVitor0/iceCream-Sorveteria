@@ -13,16 +13,16 @@ import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftAvatar from 'components/SoftAvatar';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftAvatar from '../../../components/Dashboard/SoftAvatar';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard React base styles
-import colors from 'assets/theme/base/colors';
-import typography from 'assets/theme/base/typography';
-import borders from 'assets/theme/base/borders';
+import colors from '../../../media/theme/base/colors';
+import typography from '../../../media/theme/base/typography';
+import borders from '../../../media/theme/base/borders';
 
-function Table({ columns, rows }) {
+function Table({ columns = [], rows = [{}] }) {
   const { light } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
@@ -141,12 +141,6 @@ function Table({ columns, rows }) {
     [renderColumns, renderRows],
   );
 }
-
-// Setting default values for the props of Table
-Table.defaultProps = {
-  columns: [],
-  rows: [{}],
-};
 
 // Typechecking props for the Table
 Table.propTypes = {

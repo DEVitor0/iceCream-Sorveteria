@@ -1,8 +1,8 @@
-import colors from 'assets/theme/base/colors';
+import colors from '../base/colors';
 
 // Soft UI Dashboard React helper functions
-import rgba from 'assets/theme/functions/rgba';
-import pxToRem from 'assets/theme/functions/pxToRem';
+import rgba from '../functions/rgba';
+import pxToRem from '../functions/pxToRem';
 
 const { dark, transparent, white } = colors;
 
@@ -22,10 +22,10 @@ const divider = {
 
     vertical: {
       backgroundColor: transparent.main,
-      backgroundImage: `linear-gradient(to bottom, ${rgba(dark.main, 0)}, ${rgba(
+      backgroundImage: `linear-gradient(to bottom, ${rgba(
         dark.main,
-        0.5,
-      )}, ${rgba(dark.main, 0)}) !important`,
+        0,
+      )}, ${rgba(dark.main, 0.5)}, ${rgba(dark.main, 0)}) !important`,
       width: pxToRem(1),
       height: '100%',
       margin: `0 ${pxToRem(16)}`,
@@ -34,16 +34,16 @@ const divider = {
 
     light: {
       backgroundColor: transparent.main,
-      backgroundImage: `linear-gradient(to right, ${rgba(white.main, 0)}, ${rgba(
+      backgroundImage: `linear-gradient(to right, ${rgba(
         white.main,
-        0.5,
-      )}, ${rgba(white.main, 0)}) !important`,
+        0,
+      )}, ${rgba(white.main, 0.5)}, ${rgba(white.main, 0)}) !important`,
 
       '&.MuiDivider-vertical': {
-        backgroundImage: `linear-gradient(to bottom, ${rgba(white.main, 0)}, ${rgba(
+        backgroundImage: `linear-gradient(to bottom, ${rgba(
           white.main,
-          0.5,
-        )}, ${rgba(white.main, 0)}) !important`,
+          0,
+        )}, ${rgba(white.main, 0.5)}, ${rgba(white.main, 0)}) !important`,
       },
     },
   },

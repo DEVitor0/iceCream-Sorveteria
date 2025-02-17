@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
 // Custom styles for SoftAvatar
-import SoftAvatarRoot from 'components/SoftAvatar/SoftAvatarRoot';
+import SoftAvatarRoot from './SoftAvatarRoot';
 
 const SoftAvatar = forwardRef(({ bgColor, size, shadow, ...rest }, ref) => (
   <SoftAvatarRoot ref={ref} ownerState={{ shadow, bgColor, size }} {...rest} />

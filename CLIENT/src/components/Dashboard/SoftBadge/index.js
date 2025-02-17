@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 
 import PropTypes from 'prop-types';
 
-import SoftBadgeRoot from 'components/SoftBadge/SoftBadgeRoot';
+import SoftBadgeRoot from './SoftBadgeRoot';
 
 const SoftBadge = forwardRef(
   (

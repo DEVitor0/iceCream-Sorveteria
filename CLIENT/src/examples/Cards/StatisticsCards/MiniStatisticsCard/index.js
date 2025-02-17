@@ -10,12 +10,12 @@ import SoftBox from '../../../../components/Dashboard/SoftBox';
 import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 function MiniStatisticsCard({
-  bgColor,
-  title,
+  bgColor = 'white',
+  title = { fontWeight: 'medium', text: '' },
   count,
-  percentage,
+  percentage = { color: 'success', text: '' },
   icon,
-  direction,
+  direction = 'right',
 }) {
   return (
     <Card>
@@ -97,20 +97,6 @@ function MiniStatisticsCard({
   );
 }
 
-// Setting default values for the props of MiniStatisticsCard
-MiniStatisticsCard.defaultProps = {
-  bgColor: 'white',
-  title: {
-    fontWeight: 'medium',
-    text: '',
-  },
-  percentage: {
-    color: 'success',
-    text: '',
-  },
-  direction: 'right',
-};
-
 // Typechecking props for the MiniStatisticsCard
 MiniStatisticsCard.propTypes = {
   bgColor: PropTypes.oneOf([
@@ -123,7 +109,7 @@ MiniStatisticsCard.propTypes = {
     'error',
     'dark',
   ]),
-  title: PropTypes.PropTypes.shape({
+  title: PropTypes.shape({
     fontWeight: PropTypes.oneOf(['light', 'regular', 'medium', 'bold']),
     text: PropTypes.string,
   }),

@@ -1,8 +1,16 @@
 {
   "name": "client",
   "version": "1.0.0",
+  "author": "DEVitor0",
+  "license": "ISC",
+  "description": "ReactJS application",
   "main": "index.js",
+  "proxy": "http://localhost:8443",
+  "repository": {
+    "type": "git"
+  },
   "dependencies": {
+    "@emotion/cache": "11.11.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -10,20 +18,37 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@mui/icons-material": "^6.4.4",
     "@mui/material": "^6.4.4",
+    "@mui/styled-engine": "5.12.3",
+    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "14.4.3",
+    "ajv": "^8.17.1",
+    "chart.js": "3.9.1",
+    "chroma-js": "^3.1.2",
     "cra-template": "1.2.0",
     "dotenv": "^16.4.7",
     "prop-types": "^15.8.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-countup": "6.4.2",
+    "react-dom": "^18.2.0",
+    "react-flatpickr": "^3.10.13",
     "react-router-dom": "^7.1.5",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "stylis": "4.2.0",
+    "stylis-plugin-rtl": "2.1.1",
+    "uuid": "9.0.0",
+    "web-vitals": "3.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "install:peer-deps": "npm install --legacy-peer-deps"
   },
   "browserslist": {
     "production": [
@@ -37,12 +62,20 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8443",
-  "keywords": [],
-  "author": "DEVitor0",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^5.1.0"
+    "eslint": "8.40.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "prettier": "2.8.8"
+  },
+  "overrides": {
+    "overrides": {
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "svgo": "3.0.2"
+    }
   }
 }

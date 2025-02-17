@@ -7,14 +7,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard Materail-UI example components
-import Table from 'examples/Tables/Table';
+import Table from '../../../../examples/Tables/Table/index';
 
 // Data
-import data from 'layouts/dashboard/components/Projects/data';
+import data from './data/index';
 
 function Projects() {
   const { columns, rows } = data();

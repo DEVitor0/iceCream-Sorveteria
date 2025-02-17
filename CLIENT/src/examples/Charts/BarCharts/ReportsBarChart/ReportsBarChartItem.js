@@ -11,7 +11,7 @@ import SoftBox from '../../../../components/Dashboard/SoftBox';
 import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 import SoftProgress from '../../../../components/Dashboard/SoftProgress';
 
-function ReportsBarChartItem({ color, icon, label, progress }) {
+function ReportsBarChartItem({ color = 'dark', icon, label, progress }) {
   const { size } = typography;
 
   return (
@@ -53,11 +53,6 @@ function ReportsBarChartItem({ color, icon, label, progress }) {
     </SoftBox>
   );
 }
-
-// Setting default values for the props of ReportsBarChartItem
-ReportsBarChartItem.defaultProps = {
-  color: 'dark',
-};
 
 // Typechecking props for the ReportsBarChartItem
 ReportsBarChartItem.propTypes = {

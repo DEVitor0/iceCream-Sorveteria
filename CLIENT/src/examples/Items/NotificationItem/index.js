@@ -8,11 +8,11 @@ import MenuItem from '@mui/material/MenuItem';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
 
 // custom styles for the NotificationItem
-import { menuItem, menuImage } from 'examples/Items/NotificationItem/styles';
+import { menuItem, menuImage } from './styles';
 
 const NotificationItem = forwardRef(
   ({ color, image, title, date, ...rest }, ref) => (

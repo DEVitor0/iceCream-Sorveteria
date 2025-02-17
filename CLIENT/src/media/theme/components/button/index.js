@@ -1,7 +1,7 @@
-import root from 'assets/theme/components/button/root';
-import contained from 'assets/theme/components/button/contained';
-import outlined from 'assets/theme/components/button/outlined';
-import buttonText from 'assets/theme/components/button/text';
+import root from './root';
+import contained from './contained';
+import outlined from './outlined';
+import buttonText from './text';
 
 const button = {
   defaultProps: {

@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
+import SoftBox from '../../../components/Dashboard/SoftBox';
 
 // Soft UI Dashboard React context
 import { useSoftUIController, setLayout } from 'context';
