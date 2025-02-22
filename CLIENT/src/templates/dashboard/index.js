@@ -1,6 +1,7 @@
 // @mui material components
 import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
+import Card from '@mui/material/Card';
 
 // Soft UI Dashboard React components
 import SoftBox from '../../components/Dashboard/SoftBox';
@@ -12,24 +13,239 @@ import DashboardNavbar from '../../examples/Navbars/DashboardNavbar';
 import Footer from '../../examples/Footer';
 import MiniStatisticsCard from '../../examples/Cards/StatisticsCards/MiniStatisticsCard';
 import ReportsBarChart from '../../examples/Charts/BarCharts/ReportsBarChart';
-import GradientLineChart from '../../examples/Charts/LineCharts/GradientLineChart';
 
 // Soft UI Dashboard React base styles
+import colors from '../../media/theme/base/colors';
 import typography from '../../media/theme/base/typography';
+import gradientChartLine from '../../media/theme/functions/gradientChartLine';
 
 // Dashboard layout components
-import BuildByDevelopers from './components/BuildByDevelopers/index';
-import WorkWithTheRockets from './components/WorkWithTheRockets';
 import Projects from './components/Projects';
 import OrderOverview from './components/OrderOverview';
 
-// Data
-import reportsBarChartData from './data/reportsBarChartData';
-import gradientLineChartData from './data/gradientLineChartData';
+// Chart.js setup
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { useRef, useEffect, useState } from 'react';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
+function GradientLineChart({
+  title = '',
+  description = '',
+  height = '20.25rem',
+  chart,
+}) {
+  const chartRef = useRef(null);
+  const [chartData, setChartData] = useState({
+    data: { labels: [], datasets: [] },
+    options: {},
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initChart = async () => {
+      try {
+        if (!chartRef.current || !chart?.datasets) return;
+
+        const newDatasets = chart.datasets.map((dataset) => {
+          // Corrigindo o acesso ao contexto do canvas
+          const chartCanvas = chartRef.current?.querySelector('canvas');
+          if (!chartCanvas) return dataset;
+
+          const ctx = chartCanvas.getContext('2d');
+          if (!ctx) return dataset;
+
+          return {
+            ...dataset,
+            tension: 0.4,
+            pointRadius: 0,
+            borderWidth: 3,
+            borderColor: colors[dataset.color]?.main || colors.dark.main,
+            fill: true,
+            maxBarThickness: 6,
+            backgroundColor: gradientChartLine(
+              ctx,
+              colors[dataset.color]?.main || colors.dark.main,
+            ),
+          };
+        });
+
+        if (isMounted) {
+          setChartData({
+            data: {
+              labels: chart.labels || [],
+              datasets: newDatasets.filter((d) => d),
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              interaction: { intersect: false, mode: 'index' },
+              scales: {
+                y: {
+                  grid: {
+                    drawBorder: false,
+                    display: true,
+                    drawOnChartArea: true,
+                    drawTicks: false,
+                    borderDash: [5, 5],
+                  },
+                  ticks: {
+                    display: true,
+                    padding: 10,
+                    color: '#b2b9bf',
+                    font: {
+                      size: 11,
+                      family: typography.fontFamily,
+                      style: 'normal',
+                      lineHeight: 2,
+                    },
+                  },
+                },
+                x: {
+                  grid: {
+                    drawBorder: false,
+                    display: false,
+                    drawOnChartArea: false,
+                    drawTicks: false,
+                    borderDash: [5, 5],
+                  },
+                  ticks: {
+                    display: true,
+                    color: '#b2b9bf',
+                    padding: 20,
+                    font: {
+                      size: 11,
+                      family: typography.fontFamily,
+                      style: 'normal',
+                      lineHeight: 2,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing chart:', error);
+      }
+    };
+
+    initChart();
+    return () => {
+      isMounted = false;
+    };
+  }, [chart]); // Adicionamos chartRef.current como dependência
+
+  return (
+    <Card>
+      <SoftBox p={2}>
+        {title && (
+          <SoftBox mb={1}>
+            <SoftTypography variant="h6">{title}</SoftTypography>
+          </SoftBox>
+        )}
+
+        {description && (
+          <SoftBox mb={2}>
+            <SoftTypography variant="button" color="text" fontWeight="regular">
+              {description}
+            </SoftTypography>
+          </SoftBox>
+        )}
+
+        <SoftBox ref={chartRef} sx={{ height }}>
+          {chartData.data.labels.length > 0 &&
+          chartData.data.datasets.length > 0 ? (
+            <Line data={chartData.data} options={chartData.options} />
+          ) : (
+            <SoftTypography variant="body2" color="text">
+              Carregando gráfico...
+            </SoftTypography>
+          )}
+        </SoftBox>
+      </SoftBox>
+    </Card>
+  );
+}
 
 function Dashboard() {
-  const { size } = typography;
-  const { chart, items } = reportsBarChartData;
+  // Dados para o componente Projects
+  const projectsData = {
+    columns: [
+      { name: 'companies', align: 'left' },
+      { name: 'members', align: 'left' },
+      { name: 'budget', align: 'center' },
+      { name: 'completion', align: 'center' },
+    ],
+    rows: [
+      {
+        companies: ['Soft UI XD Version'],
+        members: [
+          'Ryan Tompson',
+          'Romina Hadid',
+          'Alexander Smith',
+          'Jessica Doe',
+        ],
+        budget: '$14,000',
+        completion: 60,
+      },
+      {
+        companies: ['Add Progress Track'],
+        members: ['Romina Hadid', 'Jessica Doe'],
+        budget: '$3,000',
+        completion: 10,
+      },
+      {
+        companies: ['Fix Platform Errors'],
+        members: ['Ryan Tompson', 'Alexander Smith'],
+        budget: 'Not set',
+        completion: 100,
+      },
+      {
+        companies: ['Launch our Mobile App'],
+        members: [
+          'Jessica Doe',
+          'Alexander Smith',
+          'Romina Hadid',
+          'Ryan Tompson',
+        ],
+        budget: '$20,500',
+        completion: 100,
+      },
+      {
+        companies: ['Add the New Pricing Page'],
+        members: ['Jessica Doe'],
+        budget: '$500',
+        completion: 25,
+      },
+      {
+        companies: ['Redesign New Online Shop'],
+        members: ['Ryan Tompson', 'Jessica Doe'],
+        budget: '$2,000',
+        completion: 40,
+      },
+    ],
+  };
 
   return (
     <DashboardLayout>
@@ -76,26 +292,40 @@ function Dashboard() {
         </SoftBox>
         <SoftBox mb={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={7}>
-              <BuildByDevelopers />
-            </Grid>
-            <Grid item xs={12} lg={5}>
-              <WorkWithTheRockets />
-            </Grid>
-          </Grid>
-        </SoftBox>
-        <SoftBox mb={3}>
-          <Grid container spacing={3}>
             <Grid item xs={12} lg={5}>
               <ReportsBarChart
-                title="active users"
-                description={
-                  <>
-                    (<strong>+23%</strong>) than last week
-                  </>
-                }
-                chart={chart}
-                items={items}
+                color="info"
+                title="Active Users"
+                description="(+23%) than last week"
+                chart={{
+                  labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                  datasets: {
+                    label: 'Sales',
+                    data: [50, 20, 10, 22, 50, 10, 40],
+                  },
+                }}
+                items={[
+                  {
+                    icon: { color: 'primary', component: 'library_books' },
+                    label: 'items',
+                    progress: { content: '36', percentage: 60 },
+                  },
+                  {
+                    icon: { color: 'info', component: 'touch_app' },
+                    label: 'clicks',
+                    progress: { content: '2m', percentage: 90 },
+                  },
+                  {
+                    icon: { color: 'warning', component: 'payment' },
+                    label: 'sales',
+                    progress: { content: '$435', percentage: 30 },
+                  },
+                  {
+                    icon: { color: 'error', component: 'extension' },
+                    label: 'items',
+                    progress: { content: '43', percentage: 50 },
+                  },
+                ]}
               />
             </Grid>
             <Grid item xs={12} lg={7}>
@@ -104,7 +334,7 @@ function Dashboard() {
                 description={
                   <SoftBox display="flex" alignItems="center">
                     <SoftBox
-                      fontSize={size.lg}
+                      fontSize="lg"
                       color="success"
                       mb={0.3}
                       mr={0.5}
@@ -129,14 +359,38 @@ function Dashboard() {
                   </SoftBox>
                 }
                 height="20.25rem"
-                chart={gradientLineChartData}
+                chart={{
+                  labels: [
+                    'Apr',
+                    'May',
+                    'Jun',
+                    'Jul',
+                    'Aug',
+                    'Sep',
+                    'Oct',
+                    'Nov',
+                    'Dec',
+                  ],
+                  datasets: [
+                    {
+                      label: 'Mobile apps',
+                      color: 'info',
+                      data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
+                    },
+                    {
+                      label: 'Websites',
+                      color: 'dark',
+                      data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
+                    },
+                  ],
+                }}
               />
             </Grid>
           </Grid>
         </SoftBox>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={8}>
-            <Projects />
+            <Projects data={projectsData} />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
             <OrderOverview />

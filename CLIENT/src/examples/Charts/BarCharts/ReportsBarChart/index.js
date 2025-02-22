@@ -1,67 +1,165 @@
 import { useMemo } from 'react';
-
-// prop-types is a library for typechecking of props
 import PropTypes from 'prop-types';
-
-// react-chartjs-2 components
 import { Bar } from 'react-chartjs-2';
-
-// @mui material components
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
-
-// Soft UI Dashboard React components
 import SoftBox from '../../../../components/Dashboard/SoftBox';
 import SoftTypography from '../../../../components/Dashboard/SoftTypography';
+import SoftProgress from '../../../../components/Dashboard/SoftProgress';
+import Icon from '@mui/material/Icon';
 
-// Soft UI Dashboard React examples
-import BarReportsChartItem from '../../../../examples/Charts/BarCharts/ReportsBarChart/ReportsBarChartItem';
-
-// ReportsBarChart configurations
-import configs from '../../../../examples/Charts/BarCharts/ReportsBarChart/configs';
+// Registre os componentes necessários do Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 function ReportsBarChart({
   color = 'dark',
   title,
   description = '',
-  chart,
+  chart = { labels: [], datasets: {} },
   items = [],
 }) {
-  const { data, options } = configs(chart.labels || [], chart.datasets || {});
+  // Configurações do gráfico
+  const { data, options } = useMemo(() => {
+    return {
+      data: {
+        labels: chart.labels,
+        datasets: [
+          {
+            label: chart.datasets.label,
+            tension: 0.4,
+            borderWidth: 0,
+            borderRadius: 4,
+            borderSkipped: false,
+            backgroundColor: '#fff',
+            data: chart.datasets.data,
+            maxBarThickness: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+            },
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 500,
+              beginAtZero: true,
+              padding: 15,
+              font: {
+                size: 14,
+                family: 'Roboto',
+                style: 'normal',
+                lineHeight: 2,
+              },
+              color: '#fff',
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+            },
+            ticks: {
+              display: false,
+            },
+          },
+        },
+      },
+    };
+  }, [chart]);
 
-  const renderItems = items.map(({ icon, label, progress }) => (
-    <Grid item xs={6} sm={3} key={label}>
-      <BarReportsChartItem
-        color={color}
-        icon={{ color: icon.color, component: icon.component }}
-        label={label}
-        progress={{
-          content: progress.content,
-          percentage: progress.percentage,
-        }}
-      />
+  // Renderiza os itens
+  const renderItems = items.map(({ icon, label, progress }, index) => (
+    <Grid item xs={6} sm={3} key={index}>
+      {' '}
+      {/* Use o índice como chave */}
+      <SoftBox width="100%">
+        <SoftBox display="flex" alignItems="center" mb={2}>
+          <SoftBox
+            bgColor={icon.color}
+            width="1.25rem"
+            height="1.25rem"
+            borderRadius="sm"
+            color="white"
+            fontSize="0.875rem"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            shadow="md"
+            mr={1}
+            variant="gradient"
+          >
+            <Icon>{icon.component}</Icon>
+          </SoftBox>
+          <SoftTypography
+            variant="caption"
+            textTransform="capitalize"
+            fontWeight="medium"
+            color="text"
+          >
+            {label}
+          </SoftTypography>
+        </SoftBox>
+        <SoftBox mt={1}>
+          <SoftTypography variant="h4" fontWeight="bold" color={color}>
+            {progress.content}
+          </SoftTypography>
+          <SoftBox width="75%" mt={0.5}>
+            <SoftProgress value={progress.percentage} color={color} />
+          </SoftBox>
+        </SoftBox>
+      </SoftBox>
     </Grid>
   ));
 
   return (
     <Card sx={{ height: '100%' }}>
       <SoftBox padding="1rem">
-        {useMemo(
-          () => (
-            <SoftBox
-              variant="gradient"
-              bgColor={color}
-              borderRadius="lg"
-              py={2}
-              pr={0.5}
-              mb={3}
-              height="12.5rem"
-            >
-              <Bar data={data} options={options} />
-            </SoftBox>
-          ),
-          [color, data, options],
-        )}
+        <SoftBox
+          variant="gradient"
+          bgColor={color}
+          borderRadius="lg"
+          py={2}
+          pr={0.5}
+          mb={3}
+          height="12.5rem"
+        >
+          <Bar data={data} options={options} />
+        </SoftBox>
         <SoftBox px={1}>
           <SoftBox mb={2}>
             <SoftTypography
@@ -104,10 +202,26 @@ ReportsBarChart.propTypes = {
   ]),
   title: PropTypes.string.isRequired,
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  chart: PropTypes.objectOf(
-    PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  ).isRequired,
-  items: PropTypes.arrayOf(PropTypes.object),
+  chart: PropTypes.shape({
+    labels: PropTypes.array,
+    datasets: PropTypes.shape({
+      label: PropTypes.string,
+      data: PropTypes.array,
+    }),
+  }).isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      icon: PropTypes.shape({
+        color: PropTypes.string,
+        component: PropTypes.node,
+      }),
+      label: PropTypes.string,
+      progress: PropTypes.shape({
+        content: PropTypes.string,
+        percentage: PropTypes.number,
+      }),
+    }),
+  ),
 };
 
 export default ReportsBarChart;
