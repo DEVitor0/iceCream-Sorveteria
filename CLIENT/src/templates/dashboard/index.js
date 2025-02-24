@@ -10,7 +10,6 @@ import SoftTypography from '../../components/Dashboard/SoftTypography';
 // Soft UI Dashboard React examples
 import DashboardLayout from '../../examples/LayoutContainers/DashboardLayout';
 import DashboardNavbar from '../../examples/Navbars/DashboardNavbar';
-import Footer from '../../examples/Footer';
 import MiniStatisticsCard from '../../examples/Cards/StatisticsCards/MiniStatisticsCard';
 import ReportsBarChart from '../../examples/Charts/BarCharts/ReportsBarChart';
 
@@ -154,7 +153,7 @@ function GradientLineChart({
     return () => {
       isMounted = false;
     };
-  }, [chart]); // Adicionamos chartRef.current como dependência
+  }, [chart]);
 
   return (
     <Card>
@@ -397,7 +396,6 @@ function Dashboard() {
           </Grid>
         </Grid>
       </SoftBox>
-      <Footer />
     </DashboardLayout>
   );
 }

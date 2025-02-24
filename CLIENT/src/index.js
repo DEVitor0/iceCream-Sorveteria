@@ -6,30 +6,40 @@ import theme from './media/theme/index';
 import './styles/scss/global-style.scss';
 
 import { Home } from './templates/Home';
-import Login from './templates/Account/LogIn';
-import SignUp from './templates/Account/SignUp';
-import { SoftUIControllerProvider } from './contexts/Reducer/index';
 import Dashboard from './templates/dashboard/index';
+/* import Billing from '../src/templates/billing';
+import SignIn from '../src/templates/authentication/sign-in';
+import SignUp from '../src/templates/authentication/sign-up'; */
+import CadastrarProduto from './templates/Produtos/Register/index';
+import IconProvider from './contexts/IconsContext/IconProvider/index';
+import { SoftUIControllerProvider } from './contexts/Reducer/index';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      {' '}
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/entrar" element={<Login />} />
-          <Route path="/registrar" element={<SignUp />} />
-          <Route
-            path="/Dashboard"
-            element={
-              <SoftUIControllerProvider>
-                <Dashboard />
-              </SoftUIControllerProvider>
-            }
-          />
-        </Routes>
+        <IconProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/Dashboard"
+              element={
+                <SoftUIControllerProvider>
+                  <Dashboard />
+                </SoftUIControllerProvider>
+              }
+            />
+            <Route
+              path="/Dashboard/cadastrar"
+              element={
+                <SoftUIControllerProvider>
+                  <CadastrarProduto />
+                </SoftUIControllerProvider>
+              }
+            />
+          </Routes>
+        </IconProvider>
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>,

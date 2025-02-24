@@ -1,0 +1,66 @@
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.errorPopup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  color: #d32f2f;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out forwards;
+
+  &.exiting {
+    animation: slideOut 0.3s ease-in forwards;
+  }
+}
+
+.errorIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .material-symbols-outlined {
+    font-size: 1.5rem;
+    color: #d32f2f;
+  }
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #b71c1c;
+  }
+}

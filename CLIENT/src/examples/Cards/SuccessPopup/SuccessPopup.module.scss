@@ -1,0 +1,37 @@
+.successPopup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out forwards;
+
+  &.exiting {
+    animation: slideOut 0.3s ease-in forwards;
+  }
+}
+
+.successIcon {
+  font-size: 1.5rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #e0e0e0;
+  }
+}

@@ -10,6 +10,8 @@ import {
   faBoxOpen,
   faUser,
   faArrowRightFromBracket,
+  faSackDollar,
+  faGear,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -33,6 +35,8 @@ const icons = {
   user: faUser,
   basketShopping: faBasketShopping,
   goOut: faArrowRightFromBracket,
+  sackDollar: faSackDollar,
+  gear: faGear,
 };
 
 export default icons;

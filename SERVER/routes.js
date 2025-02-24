@@ -1,3 +1,5 @@
+const { createProduct } = require('./controllers/productController');
+
 const express = require("express");
 
 const router = express.Router();
@@ -18,8 +20,10 @@ router.post('/api/validate-credentials', csrfProtection, validateUserCredentials
 router.post('/entrar', csrfProtection, login);
 router.post('/registrar', csrfProtection, register);
 
-router.get("/dashboard", authenticateJWT, (req, res) => {
-    res.json({ user: req.user });
+router.get("/Dashboard", authenticateJWT, (req, res) => {
+  res.json({ user: req.user });
 });
+
+router.post('/Dashboard/cadastrar', authenticateJWT, csrfProtection, createProduct);
 
 module.exports = router;
