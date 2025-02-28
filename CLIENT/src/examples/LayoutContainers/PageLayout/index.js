@@ -10,7 +10,10 @@ import PropTypes from 'prop-types';
 import SoftBox from '../../../components/Dashboard/SoftBox';
 
 // Soft UI Dashboard React context
-import { useSoftUIController, setLayout } from 'context';
+import {
+  useSoftUIController,
+  setLayout,
+} from '../../../contexts/Reducer/index';
 
 function PageLayout({ background, children }) {
   const [, dispatch] = useSoftUIController();

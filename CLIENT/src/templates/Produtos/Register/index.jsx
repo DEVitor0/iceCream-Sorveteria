@@ -125,15 +125,15 @@ function RegisterProducts() {
       }
 
       try {
-        // Envia os dados para o backend
         const response = await fetch(
           'http://localhost:8443/Dashboard/cadastrar',
           {
             method: 'POST',
+            credentials: 'include', // Permite envio de cookies
             headers: {
-              'X-CSRF-Token': csrfToken, // Adiciona o token CSRF no cabeçalho
+              'X-CSRF-Token': csrfToken,
             },
-            body: formDataToSend, // Envia o FormData
+            body: formDataToSend,
           },
         );
 

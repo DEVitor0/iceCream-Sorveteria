@@ -1,125 +1,174 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
+import PropTypes from 'prop-types';
+import Grid from '@mui/material/Grid';
 
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
-Coded by www.creative-tim.com
+import PageLayout from '../../../../examples/LayoutContainers/PageLayout';
 
- =========================================================
+import DefaultNavbar from '../../../../examples/Navbars/DefaultNavbar';
 
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
-
-// @mui material components
-import Grid from "@mui/material/Grid";
-
-// Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-
-// Soft UI Dashboard React examples
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
-import PageLayout from "examples/LayoutContainers/PageLayout";
-
-// Authentication layout components
-import Footer from "layouts/authentication/components/Footer";
-
-function CoverLayout({ color, header, title, description, image, top, children }) {
+function CoverLayout({
+  color,
+  header,
+  title,
+  description,
+  image,
+  top,
+  children,
+}) {
   return (
-    <PageLayout background="white">
+    <PageLayout
+      background="white"
+      sx={{
+        overflow: 'hidden',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+      }}
+    >
       <DefaultNavbar
+        transparent
+        light
         action={{
-          type: "external",
-          route: "https://creative-tim.com/product/soft-ui-dashboard-react",
-          label: "free download",
-          color: "dark",
+          type: 'internal',
+          route: '/authentication/sign-in',
+          label: 'Sign In',
+          color: 'info',
         }}
       />
-      <Grid
-        container
-        justifyContent="center"
+
+      <SoftBox
         sx={{
-          minHeight: "75vh",
-          margin: 0,
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          height: 'calc(100vh - 0px)',
         }}
       >
-        <Grid item xs={11} sm={8} md={5} xl={3}>
-          <SoftBox mt={top}>
-            <SoftBox pt={3} px={3}>
-              {!header ? (
-                <>
-                  <SoftBox mb={1}>
-                    <SoftTypography variant="h3" fontWeight="bold" color={color} textGradient>
-                      {title}
+        <Grid
+          container
+          sx={{
+            height: '100%',
+            position: 'relative',
+            zIndex: 2,
+          }}
+        >
+          <Grid item xs={12} md={6}>
+            <SoftBox
+              sx={{
+                maxWidth: '500px',
+                mx: 'auto',
+                px: 3,
+                py: 4,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}
+            >
+              <SoftBox>
+                {!header ? (
+                  <>
+                    <SoftBox mb={2}>
+                      <SoftTypography
+                        variant="h3"
+                        fontWeight="bold"
+                        color={color}
+                        textGradient
+                      >
+                        {title}
+                      </SoftTypography>
+                    </SoftBox>
+                    <SoftTypography
+                      variant="body2"
+                      fontWeight="regular"
+                      color="text"
+                      mb={4}
+                    >
+                      {description}
                     </SoftTypography>
-                  </SoftBox>
-                  <SoftTypography variant="body2" fontWeight="regular" color="text">
-                    {description}
-                  </SoftTypography>
-                </>
-              ) : (
-                header
-              )}
+                  </>
+                ) : (
+                  header
+                )}
+                <SoftBox>{children}</SoftBox>
+              </SoftBox>
             </SoftBox>
-            <SoftBox p={3}>{children}</SoftBox>
-          </SoftBox>
-        </Grid>
-        <Grid item xs={12} md={5}>
-          <SoftBox
-            height="100%"
-            display={{ xs: "none", md: "block" }}
-            position="relative"
-            right={{ md: "-12rem", xl: "-16rem" }}
-            mr={-16}
-            sx={{
-              transform: "skewX(-10deg)",
-              overflow: "hidden",
-              borderBottomLeftRadius: ({ borders: { borderRadius } }) => borderRadius.lg,
-            }}
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            md={6}
+            sx={{ display: { xs: 'none', md: 'block' } }}
           >
             <SoftBox
-              ml={-8}
-              height="100%"
               sx={{
-                backgroundImage: `url(${image})`,
-                backgroundSize: "cover",
-                transform: "skewX(10deg)",
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: '50%',
+                overflow: 'hidden',
+                '&:before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0,0,0,0.1)',
+                  zIndex: 1,
+                },
               }}
-            />
-          </SoftBox>
+            >
+              <SoftBox
+                sx={{
+                  backgroundImage: `url(${image})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  transform: 'scale(1.05)',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                  },
+                }}
+              />
+            </SoftBox>
+          </Grid>
         </Grid>
-      </Grid>
-      <Footer />
+      </SoftBox>
     </PageLayout>
   );
 }
 
-// Setting default values for the props of CoverLayout
 CoverLayout.defaultProps = {
-  header: "",
-  title: "",
-  description: "",
-  color: "info",
-  top: 20,
+  header: '',
+  title: '',
+  description: '',
+  color: 'info',
+  top: 0,
 };
 
-// Typechecking props for the CoverLayout
 CoverLayout.propTypes = {
   color: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "dark",
-    "light",
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'dark',
+    'light',
   ]),
   header: PropTypes.node,
   title: PropTypes.string,

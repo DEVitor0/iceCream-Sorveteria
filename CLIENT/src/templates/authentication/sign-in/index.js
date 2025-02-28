@@ -1,37 +1,22 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useState } from "react";
+import { useState } from 'react';
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 // @mui material components
-import Switch from "@mui/material/Switch";
+import Switch from '@mui/material/Switch';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
-import SoftInput from "components/SoftInput";
-import SoftButton from "components/SoftButton";
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
+import SoftInput from '../../../components/Dashboard/SoftInput';
+import SoftButton from '../../../components/Dashboard/SoftButton';
 
 // Authentication layout components
-import CoverLayout from "layouts/authentication/components/CoverLayout";
+import CoverLayout from '../components/CoverLayout/index';
 
 // Images
-import curved9 from "assets/images/curved-images/curved-6.jpg";
+import iceCreamImage from '../../../media/images/dashboard/icecreams/loginIceCream.jpg';
 
 function SignIn() {
   const [rememberMe, setRememberMe] = useState(true);
@@ -42,12 +27,16 @@ function SignIn() {
     <CoverLayout
       title="Welcome back"
       description="Enter your email and password to sign in"
-      image={curved9}
+      image={iceCreamImage}
     >
       <SoftBox component="form" role="form">
         <SoftBox mb={2}>
           <SoftBox mb={1} ml={0.5}>
-            <SoftTypography component="label" variant="caption" fontWeight="bold">
+            <SoftTypography
+              component="label"
+              variant="caption"
+              fontWeight="bold"
+            >
               Email
             </SoftTypography>
           </SoftBox>
@@ -55,7 +44,11 @@ function SignIn() {
         </SoftBox>
         <SoftBox mb={2}>
           <SoftBox mb={1} ml={0.5}>
-            <SoftTypography component="label" variant="caption" fontWeight="bold">
+            <SoftTypography
+              component="label"
+              variant="caption"
+              fontWeight="bold"
+            >
               Password
             </SoftTypography>
           </SoftBox>
@@ -67,7 +60,7 @@ function SignIn() {
             variant="button"
             fontWeight="regular"
             onClick={handleSetRememberMe}
-            sx={{ cursor: "pointer", userSelect: "none" }}
+            sx={{ cursor: 'pointer', userSelect: 'none' }}
           >
             &nbsp;&nbsp;Remember me
           </SoftTypography>
@@ -79,7 +72,7 @@ function SignIn() {
         </SoftBox>
         <SoftBox mt={3} textAlign="center">
           <SoftTypography variant="button" color="text" fontWeight="regular">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{' '}
             <SoftTypography
               component={Link}
               to="/authentication/sign-up"

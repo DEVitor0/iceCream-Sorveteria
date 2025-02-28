@@ -6,7 +6,6 @@ const router = express.Router();
 
 const { validateUserCredentials } = require('./controllers/userController');
 const csrfProtection = require('./configs/csrfProtectionConfigs');
-const { login, register } = require('./controllers/authController');
 const authenticateJWT = require('./middlewares/authMiddleware');
 
 router.get("/csrf-token", (req, res) => {
@@ -16,9 +15,6 @@ router.get("/csrf-token", (req, res) => {
 router.post('/api/validate-credentials', csrfProtection, validateUserCredentials, (req, res) => {
   res.sendStatus(200);
 });
-
-router.post('/entrar', csrfProtection, login);
-router.post('/registrar', csrfProtection, register);
 
 router.get("/Dashboard", authenticateJWT, (req, res) => {
   res.json({ user: req.user });

@@ -33,7 +33,11 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+
+import useAuth from '../../hooks/Authentication/UseAuth';
+
 import { Line } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 
 ChartJS.register(
@@ -66,7 +70,6 @@ function GradientLineChart({
         if (!chartRef.current || !chart?.datasets) return;
 
         const newDatasets = chart.datasets.map((dataset) => {
-          // Corrigindo o acesso ao contexto do canvas
           const chartCanvas = chartRef.current?.querySelector('canvas');
           if (!chartCanvas) return dataset;
 
@@ -188,7 +191,19 @@ function GradientLineChart({
 }
 
 function Dashboard() {
-  // Dados para o componente Projects
+  const { isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, loading, navigate]);
+
+  if (loading) {
+    return null;
+  }
+
   const projectsData = {
     columns: [
       { name: 'companies', align: 'left' },

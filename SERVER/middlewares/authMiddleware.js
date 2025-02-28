@@ -4,10 +4,7 @@ const authenticateJWT = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: 'Acesso não autorizado'
-        });
+        return res.redirect('/login');
     }
 
     try {
@@ -15,11 +12,8 @@ const authenticateJWT = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        res.clearCookie('jwt');
-        res.status(401).json({
-            success: false,
-            message: 'Sessão expirada ou inválida'
-        });
+        res.clearCookie('jwt')
+        res.redirect('/login');
     }
 };
 

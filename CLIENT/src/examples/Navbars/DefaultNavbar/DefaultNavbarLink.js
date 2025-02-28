@@ -1,4 +1,3 @@
-// react-router-dom components
 import { Link } from 'react-router-dom';
 
 // prop-types is a library for typechecking of props
@@ -8,8 +7,8 @@ import PropTypes from 'prop-types';
 import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../components/Dashboard/SoftTypography';
 
 function DefaultNavbarLink({ icon, name, route, light }) {
   return (
@@ -24,6 +23,7 @@ function DefaultNavbarLink({ icon, name, route, light }) {
     >
       <Icon
         sx={{
+          fontSize: 24,
           color: ({ palette: { white, secondary } }) =>
             light ? white.main : secondary.main,
           verticalAlign: 'middle',
@@ -34,9 +34,10 @@ function DefaultNavbarLink({ icon, name, route, light }) {
       <SoftTypography
         variant="button"
         fontWeight="regular"
+        fontSize="1rem"
         color={light ? 'white' : 'dark'}
         textTransform="capitalize"
-        sx={{ width: '100%', lineHeight: 0 }}
+        sx={{ width: '100%', lineHeight: 1.5 }}
       >
         &nbsp;{name}
       </SoftTypography>

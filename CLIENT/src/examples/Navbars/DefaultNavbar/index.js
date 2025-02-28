@@ -1,37 +1,23 @@
 import { useState, useEffect } from 'react';
-
-// react-router components
 import { Link } from 'react-router-dom';
-
-// prop-types is a library for typechecking of props.
 import PropTypes from 'prop-types';
-
-// @mui material components
 import Container from '@mui/material/Container';
 import Icon from '@mui/material/Icon';
-
-// Soft UI Dashboard React components
-import SoftBox from 'components/SoftBox';
-import SoftTypography from 'components/SoftTypography';
-import SoftButton from 'components/SoftButton';
-
-// Soft UI Dashboard React examples
-import DefaultNavbarLink from 'examples/Navbars/DefaultNavbar/DefaultNavbarLink';
-import DefaultNavbarMobile from 'examples/Navbars/DefaultNavbar/DefaultNavbarMobile';
-
-// Soft UI Dashboard React base styles
-import breakpoints from 'assets/theme/base/breakpoints';
+import SoftBox from '../../../components/Dashboard/SoftBox';
+import DefaultNavbarLink from './DefaultNavbarLink';
+import DefaultNavbarMobile from './DefaultNavbarMobile';
+import breakpoints from '../../../media/theme/base/breakpoints';
+import image from '../../../utils/imageManager/imageManager';
 
 function DefaultNavbar({ transparent, light, action }) {
   const [mobileNavbar, setMobileNavbar] = useState(false);
   const [mobileView, setMobileView] = useState(false);
+  const [hover, setHover] = useState(false);
 
-  const openMobileNavbar = ({ currentTarget }) =>
-    setMobileNavbar(currentTarget.parentNode);
+  const openMobileNavbar = () => setMobileNavbar(true);
   const closeMobileNavbar = () => setMobileNavbar(false);
 
   useEffect(() => {
-    // A function that sets the display state for the DefaultNavbarMobile.
     function displayMobileNavbar() {
       if (window.innerWidth < breakpoints.values.lg) {
         setMobileView(true);
@@ -42,137 +28,86 @@ function DefaultNavbar({ transparent, light, action }) {
       }
     }
 
-    /**
-     The event listener that's calling the displayMobileNavbar function when
-     resizing the window.
-    */
     window.addEventListener('resize', displayMobileNavbar);
-
-    // Call the displayMobileNavbar function to set the state with the initial value.
     displayMobileNavbar();
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener('resize', displayMobileNavbar);
   }, []);
 
   return (
-    <Container>
+    <Container
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        maxWidth: '1200px',
+        position: 'relative',
+      }}
+    >
       <SoftBox
         py={1.5}
-        px={{
-          xs: transparent ? 4 : 5,
-          sm: transparent ? 2 : 5,
-          lg: transparent ? 0 : 5,
-        }}
-        my={2}
-        mx={3}
-        width="calc(100% - 48px)"
-        borderRadius="section"
-        shadow={transparent ? 'none' : 'md'}
-        color={light ? 'white' : 'dark'}
+        px={5}
+        width="100%"
+        borderRadius="15px"
+        shadow="md"
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         position="absolute"
+        top={hover ? '0px' : '-60px'}
         left={0}
         zIndex={3}
-        sx={({
-          palette: { transparent: transparentColor, white },
-          functions: { rgba },
-        }) => ({
-          backgroundColor: transparent
-            ? transparentColor.main
-            : rgba(white.main, 0.8),
-          backdropFilter: transparent ? 'none' : `saturate(200%) blur(30px)`,
-        })}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        sx={{
+          backgroundColor: '#f5f5f5',
+          backdropFilter: 'saturate(200%) blur(30px)',
+          paddingLeft: '24px',
+          paddingRight: '24px',
+          transition: 'top 0.3s ease-in-out',
+        }}
       >
-        <SoftBox
-          component={Link}
-          to="/"
-          py={transparent ? 1.5 : 0.75}
-          lineHeight={1}
-        >
-          <SoftTypography
-            variant="button"
-            fontWeight="bold"
-            color={light ? 'white' : 'dark'}
-          >
-            Soft UI Dashboard
-          </SoftTypography>
-        </SoftBox>
-        <SoftBox
-          color="inherit"
-          display={{ xs: 'none', lg: 'flex' }}
-          m={0}
-          p={0}
-        >
-          <DefaultNavbarLink
-            icon="donut_large"
-            name="dashboard"
-            route="/dashboard"
-            light={light}
+        <SoftBox component={Link} to="/" lineHeight={0.1}>
+          <SoftBox
+            component="img"
+            src={image.fitBrand}
+            alt="IceCream Sorveteria"
+            sx={{
+              height: '50px',
+              objectFit: 'contain',
+            }}
           />
+        </SoftBox>
+        <SoftBox color="black" display={{ xs: 'none', lg: 'flex' }}>
+          <DefaultNavbarLink icon="home" name="Home" route="/" />
           <DefaultNavbarLink
-            icon="person"
-            name="profile"
-            route="/profile"
-            light={light}
+            icon="shopping_bag"
+            name="Produtos"
+            route="/produtos"
           />
           <DefaultNavbarLink
             icon="account_circle"
-            name="sign up"
+            name="Contato"
             route="/authentication/sign-up"
-            light={light}
           />
           <DefaultNavbarLink
             icon="key"
-            name="sign in"
+            name="Registrar"
             route="/authentication/sign-in"
-            light={light}
           />
         </SoftBox>
-        {action &&
-          (action.type === 'internal' ? (
-            <SoftBox display={{ xs: 'none', lg: 'inline-block' }}>
-              <SoftButton
-                component={Link}
-                to={action.route}
-                variant="gradient"
-                color={action.color ? action.color : 'info'}
-                size="small"
-                circular
-              >
-                {action.label}
-              </SoftButton>
-            </SoftBox>
-          ) : (
-            <SoftBox display={{ xs: 'none', lg: 'inline-block' }}>
-              <SoftButton
-                component="a"
-                href={action.route}
-                target="_blank"
-                rel="noreferrer"
-                variant="gradient"
-                color={action.color ? action.color : 'info'}
-                size="small"
-                circular
-              >
-                {action.label}
-              </SoftButton>
-            </SoftBox>
-          ))}
         <SoftBox
           display={{ xs: 'inline-block', lg: 'none' }}
-          lineHeight={0}
           py={1.5}
           pl={1.5}
-          color="inherit"
           sx={{ cursor: 'pointer' }}
           onClick={openMobileNavbar}
         >
-          <Icon fontSize="default">{mobileNavbar ? 'close' : 'menu'}</Icon>
+          <Icon fontSize="default" sx={{ color: 'black' }}>
+            {mobileNavbar ? 'close' : 'menu'}
+          </Icon>
         </SoftBox>
       </SoftBox>
+
       {mobileView && (
         <DefaultNavbarMobile open={mobileNavbar} close={closeMobileNavbar} />
       )}
@@ -180,14 +115,12 @@ function DefaultNavbar({ transparent, light, action }) {
   );
 }
 
-// Setting default values for the props of DefaultNavbar
 DefaultNavbar.defaultProps = {
   transparent: false,
   light: false,
   action: false,
 };
 
-// Typechecking props for the DefaultNavbar
 DefaultNavbar.propTypes = {
   transparent: PropTypes.bool,
   light: PropTypes.bool,
