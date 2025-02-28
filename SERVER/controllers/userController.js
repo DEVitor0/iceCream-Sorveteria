@@ -2,29 +2,43 @@ const User = require('../model/userModel');
 
 const validateUserCredentials = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body; // ← Corrigir nome do campo
+
+    if (!username || !password) {
+      return res.status(400).json({
+        error: true,
+        message: 'Forneça usuário e senha'
+      });
+    }
+
     const user = await User.findOne({ username }).select('+password');
+
     if (!user) {
-      return generateErrorResponse(res, 'Usuário não encontrado.');
+      return res.status(404).json({
+        error: true,
+        message: 'Usuário não encontrado'
+      });
     }
 
-    const isPasswordValid = await user.matchPassword(password);
-    if (!isPasswordValid) {
-      return generateErrorResponse(res, 'Senha incorreta.');
+    if (!(await user.matchPassword(password))) {
+      return res.status(401).json({
+        error: true,
+        message: 'Senha incorreta'
+      });
     }
 
-    res.status(200).json({ message: 'Login realizado com sucesso!', redirectUrl: '/' });
+    res.status(200).json({
+      valid: true,
+      message: 'Credenciais válidas'
+    });
+
   } catch (error) {
-    console.error('Erro na validação do usuário:', error);
-    res.status(500).json({ message: 'Erro interno do servidor.' });
+    console.error('Erro na validação:', error);
+    res.status(500).json({
+      error: true,
+      message: 'Erro interno'
+    });
   }
 };
 
-// Função para gerar respostas de erro
-const generateErrorResponse = (res, message) => {
-  return res.status(400).json({ error: true, message });
-};
-
-module.exports = {
-  validateUserCredentials,
-};
+module.exports = { validateUserCredentials };

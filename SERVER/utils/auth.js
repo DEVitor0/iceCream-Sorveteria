@@ -1,21 +1,21 @@
+// utils/auth.js
 const jwt = require('jsonwebtoken');
-// eslint-disable-next-line no-unused-vars
-const config = require('../configs/jwtConfigs');
+const jwtConfig = require('../configs/jwtConfigs');
 
 const generateToken = (user) => {
-    return jwt.sign(
-        {
-            id: user._id,
-            username: user.username,
-            role: user.role
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-    );
+  return jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+      role: user.role
+    },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.expiresIn }
+  );
 };
 
 const verifyToken = (token) => {
-    return jwt.verify(token, process.env.JWT_SECRET);
+  return jwt.verify(token, jwtConfig.secret);
 };
 
 module.exports = { generateToken, verifyToken };

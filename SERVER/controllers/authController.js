@@ -2,42 +2,54 @@ const { generateToken } = require('../utils/auth');
 const User = require('../model/userModel');
 
 const login = async (req, res) => {
-    try {
-        const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-        const user = await User.findOne({ username }).select('+password');
-        if (!user || !(await user.matchPassword(password))) {
-            return res.status(401).json({
-                success: false,
-                message: 'Credenciais inválidas'
-            });
-        }
-
-        const token = generateToken(user);
-
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 1 dia
-        });
-
-        res.json({
-            success: true,
-            user: {
-                id: user._id,
-                username: user.username,
-                role: user.role
-            }
-        });
-
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro no servidor'
-        });
+    // Validação básica
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Forneça usuário e senha'
+      });
     }
+
+    const user = await User.findOne({ username }).select('+password');
+
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas',
+      });
+    }
+
+    const token = generateToken(user);
+
+    // Corrigido: Remover console.log após resposta
+    res.status(200)
+    .cookie('jwt', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Lax',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+      domain: 'localhost'
+    })
+    .json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro no servidor',
+    });
+  }
 };
 
 const register = async (req, res) => {
@@ -48,7 +60,7 @@ const register = async (req, res) => {
         if (existingUser) {
             return res.status(409).json({
                 success: false,
-                message: 'Nome de usuário já está em uso'
+                message: 'Email já está em uso'
             });
         }
 

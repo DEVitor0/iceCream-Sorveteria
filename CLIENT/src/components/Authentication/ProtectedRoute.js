@@ -1,19 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import useAuthCheck from '../../hooks/Authentication/UseAuth';
+import useAuth from '../../hooks/Authentication/UseAuth';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuthCheck();
+  const { isAuthenticated, loading } = useAuth(); // Deve usar o hook corrigido
 
   if (loading) {
-    return null;
+    return <div>Carregando...</div>; // Melhor que retornar null
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

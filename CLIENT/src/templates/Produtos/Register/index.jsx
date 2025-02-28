@@ -4,7 +4,7 @@ import DashboardNavbar from '../../../examples/Navbars/DashboardNavbar/index';
 import { Upload } from 'lucide-react';
 import styles from './CadastrarProduto.module.scss';
 import ErrorPopup from '../../../examples/ErrorPopup/index';
-import PreventClosePopup from '../../../examples/PreventClosePopup/PreventClosePopup';
+import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
 import SuccessPopup from '../../../examples/Cards/SuccessPopup/SuccessPopup';
 import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation'; // Importando a função para buscar o token CSRF
 
@@ -20,9 +20,8 @@ function RegisterProducts() {
   const [isDragging, setIsDragging] = useState(false);
   const [errors, setErrors] = useState([]);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [csrfToken, setCsrfToken] = useState(''); // Estado para armazenar o token CSRF
+  const [csrfToken, setCsrfToken] = useState('');
 
-  // Busca o token CSRF ao montar o componente
   useEffect(() => {
     const getCsrfToken = async () => {
       const token = await fetchCsrfToken();
@@ -113,7 +112,6 @@ function RegisterProducts() {
     if (validateForm()) {
       const fileData = fileInputRef.current?.files?.[0];
 
-      // Cria um FormData para enviar arquivos e dados do formulário
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name);
       formDataToSend.append('price', formData.price);

@@ -1,6 +1,6 @@
-import Product from '../model/productModel.js';
+const Product =  require('../model/productModel.js');
 
-export const createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   try {
     const { name, price, tag, imageUrl, imageFile } = req.body;
 
@@ -19,3 +19,5 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: 'Erro ao cadastrar o produto.', error: error.message });
   }
 };
+
+module.exports = { createProduct };

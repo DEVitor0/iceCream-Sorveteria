@@ -1,6 +1,5 @@
 const csurf = require("csurf");
 
-// Substitua a configuração atual do CSRF por:
 const csrfProtection = csurf({
   cookie: {
     key: '_csrf',
