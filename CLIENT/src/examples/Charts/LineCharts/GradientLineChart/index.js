@@ -121,7 +121,6 @@ function GradientLineChart({
       });
     } else {
       console.error('Invalid chart data:', chart);
-      // Defina um fallback para dados inválidos
       setChartData({
         data: {
           labels: [],

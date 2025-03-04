@@ -1,5 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+
+const getCookie = (name) => {
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    const [cookieName, cookieValue] = cookie.split('=').map((c) => c.trim());
+    if (cookieName === name) {
+      return cookieValue;
+    }
+  }
+  return null;
+};
 
 const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -10,31 +22,36 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:8443/Dashboard', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const token = getCookie('jwt');
 
-        const data = await response.json();
-
-        if (response.ok) {
-          setIsAuthenticated(true);
-          setUser(data.user);
-        } else {
-          navigate('/login'); // Corrigido para a rota definida no index.js
+        if (!token) {
+          throw new Error('No token found');
         }
+
+        const decodedToken = jwtDecode(token);
+
+        if (decodedToken.exp * 1000 < Date.now()) {
+          throw new Error('Token expired');
+        }
+
+        setIsAuthenticated(true);
+        setUser({
+          id: decodedToken.id,
+          username: decodedToken.username,
+          role: decodedToken.role,
+        });
       } catch (error) {
-        console.error('Erro na verificação de autenticação:', error);
-        navigate('/login');
+        document.cookie =
+          'jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        navigate('/authentication/login');
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    setTimeout(() => {
+      checkAuth();
+    }, 100);
   }, [navigate]);
 
   return { isAuthenticated, user, loading };

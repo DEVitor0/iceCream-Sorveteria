@@ -11,23 +11,50 @@ import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 import ErrorPopup from '../../../examples/ErrorPopup/index';
 import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
 
-const validateFields = (email, password, setError) => {
-  if (!email || !password) {
-    setError('Preencha todos os campos!');
-    return false;
+const validateFields = (
+  email,
+  password,
+  setError,
+  setEmailError,
+  setPasswordError,
+) => {
+  let isValid = true;
+
+  if (!email) {
+    setEmailError(true);
+    setError('Preencha o campo de email!');
+    isValid = false;
+  } else {
+    setEmailError(false);
+  }
+
+  if (!password) {
+    setPasswordError(true);
+    setError('Preencha o campo de senha!');
+    isValid = false;
+  } else {
+    setPasswordError(false);
+  }
+
+  if (password.length < 6) {
+    setPasswordError(true);
+    setError('A senha deve ter no mínimo 6 caracteres.');
+    isValid = false;
   }
 
   if (email.length > 35 || password.length > 25) {
     setError('Campos excedem o tamanho máximo!');
-    return false;
+    isValid = false;
   }
 
-  if (!email.includes('@') || !email.includes('.')) {
-    setError('Endereço de email inválido');
-    return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    setEmailError(true);
+    setError('Endereço de email inválido.');
+    isValid = false;
   }
 
-  return true;
+  return isValid;
 };
 
 function SignIn() {
@@ -37,6 +64,8 @@ function SignIn() {
   const [csrfToken, setCsrfToken] = useState('');
   const [error, setError] = useState('');
   const [isFormDirty, setIsFormDirty] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,28 +94,39 @@ function SignIn() {
     e.preventDefault();
     setError('');
 
-    if (!validateFields(email, password, setError)) return;
+    if (
+      !validateFields(
+        email,
+        password,
+        setError,
+        setEmailError,
+        setPasswordError,
+      )
+    )
+      return;
 
     try {
-      const response = await fetch('http://localhost:8443/api/login', {
+      const response = await fetch('http://localhost:8443/login', {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
         },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
-        // Redireciona imediatamente após login bem-sucedido
-        navigate('/Dashboard'); // Alterado para usar navigate
+        localStorage.setItem('email', email);
+        navigate('/validate-2fa');
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Falha ao autenticar');
+        setError(
+          errorData.message || 'Credenciais inválidas. Tente novamente.',
+        );
       }
     } catch (error) {
-      setError('Erro na conexão com o servidor');
+      setError('Erro na conexão com o servidor. Tente novamente mais tarde.');
     }
   };
 
@@ -97,7 +137,7 @@ function SignIn() {
       image={iceCreamImage}
     >
       <PreventClosePopup hasUnsavedChanges={() => isFormDirty} />
-      <SoftBox component="form" role="form" onSubmit={handleSubmit}>
+      <SoftBox component="form" role="form" onSubmit={handleSubmit} noValidate>
         {error && <ErrorPopup message={error} onClose={() => setError('')} />}
         <SoftBox mb={2}>
           <SoftTypography component="label" variant="caption" fontWeight="bold">
@@ -108,6 +148,8 @@ function SignIn() {
             placeholder="Email"
             value={email}
             onChange={handleInputChange(setEmail)}
+            required={false}
+            error={emailError}
           />
         </SoftBox>
         <SoftBox mb={2}>
@@ -119,6 +161,8 @@ function SignIn() {
             placeholder="Password"
             value={password}
             onChange={handleInputChange(setPassword)}
+            required={false}
+            error={passwordError}
           />
         </SoftBox>
         <SoftBox display="flex" alignItems="center">

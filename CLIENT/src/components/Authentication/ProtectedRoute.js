@@ -3,13 +3,17 @@ import { Navigate } from 'react-router-dom';
 import useAuth from '../../hooks/Authentication/UseAuth';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth(); // Deve usar o hook corrigido
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div>Carregando...</div>; // Melhor que retornar null
+    return <div>Carregando...</div>;
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ? (
+    children
+  ) : (
+    <Navigate to="/authentication/login" replace />
+  );
 };
 
 export default ProtectedRoute;

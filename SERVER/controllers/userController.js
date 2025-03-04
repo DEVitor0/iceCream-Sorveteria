@@ -2,11 +2,11 @@ const User = require('../model/userModel');
 
 const validateUserCredentials = async (req, res) => {
   try {
-    const { username, password } = req.body; // ← Corrigir nome do campo
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({
-        error: true,
+        success: false,
         message: 'Forneça usuário e senha'
       });
     }
@@ -15,28 +15,28 @@ const validateUserCredentials = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        error: true,
+        success: false,
         message: 'Usuário não encontrado'
       });
     }
 
     if (!(await user.matchPassword(password))) {
       return res.status(401).json({
-        error: true,
+        success: false,
         message: 'Senha incorreta'
       });
     }
 
     res.status(200).json({
-      valid: true,
+      success: true,
       message: 'Credenciais válidas'
     });
 
   } catch (error) {
     console.error('Erro na validação:', error);
     res.status(500).json({
-      error: true,
-      message: 'Erro interno'
+      success: false,
+      message: 'Erro no servidor'
     });
   }
 };

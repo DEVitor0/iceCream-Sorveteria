@@ -10,6 +10,7 @@ import { Home } from './templates/Home';
 import Dashboard from './templates/dashboard/index';
 import CadastrarProduto from './templates/Produtos/Register/index';
 import SignIn from './templates/authentication/sign-in/index';
+import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 
 import IconProvider from './contexts/IconsContext/IconProvider/index';
 import { SoftUIControllerProvider } from './contexts/Reducer/index';
@@ -24,10 +25,18 @@ root.render(
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
-              path="/login"
+              path="/authentication/login"
               element={
                 <SoftUIControllerProvider>
                   <SignIn />
+                </SoftUIControllerProvider>
+              }
+            />
+            <Route
+              path="/validate-2fa"
+              element={
+                <SoftUIControllerProvider>
+                  <TwoFAScreen />
                 </SoftUIControllerProvider>
               }
             />

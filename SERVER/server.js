@@ -6,10 +6,12 @@ const corsOptions = require("./configs/corsConfigs");
 const csrf = require("csurf");
 const connectDB = require("./configs/databaseConfigs");
 const createAdminUser = require("./utils/initializeAdmin");
-const csrfProtection = require("./configs/csrfProtectionConfigs")
+const csrfProtection = require("./configs/csrfProtectionConfigs");
 const { applySecurityHeaders } = require("./utils/helmetSecurity");
 const { limiter } = require("./configs/rateLimiterConfig");
 const routes = require("./routes");
+
+const csrfCookieMiddleware = require("./middlewares/csrfCookieMiddleware");
 
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT;
@@ -26,13 +28,8 @@ app.use(limiter);
 
 const csrfMiddleware = csrf({ cookie: true });
 app.use(csrfMiddleware);
-app.use((req, res, next) => {
-    res.cookie('XSRF-TOKEN', req.csrfToken(), {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-    });
-    next();
-});
+
+app.use(csrfCookieMiddleware);
 
 connectDB(CONNECTION_STRING)
     .then(async () => {

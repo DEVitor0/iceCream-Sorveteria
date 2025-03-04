@@ -1,42 +1,26 @@
-const { createProduct } = require('./controllers/productController');
 const express = require("express");
 const router = express.Router();
-
-// Corrigir importações
-const { validateUserCredentials } = require('./controllers/userController');
-const {login} = require('./controllers/authController')
-
+const sanitizeMiddleware = require('./middlewares/sanitizeMiddleware');
 const csrfProtection = require('./configs/csrfProtectionConfigs');
 const authenticateJWT = require('./middlewares/authMiddleware');
+const validateLoginMiddleware = require('./middlewares/joiValidatorMiddleware');
+const { twoFALogin, validateTwoFACode } = require('./controllers/twoFAController');
 
-// Rotas CSRF
+const authenticationRoutes = require('./routes/authenticationRoutes');
+const productRoutes = require('./routes/productRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+
 router.get("/csrf-token", (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+    res.json({ csrfToken: req.csrfToken() });
 });
 
-// Rota de validação de credenciais
-router.post('/api/validate-credentials',
-  csrfProtection,
-  validateUserCredentials,
-  (req, res) => {
-    res.sendStatus(200);
-  }
-);
+router.post('/login', sanitizeMiddleware, csrfProtection, validateLoginMiddleware, twoFALogin);
 
-// Rotas de autenticação
-router.post('/api/validate', csrfProtection, validateUserCredentials);
-router.post('/api/login', csrfProtection, login);
+router.post('/validate-2fa', sanitizeMiddleware, csrfProtection, validateTwoFACode);
 
-router.get("/Dashboard", authenticateJWT, (req, res) => {
-  res.json({
-    user: req.user
-  });
-});
+router.use('/authentication', sanitizeMiddleware, csrfProtection, authenticationRoutes);
 
-router.post('/Dashboard/cadastrar',
-  authenticateJWT,
-  csrfProtection,
-  createProduct
-);
+router.use('/Dashboard', authenticateJWT, productRoutes);
+router.use('/Dashboard', authenticateJWT, dashboardRoutes);
 
 module.exports = router;
