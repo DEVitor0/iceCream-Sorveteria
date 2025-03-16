@@ -8,7 +8,8 @@ import './styles/scss/global-style.scss';
 
 import { Home } from './templates/Home';
 import Dashboard from './templates/dashboard/index';
-import CadastrarProduto from './templates/Produtos/Register/index';
+import RegisterProducts from './templates/dashboard/pages/Products/Register/index';
+import EditProduct from './templates/dashboard/pages/Products/Edit/EditProduct';
 import SignIn from './templates/authentication/sign-in/index';
 import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 
@@ -55,7 +56,17 @@ root.render(
               element={
                 <ProtectedRoute>
                   <SoftUIControllerProvider>
-                    <CadastrarProduto />
+                    <RegisterProducts />
+                  </SoftUIControllerProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Dashboard/editar-produtos"
+              element={
+                <ProtectedRoute>
+                  <SoftUIControllerProvider>
+                    <EditProduct />
                   </SoftUIControllerProvider>
                 </ProtectedRoute>
               }

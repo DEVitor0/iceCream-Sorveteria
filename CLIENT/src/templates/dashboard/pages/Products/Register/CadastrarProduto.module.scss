@@ -1,4 +1,4 @@
-@use '../../../styles/scss/Home/partials/fonts' as *;
+@use '../../../../../styles/scss/Home/partials/fonts' as *;
 $color-primary: #7762d4;
 $color-primary-dark: #7928ca;
 $color-gray-50: #f9fafb;
@@ -44,6 +44,16 @@ $color-white: #ffffff;
   border-radius: 10px;
   margin: 20px auto;
   z-index: 1;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px; // Espaçamento entre os campos
+  margin-bottom: 16px; // Espaçamento entre as linhas
+}
+
+.formGroup {
+  flex: 1; // Faz com que os campos ocupem o mesmo espaço
 }
 
 // Container do formulário
@@ -185,6 +195,35 @@ $color-white: #ffffff;
   &__inputWrapper {
     position: relative;
   }
+}
+
+.descriptionInput {
+  width: 100%; // Ocupa 100% da largura do contêiner
+  min-height: 40px; // Altura inicial igual aos outros campos
+  padding: 8px; // Padding consistente com os outros campos
+  border: 1px solid #ccc; // Borda consistente
+  border-radius: 4px; // Bordas arredondadas
+  font-family: inherit; // Fonte consistente
+  font-size: 0.875rem; // Tamanho de fonte igual aos outros campos
+  line-height: 1.5; // Espaçamento entre linhas
+  overflow: hidden; // Remove a barra de rolagem interna
+  resize: none; // Impede o redimensionamento manual
+  white-space: pre-wrap; // Mantém as quebras de linha
+  word-break: break-word; // Quebra palavras longas para evitar overflow
+  box-sizing: border-box; // Garante que o padding não aumente a largura
+  outline: none; // Remove o contorno ao focar
+}
+
+.inputError {
+  border: 2px solid red !important;
+}
+
+.formGroup__charCount {
+  display: block;
+  text-align: right;
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
 }
 
 .button {

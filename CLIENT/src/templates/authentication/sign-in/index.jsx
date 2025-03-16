@@ -10,6 +10,7 @@ import iceCreamImage from '../../../media/images/dashboard/icecreams/loginIceCre
 import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 import ErrorPopup from '../../../examples/ErrorPopup/index';
 import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
+import useRedirectIfAuthenticated from '../../../hooks/Authentication/useRedirectIfAuthenticated';
 
 const validateFields = (
   email,
@@ -67,6 +68,8 @@ function SignIn() {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const navigate = useNavigate();
+
+  useRedirectIfAuthenticated();
 
   useEffect(() => {
     const getCsrfToken = async () => {

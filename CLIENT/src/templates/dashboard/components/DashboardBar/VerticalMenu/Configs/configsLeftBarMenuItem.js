@@ -10,8 +10,6 @@ const dataLeftBarMenuItem = {
       actions: {
         Register: { text: 'Cadastrar' },
         Edit: { text: 'Editar' },
-        Delete: { text: 'Excluir' },
-        Organize: { text: 'Organizar' },
       },
     },
     Sales: {
@@ -22,22 +20,11 @@ const dataLeftBarMenuItem = {
         launch: { text: 'Lançamento' },
       },
     },
-    Inventory: {
-      text: 'Estoque',
-      icon: 'box',
-      actions: {
-        Add: { text: 'Adicionar' },
-        Remove: { text: 'Remover' },
-        Adjust: { text: 'Ajustar' },
-        View: { text: 'Visualizar' },
-      },
-    },
     Customers: {
       text: 'Clientes',
       icon: 'user',
       actions: {
-        Status: { text: 'Status' },
-        offer: { text: 'Oferta' },
+        message: { text: 'Mensagem' },
         History: { text: 'Histórico' },
       },
     },

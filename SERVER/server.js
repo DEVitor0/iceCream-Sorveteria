@@ -7,6 +7,7 @@ const csrf = require("csurf");
 const connectDB = require("./configs/databaseConfigs");
 const createAdminUser = require("./utils/initializeAdmin");
 const csrfProtection = require("./configs/csrfProtectionConfigs");
+const path = require('path');
 const { applySecurityHeaders } = require("./utils/helmetSecurity");
 const { limiter } = require("./configs/rateLimiterConfig");
 const routes = require("./routes");
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(applySecurityHeaders);
 app.use(limiter);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const csrfMiddleware = csrf({ cookie: true });
 app.use(csrfMiddleware);

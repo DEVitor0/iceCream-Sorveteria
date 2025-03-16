@@ -92,7 +92,7 @@ const colors = {
     },
 
     success: {
-      main: '#C2B5F5',
+      main: '#5F53A3',
       state: '#483E7B',
     },
 

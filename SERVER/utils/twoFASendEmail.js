@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -9,26 +11,37 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     },
     tls: {
-      ciphers: 'SSLv3',
-  },
+        ciphers: 'SSLv3',
+    },
 });
 
-// Function to send the 2FA code via email
-function sendTwoFACodeEmail(email, code) {
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: 'vitormoreira6940@gmail.com',
-        subject: 'Your 2FA Code',
-        text: `Your 2FA code is: ${code}`
-    };
+function sendTwoFACodeEmail(email, codigoVerificacao) {
+    const emailTemplatePath = path.join(__dirname, '../view/email.html');
 
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
-        } else {
-            console.log('Email sent:', info.response);
+    fs.readFile(emailTemplatePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Erro ao ler o template do e-mail:', err);
+            return;
         }
+
+        const emailBody = data
+            .replace(/{{nomeCliente}}/g, email)
+            .replace(/{{codigoVerificacao}}/g, codigoVerificacao);
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Código de autenticação da Ice Cream Sorveteria 🍦',
+            html: emailBody,
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Erro ao enviar o e-mail:', error);
+            } else {
+                console.log('E-mail enviado:', info.response);
+            }
+        });
     });
 }
 

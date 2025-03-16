@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticação de Dois Fatores</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #ebe7e4; font-family: Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ebe7e4">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border: 1px solid #daa564; border-radius: 8px; margin: 20px 0;">
+                    <!-- Cabeçalho -->
+                    <tr>
+                        <td bgcolor="#9d5b16" style="padding: 20px; text-align: center; color: #ffffff; font-size: 24px; font-weight: bold;">
+                            Autenticação de Dois Fatores
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 20px; color: #5c4a3a; font-size: 16px; line-height: 1.5;">
+                            <p style="color: #4F4F4F;">Olá {{nomeCliente}},</p>
+                            <p style="color: #4F4F4F;">Para garantir a segurança da sua conta, estamos implementando a autenticação de dois fatores (2FA). Abaixo está o seu código de verificação:</p>
+
+                            <p style="font-size: 24px; font-weight: bold; text-align: center; margin: 20px 0; color: #9d5b16;">
+                                {{codigoVerificacao}}
+                            </p>
+
+                            <p style="color: #4F4F4F;">Por favor, insira este código na página de verificação para concluir o processo de autenticação.</p>
+
+                            <p style="color: #4F4F4F;">Se você não solicitou este código, por favor, entre em contato conosco imediatamente.</p>
+
+                            <p style="color: #4F4F4F;">Atenciosamente,<br>Equipe <strong style="color: #9d5b16;">Ice Cream Sorveteria &#127846;</strong></p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 10px; text-align: center; font-size: 12px; color: #ffffff;">
+                          <p style="color: #4F4F4F;">
+                            © 2025 <strong style="color: #9d5b16;">Ice Cream Sorveteria</strong>. Todos os direitos reservados.
+                          </p>
+                            <div class="banner">
+                                <a href="https://www.icecreamsorveteria.com" target="_blank">
+                                    <img src="https://i.imgur.com/TAF1ghG.png" alt="Visite nosso site" style="width: 100%; height: auto; color: #9d5b16;">
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

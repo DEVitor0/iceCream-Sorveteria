@@ -1,6 +1,5 @@
 class IntersectionObserverEffect {
   constructor() {
-    this.queue = Promise.resolve();
     this.sections = {};
   }
 
@@ -18,40 +17,20 @@ class IntersectionObserverEffect {
     this.sections[sectionName].selector = selector;
   }
 
-  addToQueue(callback, delay) {
-    this.queue = this.queue.then(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            callback();
-            resolve();
-          }, delay);
-        }),
-    );
-  }
-
   callback(entries, animations) {
-    let delayTime = 0;
-
-    const sortedEntries = Array.from(entries).sort(
-      (a, b) =>
-        Object.keys(animations).indexOf(a.target.id) -
-        Object.keys(animations).indexOf(b.target.id),
-    );
-
-    sortedEntries.forEach((entry) => {
+    entries.forEach((entry, index) => {
       if (entry.isIntersecting) {
         const element = entry.target;
         const animation = animations[element.id];
 
         if (animation) {
-          this.addToQueue(() => animation(element), delayTime);
-          delayTime += 80;
+          // Adiciona um atraso baseado no índice do elemento
+          setTimeout(() => {
+            animation(element);
+          }, index * 150); // 150ms de atraso entre cada elemento
         } else {
           console.warn(`No animation defined for ID: ${element.id}`);
         }
-      } else {
-        console.log(`Out of viewport: ${entry.target.id}`);
       }
     });
   }
@@ -74,7 +53,7 @@ class IntersectionObserverEffect {
         const observer = new IntersectionObserver(
           (entries) => this.callback(entries, animations),
           {
-            rootMargin: '0px',
+            rootMargin: '0px 0px -100px 0px', // Ajuste o rootMargin para detectar os elementos antes de entrarem na viewport
             threshold: 0.1,
           },
         );
@@ -106,10 +85,8 @@ observerEffect.addAnimation('main', 'main-block', (element) => {
 observerEffect.addAnimation('main', 'main-iceCream-image', (element) => {
   element.classList.add('visible');
   if (element.tagName === 'IMG' && !element.complete) {
-    return new Promise((resolve) => {
-      element.onload = resolve;
-      element.onerror = resolve;
-    });
+    element.onload = () => element.classList.add('visible');
+    element.onerror = () => element.classList.add('visible');
   }
 });
 
