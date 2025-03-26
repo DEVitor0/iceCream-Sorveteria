@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import './styles.scss';
 
-const Text = ({ id, text, fontSize }) => {
+const Text = ({ id, text = '', fontSize }) => {
   return (
     <p
       id={id}
@@ -11,10 +11,6 @@ const Text = ({ id, text, fontSize }) => {
       {text}
     </p>
   );
-};
-
-Text.defaultProps = {
-  id: '',
 };
 
 Text.propTypes = {

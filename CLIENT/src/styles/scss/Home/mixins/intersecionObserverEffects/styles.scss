@@ -1,4 +1,4 @@
-@mixin appear($duration: 0.6s, $timing: ease-out) { // Aumentei de 0.4s para 0.6s
+@mixin appear($duration: 0.6s, $timing: ease-out) {
   opacity: 0;
   transition:
     opacity $duration $timing,
@@ -10,7 +10,7 @@
   }
 }
 
-@mixin appear-from-left($duration: 0.7s, $timing: ease-out, $distance: 22%) { // Aumentei de 0.5s para 0.7s
+@mixin appear-from-left($duration: 0.7s, $timing: ease-out, $distance: 22%) {
   opacity: 0;
   transform: translateX(-$distance);
   transition:
@@ -24,7 +24,7 @@
   }
 }
 
-@mixin appear-from-right($duration: 0.7s, $timing: ease-out, $distance: 50px) { // Aumentei de 0.5s para 0.7s
+@mixin appear-from-right($duration: 0.7s, $timing: ease-out, $distance: 50px) {
   opacity: 0;
   transform: translateX($distance);
   transition:
@@ -38,7 +38,7 @@
   }
 }
 
-@mixin appear-from-bottom($duration: 0.7s, $timing: ease-out, $distance: 30px) { // Aumentei de 0.5s para 0.7s
+@mixin appear-from-bottom($duration: 0.7s, $timing: ease-out, $distance: 30px) {
   opacity: 0;
   transform: translateY($distance);
   transition:

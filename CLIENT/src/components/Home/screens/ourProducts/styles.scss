@@ -1,13 +1,15 @@
-@use '../../../..../../..../../styles/scss/mixins/flexContainer/flex.scss' as flex;
+@use '../../../../styles/scss/Home/mixins/flexContainer/flex.scss' as flex;
 
 .ourProducts {
-  margin-top: 20%;
+  margin-top: 5%;
   width: 100%;
   @include flex.flex-container();
+  flex-direction: column;
 
   &__title {
     @include flex.flex-container();
+    flex-direction: column;
     width: 60%;
-    margin-bottom: 7%;
+    margin-bottom: 1.5%;
   }
 }

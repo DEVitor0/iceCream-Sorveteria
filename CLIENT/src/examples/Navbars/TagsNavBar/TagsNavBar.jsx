@@ -1,26 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Box } from '@mui/material';
 import axios from 'axios';
+import { useApi } from '../../../contexts/RequestCSRFToken/ApiContextCSRFToken';
 
 const TagsNavBar = ({ selectedTag, onTagSelect }) => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const failedImages = useRef(new Set());
+  const apiCSRFToken = useApi();
 
-  // Mapeamento corrigido com caminhos absolutos
   const tagImages = {
-    'sorvete de massa': '/image/mass.png',
+    massa: '/image/mass.png',
     casquinha: '/image/ice-cream.png',
     picolé: '/image/navIceCream.png',
     açaí: '/image/acai.png',
     sundae: '/image/sundae.png',
     milkshake: '/image/milkshake.png',
-    geladinho: '/image/toothpick.png',
-    paleta: '/image/popsicle.png',
+    geladinho: '/image/popsicle.png',
+    paleta: '/image/toothpick.png',
     granizado: '/image/shave.png',
   };
 
-  // Fallback deve estar na pasta public/image
   const fallbackImage = '/image/fallback.png';
 
   const handleImageError = (e, tag) => {
@@ -39,12 +39,10 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
     const controller = new AbortController();
     let isMounted = true;
 
-    const fetchTags = async (retries = 3, backoff = 1000) => {
-      if (!isMounted || retries <= 0) return;
-
+    const fetchTags = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/tags', {
+        const response = await apiCSRFToken.get('/tags', {
           signal: controller.signal,
           timeout: 5000,
         });
@@ -55,13 +53,8 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
         }
       } catch (error) {
         if (!axios.isCancel(error)) {
-          console.error(`Tentativa ${4 - retries} falhou.`, error);
-
-          if (error.response?.status === 429 && isMounted) {
-            setTimeout(() => fetchTags(retries - 1, backoff * 2), backoff);
-          } else {
-            setLoading(false);
-          }
+          console.error('Erro ao buscar tags:', error);
+          setLoading(false);
         }
       }
     };
@@ -72,7 +65,7 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
       isMounted = false;
       controller.abort();
     };
-  }, []);
+  }, [apiCSRFToken]);
 
   const getButtonStyles = (tag) => ({
     backgroundColor:

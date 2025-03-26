@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './style.scss';
 
-const ButtonIconText = ({ text, icon, href }) => {
+const ButtonIconText = ({ text, icon, href = false }) => {
   const containerStyle = href ? { flexDirection: 'row-reverse' } : {};
   const iconStyle = href ? { marginRight: 0, marginLeft: '10px' } : {};
 
@@ -20,16 +20,9 @@ const ButtonIconText = ({ text, icon, href }) => {
   );
 };
 
-ButtonIconText.defaultProps = {
-  href: false,
-};
-
 ButtonIconText.propTypes = {
   text: PropTypes.string.isRequired,
-  icon: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
+  icon: PropTypes.string.isRequired,
   href: PropTypes.string,
 };
 

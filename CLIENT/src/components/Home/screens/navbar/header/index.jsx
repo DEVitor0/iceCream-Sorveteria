@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-const HeaderBar = ({ id }) => {
+const HeaderBar = ({ id, classname = '' }) => {
   const icons = useContext(IconContext);
   return (
     <header className={`header-bar ${id ? 'looking-main' : ''}`} id={id}>
@@ -23,10 +23,6 @@ const HeaderBar = ({ id }) => {
 
 HeaderBar.propTypes = {
   id: PropTypes.string.isRequired,
-};
-
-HeaderBar.defaultProps = {
-  classname: '',
 };
 
 export default HeaderBar;

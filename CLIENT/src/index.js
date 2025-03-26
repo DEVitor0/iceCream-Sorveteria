@@ -16,64 +16,74 @@ import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 import IconProvider from './contexts/IconsContext/IconProvider/index';
 import { SoftUIControllerProvider } from './contexts/Reducer/index';
 import ProtectedRoute from './components/Authentication/ProtectedRoute';
+import { ApiProvider } from './contexts/RequestCSRFToken/ApiContextCSRFToken';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <IconProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/authentication/login"
-              element={
+  <ThemeProvider theme={theme}>
+    <BrowserRouter>
+      <IconProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ApiProvider>
+                <Home />
+              </ApiProvider>
+            }
+          />
+          <Route
+            path="/authentication/login"
+            element={
+              <SoftUIControllerProvider>
+                <SignIn />
+              </SoftUIControllerProvider>
+            }
+          />
+          <Route
+            path="/validate-2fa"
+            element={
+              <SoftUIControllerProvider>
+                <TwoFAScreen />
+              </SoftUIControllerProvider>
+            }
+          />
+          <Route
+            path="/Dashboard"
+            element={
+              <ProtectedRoute>
                 <SoftUIControllerProvider>
-                  <SignIn />
+                  <Dashboard />
                 </SoftUIControllerProvider>
-              }
-            />
-            <Route
-              path="/validate-2fa"
-              element={
-                <SoftUIControllerProvider>
-                  <TwoFAScreen />
-                </SoftUIControllerProvider>
-              }
-            />
-            <Route
-              path="/Dashboard"
-              element={
-                <ProtectedRoute>
-                  <SoftUIControllerProvider>
-                    <Dashboard />
-                  </SoftUIControllerProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/Dashboard/cadastrar"
-              element={
-                <ProtectedRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Dashboard/cadastrar"
+            element={
+              <ProtectedRoute>
+                <ApiProvider>
                   <SoftUIControllerProvider>
                     <RegisterProducts />
                   </SoftUIControllerProvider>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/Dashboard/editar-produtos"
-              element={
-                <ProtectedRoute>
+                </ApiProvider>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Dashboard/editar-produtos"
+            element={
+              <ProtectedRoute>
+                <ApiProvider>
                   <SoftUIControllerProvider>
                     <EditProduct />
                   </SoftUIControllerProvider>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </IconProvider>
-      </BrowserRouter>
-    </ThemeProvider>
-  </React.StrictMode>,
+                </ApiProvider>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </IconProvider>
+    </BrowserRouter>
+  </ThemeProvider>,
 );

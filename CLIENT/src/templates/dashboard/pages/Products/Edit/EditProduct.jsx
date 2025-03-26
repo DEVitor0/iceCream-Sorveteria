@@ -17,10 +17,12 @@ import {
   Button,
   Box,
 } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material'; // Ícone de lixeira do MUI
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import VerticalMenu from '../../../components/DashboardBar/VerticalMenu/index';
 import DashboardNavbar from '../../../../../examples/Navbars/DashboardNavbar/index';
 import TagsNavBar from '../../../../../examples/Navbars/TagsNavBar/TagsNavBar';
+import { debounce } from 'lodash';
+import { useApi } from '../../../../../contexts/RequestCSRFToken/ApiContextCSRFToken';
 
 const styles = `
   .marquee-container {
@@ -42,28 +44,29 @@ const styles = `
   }
 `;
 
-const fetchProducts = async () => {
+const fetchProducts = debounce(async () => {
   try {
     const response = await axios.get('/Dashboard/editar-produtos', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    return response.data;
+    return response.data || []; // Ensure an array is returned even if response.data is undefined
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
-    return [];
+    return []; // Return an empty array in case of error
   }
-};
+}, 1000);
 
 export default function EditProduct() {
   const [products, setProducts] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [csrfToken, setCsrfToken] = useState(''); // Estado para armazenar o token CSRF
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
   const descriptionRefs = useRef([]);
+  const apiCSRFToken = useApi();
 
   useEffect(() => {
     const getProducts = async () => {
@@ -75,18 +78,26 @@ export default function EditProduct() {
   }, []);
 
   useEffect(() => {
-    // Função para buscar o token CSRF
-    const fetchCsrfToken = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('/csrf-token');
-        setCsrfToken(response.data.csrfToken);
+        const [productsResponse, csrfResponse] = await Promise.all([
+          axios.get('/Dashboard/editar-produtos', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          }),
+          apiCSRFToken.get('/csrf-token'),
+        ]);
+        setProducts(productsResponse.data || []); // Ensure products is always an array
+        setCsrfToken(csrfResponse.data.csrfToken || '');
       } catch (error) {
-        console.error('Erro ao buscar o token CSRF:', error);
+        console.error('Erro ao buscar dados:', error);
+        setProducts([]); // Set products to an empty array in case of error
       }
     };
 
-    fetchCsrfToken();
-  }, []);
+    fetchData();
+  }, [apiCSRFToken]);
 
   useEffect(() => {
     descriptionRefs.current.forEach((ref) => {
@@ -111,7 +122,7 @@ export default function EditProduct() {
       await axios.delete(`/Dashboard/editar-produtos/${productToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'X-CSRF-Token': csrfToken, // Inclua o token CSRF aqui
+          'X-CSRF-Token': csrfToken,
         },
       });
       setProducts(
@@ -129,8 +140,8 @@ export default function EditProduct() {
   };
 
   const filteredProducts = selectedTag
-    ? products.filter((product) => product.tag === selectedTag)
-    : products;
+    ? (products || []).filter((product) => product.tag === selectedTag) // Ensure products is defined before filtering
+    : products || []; // Fallback to an empty array if products is undefined
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -154,8 +165,8 @@ export default function EditProduct() {
         </div>
 
         <div style={{ flex: 1, padding: '24px' }}>
-          {/* Verifica se há produtos cadastrados */}
-          {filteredProducts.length === 0 ? (
+          {/* Ensure filteredProducts is defined before accessing its length */}
+          {!filteredProducts || filteredProducts.length === 0 ? (
             <Box
               sx={{
                 display: 'flex',
@@ -217,7 +228,6 @@ export default function EditProduct() {
                         alt={product.name}
                         sx={{ width: 100, height: 100, borderRadius: 2 }}
                       />
-
                       <CardContent
                         sx={{
                           flex: 1,
@@ -232,7 +242,7 @@ export default function EditProduct() {
                           variant="h6"
                           fontWeight="bold"
                           sx={{
-                            pr: 10, // Aumentado para evitar sobreposição com os ícones
+                            pr: 10,
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -240,7 +250,6 @@ export default function EditProduct() {
                         >
                           {product.name}
                         </Typography>
-
                         <Typography
                           variant="body2"
                           color="text.secondary"
@@ -256,7 +265,6 @@ export default function EditProduct() {
                         >
                           {product.description}
                         </Typography>
-
                         <div style={{ marginTop: 'auto' }}>
                           <Typography
                             variant="body1"
@@ -280,14 +288,13 @@ export default function EditProduct() {
                           </Typography>
                         </div>
                       </CardContent>
-
                       <motion.div
                         style={{
                           position: 'absolute',
                           right: 16,
                           top: 16,
                           display: 'flex',
-                          gap: 4, // Reduzido para deixar os ícones mais próximos
+                          gap: 4,
                         }}
                       >
                         <IconButton
@@ -323,7 +330,7 @@ export default function EditProduct() {
         }}
         BackdropProps={{
           sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.6)', // Overlay mais escuro
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
           },
         }}
       >

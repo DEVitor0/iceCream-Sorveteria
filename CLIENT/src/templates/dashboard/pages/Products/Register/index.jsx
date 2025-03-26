@@ -9,6 +9,7 @@ import ErrorPopup from '../../../../../examples/ErrorPopup/index';
 import PreventClosePopup from '../../../../../utils/PreventClosePopup/PreventClosePopup';
 import SuccessPopup from '../../../../../examples/Cards/SuccessPopup/SuccessPopup';
 import { fetchCsrfToken } from '../../../../../utils/csrf/csurfValidation';
+import { useApi } from '../../../../../contexts/RequestCSRFToken/ApiContextCSRFToken';
 
 function RegisterProducts() {
   const location = useLocation();
@@ -36,6 +37,8 @@ function RegisterProducts() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [csrfToken, setCsrfToken] = useState('');
 
+  const apiCSRFToken = useApi();
+
   useEffect(() => {
     const getCsrfToken = async () => {
       const token = await fetchCsrfToken();
@@ -49,35 +52,33 @@ function RegisterProducts() {
     if (productId) {
       const fetchProduct = async () => {
         try {
-          const response = await fetch(`/Dashboard/produtos/${productId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+          const response = await apiCSRFToken.get(
+            `/Dashboard/produtos/${productId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
             },
-          });
-          const productData = await response.json();
+          );
+          const productData = response.data;
           setFormData({
             ...productData,
             webImageUrl: productData.webImageUrl || '',
-            costPrice: productData.costPrice || '', // Novo campo
-            brand: productData.brand || '', // Novo campo
-            quantity: productData.quantity || '', // Novo campo
-            expirationDate: productData.expirationDate || '', // Novo campo
+            costPrice: productData.costPrice || '',
+            brand: productData.brand || '',
+            quantity: productData.quantity || '',
+            expirationDate: productData.expirationDate || '',
           });
           setPreviewImage(
             productData.imageUrl || productData.webImageUrl || null,
           );
-
-          if (descriptionInputRef.current) {
-            descriptionInputRef.current.innerText =
-              productData.description || '';
-          }
         } catch (error) {
           console.error('Erro ao buscar produto:', error);
         }
       };
       fetchProduct();
     }
-  }, [productId]);
+  }, [apiCSRFToken, productId]);
 
   useEffect(() => {
     if (descriptionInputRef.current) {
@@ -219,6 +220,10 @@ function RegisterProducts() {
     }
   };
 
+  const formatDate = (date) => {
+    return new Date(date).toISOString().split('T')[0];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -240,10 +245,13 @@ function RegisterProducts() {
       formDataToSend.append('price', formData.price);
       formDataToSend.append('tag', formData.tag);
       formDataToSend.append('description', formData.description);
-      formDataToSend.append('costPrice', formData.costPrice); // Novo campo
-      formDataToSend.append('brand', formData.brand); // Novo campo
-      formDataToSend.append('quantity', formData.quantity); // Novo campo
-      formDataToSend.append('expirationDate', formData.expirationDate); // Novo campo
+      formDataToSend.append('costPrice', formData.costPrice);
+      formDataToSend.append('brand', formData.brand);
+      formDataToSend.append('quantity', formData.quantity);
+      formDataToSend.append(
+        'expirationDate',
+        formatDate(formData.expirationDate),
+      );
 
       if (formData.webImageUrl.trim() !== '') {
         formDataToSend.append('webImageUrl', formData.webImageUrl);
@@ -261,10 +269,11 @@ function RegisterProducts() {
 
         const response = await fetch(url, {
           method,
-          credentials: 'include',
           headers: {
             'X-CSRF-Token': csrfToken,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
+          credentials: 'include', // Importante para enviar cookies
           body: formDataToSend,
         });
 
