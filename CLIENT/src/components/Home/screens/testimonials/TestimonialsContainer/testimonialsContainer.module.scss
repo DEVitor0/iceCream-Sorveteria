@@ -1,0 +1,30 @@
+.testimonialContainer {
+  width: 100%;
+  min-height: 27.8vw;
+  height: auto;
+  margin-top: 7%;
+  display: grid;
+  grid-template-columns: 40% 60%;
+  align-items: stretch;
+  background-size: cover;
+  overflow: hidden; /* Importante para animações */
+
+  &__imageContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    will-change: transform; /* Otimização para animações */
+  }
+
+  &__textContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    will-change: transform;
+
+    &__Testimoty {
+      width: 650px;
+      will-change: transform, opacity;
+    }
+  }
+}

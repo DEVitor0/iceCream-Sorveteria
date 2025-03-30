@@ -1,0 +1,39 @@
+@use "../../../../../../styles/scss/Home/partials/colors" as *;
+@use "../../../../../../styles/scss/Home/partials/fonts" as *;
+
+.author {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+
+  &__image {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-size: cover;
+    margin-right: 20px;
+  }
+
+  &__text {
+
+    &__name {
+      font-family: $font-family-primary;
+      font-weight: $font-weight-semiEmphasis;
+      font-size: 20px;
+      color: $subtitle-color;
+    }
+
+    &__rating{
+
+      &__value {
+        margin-left: 6px;
+        font-family: $font-family-primary;
+        position: relative;
+        bottom: 3px;
+        color: $all-texts;
+      }
+
+    }
+  }
+}

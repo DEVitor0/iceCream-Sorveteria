@@ -1,4 +1,4 @@
-@mixin appear($duration: 0.4s, $timing: ease-out) {
+@mixin appear($duration: 0.6s, $timing: ease-out) {
   opacity: 0;
   transition:
     opacity $duration $timing,
@@ -6,10 +6,11 @@
 
   &.visible {
     opacity: 1;
+    transition: opacity 0.5s ease-in-out;
   }
 }
 
-@mixin appear-from-left($duration: 0.5s, $timing: ease-out, $distance: 22%) {
+@mixin appear-from-left($duration: 0.7s, $timing: ease-out, $distance: 22%) {
   opacity: 0;
   transform: translateX(-$distance);
   transition:
@@ -19,10 +20,11 @@
   &.visible-from-left {
     opacity: 1;
     transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   }
 }
 
-@mixin appear-from-right($duration: 0.5s, $timing: ease-out, $distance: 50px) {
+@mixin appear-from-right($duration: 0.7s, $timing: ease-out, $distance: 50px) {
   opacity: 0;
   transform: translateX($distance);
   transition:
@@ -32,10 +34,11 @@
   &.visible-from-right {
     opacity: 1;
     transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   }
 }
 
-@mixin appear-from-bottom($duration: 0.5s, $timing: ease-out, $distance: 30px) {
+@mixin appear-from-bottom($duration: 0.7s, $timing: ease-out, $distance: 30px) {
   opacity: 0;
   transform: translateY($distance);
   transition:
@@ -45,5 +48,6 @@
   &.visible-from-bottom {
     opacity: 1;
     transform: translateY(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
   }
 }

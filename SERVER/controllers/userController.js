@@ -1,16 +1,44 @@
 const User = require('../model/userModel');
 
-const validateUserCredentials = async (email, password) => {
-  const user = await User.findOne({ email }).select('+password');
+const validateUserCredentials = async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  if (!user) throw new Error('Usuário não encontrado');
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Forneça usuário e senha'
+      });
+    }
 
-  const isPasswordValid = await user.matchPassword(password);
-  if (!isPasswordValid) throw new Error('Senha incorreta');
+    const user = await User.findOne({ username }).select('+password');
 
-  return user;
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (!(await user.matchPassword(password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Senha incorreta'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Credenciais válidas'
+    });
+
+  } catch (error) {
+    console.error('Erro na validação:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro no servidor'
+    });
+  }
 };
 
-module.exports = {
-  validateUserCredentials,
-};
+module.exports = { validateUserCredentials };

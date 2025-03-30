@@ -1,0 +1,25 @@
+@use '../../../../../styles/scss/Home/partials/colors' as *;
+
+.blockWithImage {
+  width: 25vw;
+  height: 25vw;
+  margin-right: 70px;
+  background-color: $background-session-color;
+  border-radius: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 2;
+
+  &__image{
+    width: 45vw;
+    height: 30vw;
+    position: absolute;
+    margin-left: 50px;
+    transform: translateY(70px);
+    background-image: url("../../../../../media/images/mainscreen/massTestimonials.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 3;
+  }
+}

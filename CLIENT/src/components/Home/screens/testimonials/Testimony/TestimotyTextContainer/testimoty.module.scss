@@ -1,0 +1,20 @@
+.TestimotyTextContainer{
+  width: 100%;
+
+  &__opinion {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+
+    &__quotationmark{
+      height: max-content;
+
+      &:last-child {
+        transform: translateY(45px);
+      }
+    }
+
+  }
+}

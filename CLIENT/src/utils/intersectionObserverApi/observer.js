@@ -1,7 +1,7 @@
 class IntersectionObserverEffect {
   constructor() {
-    this.queue = Promise.resolve();
     this.sections = {};
+    this.observers = [];
   }
 
   addAnimation(sectionName, id, callback) {
@@ -18,40 +18,17 @@ class IntersectionObserverEffect {
     this.sections[sectionName].selector = selector;
   }
 
-  addToQueue(callback, delay) {
-    this.queue = this.queue.then(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            callback();
-            resolve();
-          }, delay);
-        }),
-    );
-  }
-
   callback(entries, animations) {
-    let delayTime = 0;
-
-    const sortedEntries = Array.from(entries).sort(
-      (a, b) =>
-        Object.keys(animations).indexOf(a.target.id) -
-        Object.keys(animations).indexOf(b.target.id),
-    );
-
-    sortedEntries.forEach((entry) => {
+    entries.forEach((entry, index) => {
       if (entry.isIntersecting) {
         const element = entry.target;
         const animation = animations[element.id];
 
         if (animation) {
-          this.addToQueue(() => animation(element), delayTime);
-          delayTime += 80;
-        } else {
-          console.warn(`No animation defined for ID: ${element.id}`);
+          setTimeout(() => {
+            animation(element);
+          }, index * 150);
         }
-      } else {
-        console.log(`Out of viewport: ${entry.target.id}`);
       }
     });
   }
@@ -60,21 +37,15 @@ class IntersectionObserverEffect {
     window.addEventListener('load', () => {
       Object.keys(this.sections).forEach((sectionName) => {
         const { animations, selector } = this.sections[sectionName];
-        if (!selector) {
-          console.error(`Selector not set for section: ${sectionName}`);
-          return;
-        }
+        if (!selector) return;
 
         const elements = document.querySelectorAll(selector);
-        if (elements.length === 0) {
-          console.error(`No elements found with selector: ${selector}`);
-          return;
-        }
+        if (elements.length === 0) return;
 
         const observer = new IntersectionObserver(
           (entries) => this.callback(entries, animations),
           {
-            rootMargin: '0px',
+            rootMargin: '0px 0px -100px 0px',
             threshold: 0.1,
           },
         );
@@ -82,8 +53,36 @@ class IntersectionObserverEffect {
         elements.forEach((element) => {
           observer.observe(element);
         });
+
+        this.observers.push(observer);
       });
     });
+  }
+
+  // Novo método para observar componentes com Framer Motion
+  observeWithFramerMotion(element, callback) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          callback();
+        }
+      },
+      {
+        rootMargin: '0px 0px -100px 0px',
+        threshold: 0.1,
+      },
+    );
+
+    if (element) {
+      observer.observe(element);
+      this.observers.push(observer);
+    }
+
+    return () => {
+      if (element) {
+        observer.unobserve(element);
+      }
+    };
   }
 }
 
@@ -106,10 +105,8 @@ observerEffect.addAnimation('main', 'main-block', (element) => {
 observerEffect.addAnimation('main', 'main-iceCream-image', (element) => {
   element.classList.add('visible');
   if (element.tagName === 'IMG' && !element.complete) {
-    return new Promise((resolve) => {
-      element.onload = resolve;
-      element.onerror = resolve;
-    });
+    element.onload = () => element.classList.add('visible');
+    element.onerror = () => element.classList.add('visible');
   }
 });
 
@@ -142,6 +139,8 @@ observerEffect.addAnimation('services', 'services-title', (element) => {
 observerEffect.addAnimation('services', 'services-container', (element) => {
   element.classList.add('visible');
 });
+
+observerEffect.setSectionSelector('main', '.looking-main');
 
 const initializeObserver = () => {
   observerEffect.startObserving();

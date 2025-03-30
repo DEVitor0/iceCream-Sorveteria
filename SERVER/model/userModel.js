@@ -7,23 +7,28 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
-        minlength: [3, 'O nome de usuário deve ter pelo menos 3 caracteres.'],
-        maxlength: [30, 'O nome de usuário pode ter no máximo 30 caracteres.']
+        minlength: [5, 'O nome de usuário deve ter pelo menos 3 caracteres.'],
+        maxlength: [35, 'O nome de usuário pode ter no máximo 30 caracteres.']
     },
     password: {
         type: String,
         required: true,
-        select: true,
+        select: false,
         minlength: [6, 'A senha deve ter pelo menos 6 caracteres.']
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     }
 });
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
-        return next();
-    }
+    if (!this.isModified("password")) return next();
+
     try {
-        this.password = await bcrypt.hash(this.password, 10);
+        const salt = await bcrypt.genSalt(12);
+        this.password = await bcrypt.hash(this.password, salt);
         next();
     } catch (err) {
         next(err);
@@ -31,17 +36,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.matchPassword = async function(password) {
-  try {
-    console.log('Senha fornecida:', password);
-    console.log('Senha hashada armazenada:', this.password);
-
-    const isMatch = await bcrypt.compare(password, this.password);
-    console.log('Senha válida:', isMatch);
-    return isMatch;
-  } catch (err) {
-    console.error('Erro ao comparar senhas:', err);
-    throw new Error("Erro na comparação da senha.");
-  }
+    return bcrypt.compare(password, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
