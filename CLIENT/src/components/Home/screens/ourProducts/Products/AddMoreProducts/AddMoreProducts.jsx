@@ -35,6 +35,10 @@ const AddMoreProducts = () => {
           height: '100%',
           borderRight: '2px solid white',
           borderRadius: 0,
+          '&:hover': {
+            backgroundColor: '#5E5787',
+            color: '#fff',
+          },
         }}
       >
         -
@@ -63,6 +67,10 @@ const AddMoreProducts = () => {
           height: '100%',
           borderLeft: '2px solid white',
           borderRadius: 0,
+          '&:hover': {
+            backgroundColor: '#5E5787',
+            color: '#fff',
+          },
         }}
       >
         +

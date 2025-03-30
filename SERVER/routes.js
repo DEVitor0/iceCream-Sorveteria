@@ -9,11 +9,14 @@ const { twoFALogin, validateTwoFACode } = require('./controllers/twoFAController
 const authenticationRoutes = require('./routes/authenticationRoutes');
 const productRoutes = require('./routes/productRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const loadProducts = require('./routes/loadProducts');
 const { getAllTags } = require('./controllers/tagController');
 
 router.get("/csrf-token", (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
+
+router.use('/api', loadProducts);
 
 router.post('/login', sanitizeMiddleware, csrfProtection, validateLoginMiddleware, twoFALogin);
 

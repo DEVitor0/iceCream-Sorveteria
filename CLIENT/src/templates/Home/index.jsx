@@ -3,6 +3,8 @@ import MainScreen from '../../components/Home/screens/mainScreen/index';
 import HeaderBar from '../../components/Home/screens/navbar/header/index';
 import OurServices from '../../components/Home/screens/ourServices/index';
 import OurProducts from '../../components/Home/screens/ourProducts/index';
+import TestimonialsContainer from '../../components/Home/screens/testimonials/TestimonialsContainer/index';
+import Footer from '../../components/Home/screens/navbar/footer/index';
 
 // Contexts
 import IconProvider from '../../contexts/IconsContext/IconProvider/index';
@@ -24,6 +26,12 @@ export const Home = () => {
         <OurServices />
       </ImageProvider>
       <OurProducts />
+      <TestimonialsContainer />
+      <ImageProvider>
+        <IconProvider>
+          <Footer></Footer>
+        </IconProvider>
+      </ImageProvider>
     </div>
   );
 };

@@ -1,0 +1,9 @@
+@use "../../../../../../styles/scss/Home/partials/colors" as *;
+@use "../../../../../../styles/scss/Home/partials/fonts" as *;
+
+.menssage {
+  font-family: $font-family-primary;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-description;
+  color: $all-texts;
+}

@@ -1,7 +1,7 @@
 @use '../../../../styles/scss/Home/mixins/flexContainer/flex.scss' as flex;
 
 .ourProducts {
-  margin-top: 5%;
+  margin-top: 7%;
   width: 100%;
   @include flex.flex-container();
   flex-direction: column;

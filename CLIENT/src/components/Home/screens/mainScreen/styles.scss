@@ -7,7 +7,7 @@
   width: 100%;
   @include flex.flex-container;
   margin-top: 30px;
-  margin-bottom: 14%;
+  margin-bottom: 12%;
 
   &__container {
     display: flex;
@@ -59,11 +59,15 @@
       }
 
       &__block {
-        width: 420px;
-        height: 400px;
-        margin-top: 20px;
-        margin-right: 5px;
-        border-radius: 120px;
+        width: 28vw;
+        height: 27vw;
+        max-width: 420px;
+        max-height: 400px;
+        min-width: 300px;
+        min-height: 285px;
+        margin-top: 1.4vh;
+        margin-right: 0.35vw;
+        border-radius: 8.5vw;
         background-color: colors.$generic-background-color;
         z-index: 2;
       }
@@ -73,20 +77,24 @@
       }
 
       &__image {
-        margin-top: 100px;
-        width: 540px;
-        height: 540px;
+        margin-top: 7vh;
+        width: 36.5vw;
+        height: 36.5vw;
+        max-width: 540px;
+        max-height: 540px;
+        min-width: 400px;
+        min-height: 400px;
         background-size: contain;
         background-repeat: no-repeat;
         position: absolute;
-        transform: translateX(-30px);
+        transform: translateX(-2vw);
         z-index: 3;
       }
 
       &__comment {
         z-index: 4;
         height: 0;
-        transform: translate(10px, 40px);
+        transform: translateY(-1.5vw);
       }
     }
   }

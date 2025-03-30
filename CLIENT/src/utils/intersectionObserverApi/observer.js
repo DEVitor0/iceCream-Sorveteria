@@ -1,6 +1,7 @@
 class IntersectionObserverEffect {
   constructor() {
     this.sections = {};
+    this.observers = [];
   }
 
   addAnimation(sectionName, id, callback) {
@@ -24,12 +25,9 @@ class IntersectionObserverEffect {
         const animation = animations[element.id];
 
         if (animation) {
-          // Adiciona um atraso baseado no índice do elemento
           setTimeout(() => {
             animation(element);
-          }, index * 150); // 150ms de atraso entre cada elemento
-        } else {
-          console.warn(`No animation defined for ID: ${element.id}`);
+          }, index * 150);
         }
       }
     });
@@ -39,21 +37,15 @@ class IntersectionObserverEffect {
     window.addEventListener('load', () => {
       Object.keys(this.sections).forEach((sectionName) => {
         const { animations, selector } = this.sections[sectionName];
-        if (!selector) {
-          console.error(`Selector not set for section: ${sectionName}`);
-          return;
-        }
+        if (!selector) return;
 
         const elements = document.querySelectorAll(selector);
-        if (elements.length === 0) {
-          console.error(`No elements found with selector: ${selector}`);
-          return;
-        }
+        if (elements.length === 0) return;
 
         const observer = new IntersectionObserver(
           (entries) => this.callback(entries, animations),
           {
-            rootMargin: '0px 0px -100px 0px', // Ajuste o rootMargin para detectar os elementos antes de entrarem na viewport
+            rootMargin: '0px 0px -100px 0px',
             threshold: 0.1,
           },
         );
@@ -61,8 +53,36 @@ class IntersectionObserverEffect {
         elements.forEach((element) => {
           observer.observe(element);
         });
+
+        this.observers.push(observer);
       });
     });
+  }
+
+  // Novo método para observar componentes com Framer Motion
+  observeWithFramerMotion(element, callback) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          callback();
+        }
+      },
+      {
+        rootMargin: '0px 0px -100px 0px',
+        threshold: 0.1,
+      },
+    );
+
+    if (element) {
+      observer.observe(element);
+      this.observers.push(observer);
+    }
+
+    return () => {
+      if (element) {
+        observer.unobserve(element);
+      }
+    };
   }
 }
 
@@ -119,6 +139,8 @@ observerEffect.addAnimation('services', 'services-title', (element) => {
 observerEffect.addAnimation('services', 'services-container', (element) => {
   element.classList.add('visible');
 });
+
+observerEffect.setSectionSelector('main', '.looking-main');
 
 const initializeObserver = () => {
   observerEffect.startObserving();

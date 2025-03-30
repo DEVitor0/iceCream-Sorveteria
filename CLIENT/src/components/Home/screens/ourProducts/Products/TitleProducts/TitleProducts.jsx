@@ -10,6 +10,7 @@ const TitleProducts = ({ name }) => {
         fontFamily: 'Poppins, sans-serif',
         fontWeight: 500,
       }}
+      position="absolute"
     >
       {name}
     </Typography>

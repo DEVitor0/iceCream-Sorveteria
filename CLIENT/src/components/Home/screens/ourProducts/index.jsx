@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TitleServices from '../../titleServices/index';
 import Subtitle from '../../subtitle/index';
 import TagsNavBar from '../../../../examples/Navbars/TagsNavBar/TagsNavBar';
@@ -7,8 +7,18 @@ import './styles.scss';
 
 const OurProducts = () => {
   const [selectedTag, setSelectedTag] = useState(null);
+  const [debouncedTag, setDebouncedTag] = useState(null);
 
-  // Função para lidar com a seleção de tags
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTag(selectedTag);
+    }, 500); // Atraso de 500ms
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [selectedTag]);
+
   const handleTagSelect = (tag) => {
     setSelectedTag(tag === selectedTag ? null : tag);
   };
@@ -20,11 +30,8 @@ const OurProducts = () => {
         <Subtitle id="ourProducts-subtitle" text="Conheça o nosso cardápio" />
       </div>
 
-      {/* Passando a tag selecionada e a função de seleção */}
       <TagsNavBar selectedTag={selectedTag} onTagSelect={handleTagSelect} />
-
-      {/* Passando a tag selecionada para o ProductsContainer */}
-      <ProductsContainer selectedTag={selectedTag} />
+      <ProductsContainer selectedTag={debouncedTag} />
     </section>
   );
 };

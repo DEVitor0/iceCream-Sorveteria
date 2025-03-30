@@ -1,0 +1,153 @@
+@use '../../../../../styles/scss/Home/partials/colors' as *;
+@use '../../../../../styles/scss/Home/partials/fonts' as *;
+
+.footer {
+  background-color: #fff;
+  color: $all-texts;
+  padding: 3rem 0 1.5rem;
+  font-family: 'Roboto', sans-serif;
+
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  &__mainContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; // Voltando para flex-start
+    gap: 3rem;
+  }
+
+  &__brandSection {
+    flex: 0 0 20%;
+    display: flex;
+    align-items: center; // Centraliza verticalmente apenas o brand
+    justify-content: center; // Centraliza horizontalmente
+    height: 100%; // Ocupa toda a altura disponível
+    padding: 1rem 0; // Adiciona padding para espaçamento
+  }
+
+  &__brandWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__slogan {
+    color: $emphasis-color;
+    font-weight: 500;
+    font-size: 1.1rem;
+    max-width: 80%;
+    text-align: center;
+    margin-top: 1rem; // Espaço adicional acima do slogan
+  }
+
+  &__linksSection {
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    align-items: flex-start; // Voltando para flex-start
+    padding-top: 0.5rem; // Ajuste fino de alinhamento
+  }
+
+  &__linksGroup {
+    flex: 1;
+    max-width: 200px;
+  }
+
+  &__groupTitle {
+    color: $color-section-title;
+    margin-bottom: 2rem; // Aumentei este valor para afastar mais a linha do conteúdo abaixo
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 0.5rem; // Este controla a distância entre o TEXTO e a linha
+    line-height: 1.2;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background-color: $emphasis-color;
+      /* Removi o margin-bottom daqui - não é o lugar correto para esse ajuste */
+    }
+  }
+
+  &__linksList {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0 0; // Adicionei margin-top para afastar do título
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem; // Espaçamento entre os itens da lista
+
+    li {
+      color: $description-color-heavy;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      padding: 0.25rem 0; // Espaçamento interno para cada item
+    }
+
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+
+      &:hover {
+        color: $color-section-title;
+      }
+    }
+  }
+
+  &__copyright {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba($color-section-title, 0.2);
+    color: $description-color-heavy;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 1200px) {
+    &__mainContent {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    &__brandSection {
+      flex: 1;
+      width: 100%;
+      padding: 0;
+    }
+
+    &__slogan {
+      max-width: 100%;
+    }
+
+    &__linksSection {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    &__linksGroup {
+      flex: 0 0 calc(33.333% - 2rem);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 2.5rem 0 1.25rem;
+
+    &__linksGroup {
+      flex: 0 0 calc(50% - 2rem);
+    }
+  }
+}
