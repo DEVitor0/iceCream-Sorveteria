@@ -8,7 +8,7 @@ import SoftButton from '../../../components/Dashboard/SoftButton';
 import CoverLayout from '../components/CoverLayout/index';
 import iceCreamImage from '../../../media/images/dashboard/icecreams/loginIceCream.jpg';
 import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
-import ErrorPopup from '../../../examples/ErrorPopup/index';
+import ErrorPopup from '../../../examples/Cards/ErrorPopup/index';
 import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
 import useRedirectIfAuthenticated from '../../../hooks/Authentication/useRedirectIfAuthenticated';
 

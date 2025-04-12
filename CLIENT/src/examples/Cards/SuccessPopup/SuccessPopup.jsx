@@ -5,7 +5,7 @@ import styles from './SuccessPopup.module.scss';
 function SuccessPopup({ message, onClose }) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose(); // Fecha após 3s (coincide com o fim da animação)
+      onClose();
     }, 3000);
 
     return () => clearTimeout(timer);

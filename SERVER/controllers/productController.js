@@ -16,7 +16,6 @@ exports.createProduct = async (req, res) => {
 
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-    // Validação dos campos obrigatórios
     if (!name || !price || !tag || !costPrice || !quantity || !expirationDate) {
       return res.status(400).json({ message: 'Todos os campos obrigatórios devem ser preenchidos.' });
     }
@@ -56,7 +55,6 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// Buscar produto por ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -82,14 +80,13 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Produto não encontrado.' });
     }
 
-    // Atualiza os campos do produto
     product.name = name || product.name;
     product.price = price || product.price;
     product.tag = tag || product.tag;
     product.description = description || product.description;
-    product.webImageUrl = webImageUrl || product.webImageUrl; // Atualiza a URL web
+    product.webImageUrl = webImageUrl || product.webImageUrl;
     if (imageUrl) {
-      product.imageUrl = imageUrl; // Atualiza o caminho da imagem no servidor
+      product.imageUrl = imageUrl;
     }
 
     await product.save();
@@ -109,7 +106,6 @@ exports.deleteProduct = async (req, res) => {
       return res.status(404).json({ message: 'Produto não encontrado.' });
     }
 
-    // Remove o produto do banco de dados
     await Product.findByIdAndDelete(id);
 
     res.status(200).json({ message: 'Produto excluído com sucesso!' });

@@ -5,7 +5,7 @@ import DashboardNavbar from '../../../../../examples/Navbars/DashboardNavbar/ind
 import { Upload } from 'lucide-react';
 import { debounce } from 'lodash';
 import styles from './CadastrarProduto.module.scss';
-import ErrorPopup from '../../../../../examples/ErrorPopup/index';
+import ErrorPopup from '../../../../../examples/Cards/ErrorPopup/index';
 import PreventClosePopup from '../../../../../utils/PreventClosePopup/PreventClosePopup';
 import SuccessPopup from '../../../../../examples/Cards/SuccessPopup/SuccessPopup';
 import { fetchCsrfToken } from '../../../../../utils/csrf/csurfValidation';

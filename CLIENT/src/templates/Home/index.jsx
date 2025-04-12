@@ -26,8 +26,8 @@ export const Home = () => {
         <OurServices />
       </ImageProvider>
       <OurProducts />
-      <TestimonialsContainer />
       <ImageProvider>
+        <TestimonialsContainer />
         <IconProvider>
           <Footer></Footer>
         </IconProvider>

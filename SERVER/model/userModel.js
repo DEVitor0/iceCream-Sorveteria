@@ -1,10 +1,50 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+const addressSchema = new mongoose.Schema({
+  cep: {
+    type: String,
+    required: true,
+    match: [/^\d{5}-?\d{3}$/, 'CEP inválido']
+  },
+  logradouro: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  numero: {
+    type: String,
+    required: true
+  },
+  complemento: {
+    type: String,
+    trim: true
+  },
+  bairro: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  cidade: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  estado: {
+    type: String,
+    required: true,
+    enum: ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'],
+    uppercase: true
+  },
+  principal: {
+    type: Boolean,
+    default: false
+  }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
         unique: true,
         trim: true,
         minlength: [5, 'O nome de usuário deve ter pelo menos 3 caracteres.'],
@@ -12,19 +52,42 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         select: false,
         minlength: [6, 'A senha deve ter pelo menos 6 caracteres.']
+    },
+    googleSub: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    fullName: {
+        type: String,
+        trim: true
+    },
+    email: {
+        type: String,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+    photo: {
+        type: String
     },
     role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
-    }
-});
+    },
+    provider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
+    },
+    addresses: [addressSchema]
+}, { timestamps: true });
 
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+    if (!this.isModified("password") || this.provider !== 'local') return next();
 
     try {
         const salt = await bcrypt.genSalt(12);
@@ -36,6 +99,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.matchPassword = async function(password) {
+    if (this.provider !== 'local') return false;
     return bcrypt.compare(password, this.password);
 };
 

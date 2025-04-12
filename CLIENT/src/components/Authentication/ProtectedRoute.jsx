@@ -1,16 +1,54 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/Authentication/UseAuth';
 import styles from './ProtectedRoute.module.scss';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, authType = 'login' }) => {
+  const [authState, setAuthState] = useState({
+    loading: true,
+    isAuthenticated: false,
+  });
 
-  if (loading) {
+  const location = useLocation();
+  const { loading: loadingFromHook } = useAuth();
+
+  useEffect(() => {
+    // Função para verificar autenticação via API
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('http://localhost:8443/auth/verify', {
+          credentials: 'include', // Isso envia os cookies
+        });
+
+        if (response.ok) {
+          setAuthState({
+            loading: false,
+            isAuthenticated: true,
+          });
+        } else {
+          setAuthState({
+            loading: false,
+            isAuthenticated: false,
+          });
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setAuthState({
+          loading: false,
+          isAuthenticated: false,
+        });
+      }
+    };
+
+    checkAuth();
+  }, [location.pathname]);
+
+  const isLoading = authState.loading || loadingFromHook;
+
+  if (isLoading) {
+    console.log('[ProtectedRoute] Exibindo tela de carregamento');
     return (
       <div className={styles.protectedRouteBody}>
-        {' '}
-        {/* Aplicando a classe específica */}
         <div className={styles.loadingMessage}>
           Carregando
           <div className={styles.loadingDots}>
@@ -49,11 +87,18 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? (
-    children
-  ) : (
-    <Navigate to="/authentication/login" replace />
-  );
+  if (authType === 'register') {
+    if (authState.isAuthenticated) {
+      return children;
+    }
+    return <Navigate to="/authentication/registrar" replace />;
+  }
+
+  if (!authState.isAuthenticated) {
+    return <Navigate to="/authentication/login" replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

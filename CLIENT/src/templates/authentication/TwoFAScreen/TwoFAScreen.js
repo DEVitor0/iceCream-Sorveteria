@@ -4,7 +4,7 @@ import SoftBox from '../../../components/Dashboard/SoftBox';
 import SoftTypography from '../../../components/Dashboard/SoftTypography';
 import SoftInput from '../../../components/Dashboard/SoftInput';
 import SoftButton from '../../../components/Dashboard/SoftButton';
-import ErrorPopup from '../../../examples/ErrorPopup/index';
+import ErrorPopup from '../../../examples/Cards/ErrorPopup/index';
 import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 
 function TwoFAScreen() {

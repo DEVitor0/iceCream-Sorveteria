@@ -1,52 +1,45 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// prop-types is a library for typechecking of props
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 // @mui material components
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 
 // Soft UI Dashboard React components
-import SoftBox from "components/SoftBox";
-import SoftTypography from "components/SoftTypography";
+import SoftBox from '../../../../components/Dashboard/SoftBox';
+import SoftTypography from '../../../../components/Dashboard/SoftTypography';
 
 // Soft UI Dashboard React examples
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
-import PageLayout from "examples/LayoutContainers/PageLayout";
-
-// Soft UI Dashboard React page layout routes
-import pageRoutes from "page.routes";
+import DefaultNavbar from '../../../../examples/Navbars/DefaultNavbar';
+import PageLayout from '../../../../examples/LayoutContainers/PageLayout';
 
 // Images
-import pattern from "assets/images/shapes/pattern-lines.svg";
+import pattern from 'assets/images/shapes/pattern-lines.svg';
 
-function IllustrationLayout({ color, header, title, description, illustration, children }) {
+function IllustrationLayout({
+  color,
+  header,
+  title,
+  description,
+  illustration,
+  children,
+}) {
   return (
     <PageLayout background="white">
       <DefaultNavbar
-        routes={pageRoutes}
+        routes="teste"
         action={{
-          type: "external",
-          route: "https://creative-tim.com/product/soft-ui-dashboard-pro-react",
-          label: "buy now",
+          type: 'external',
+          route: 'https://creative-tim.com/product/soft-ui-dashboard-pro-react',
+          label: 'buy now',
         }}
       />
       <Grid container>
-        <Grid item xs={11} sm={8} md={6} lg={4} xl={3} sx={{ mx: "auto" }}>
-          <SoftBox display="flex" flexDirection="column" justifyContent="center" height="100vh">
+        <Grid item xs={11} sm={8} md={6} lg={4} xl={3} sx={{ mx: 'auto' }}>
+          <SoftBox
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            height="100vh"
+          >
             <SoftBox pt={3} px={3}>
               {!header ? (
                 <>
@@ -55,7 +48,11 @@ function IllustrationLayout({ color, header, title, description, illustration, c
                       {title}
                     </SoftTypography>
                   </SoftBox>
-                  <SoftTypography variant="body2" fontWeight="regular" color="text">
+                  <SoftTypography
+                    variant="body2"
+                    fontWeight="regular"
+                    color="text"
+                  >
                     {description}
                   </SoftTypography>
                 </>
@@ -68,7 +65,7 @@ function IllustrationLayout({ color, header, title, description, illustration, c
         </Grid>
         <Grid item xs={12} lg={6}>
           <SoftBox
-            display={{ xs: "none", lg: "flex" }}
+            display={{ xs: 'none', lg: 'flex' }}
             flexDirection="column"
             justifyContent="center"
             alignItems="center"
@@ -81,7 +78,7 @@ function IllustrationLayout({ color, header, title, description, illustration, c
             variant="gradient"
             m={2}
             px={13}
-            sx={{ overflow: "hidden" }}
+            sx={{ overflow: 'hidden' }}
           >
             <SoftBox
               component="img"
@@ -125,16 +122,24 @@ function IllustrationLayout({ color, header, title, description, illustration, c
 
 // Setting default values for the props of IllustrationLayout
 IllustrationLayout.defaultProps = {
-  color: "info",
-  header: "",
-  title: "",
-  description: "",
+  color: 'info',
+  header: '',
+  title: '',
+  description: '',
   illustration: {},
 };
 
 // Typechecking props for the IllustrationLayout
 IllustrationLayout.propTypes = {
-  color: PropTypes.oneOf(["primary", "secondary", "info", "success", "warning", "error", "dark"]),
+  color: PropTypes.oneOf([
+    'primary',
+    'secondary',
+    'info',
+    'success',
+    'warning',
+    'error',
+    'dark',
+  ]),
   header: PropTypes.node,
   title: PropTypes.string,
   description: PropTypes.string,

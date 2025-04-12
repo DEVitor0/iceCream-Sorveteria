@@ -7,13 +7,19 @@ import theme from './media/theme/index';
 import './styles/scss/global-style.scss';
 
 import { Home } from './templates/Home';
+import Carrinho from './templates/Cart';
+
+import SignIn from './templates/authentication/sign-in/index';
+import SignUp from './templates/authentication/sign-up/index';
+import RegisterDatas from './templates/authentication/registerData/index';
+
 import Dashboard from './templates/dashboard/index';
 import RegisterProducts from './templates/dashboard/pages/Products/Register/index';
 import EditProduct from './templates/dashboard/pages/Products/Edit/EditProduct';
-import SignIn from './templates/authentication/sign-in/index';
 import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 
 import IconProvider from './contexts/IconsContext/IconProvider/index';
+import ImageProvider from './contexts/ImagesContext/ImageProvider/index';
 import { SoftUIControllerProvider } from './contexts/Reducer/index';
 import ProtectedRoute from './components/Authentication/ProtectedRoute';
 import { ApiProvider } from './contexts/RequestCSRFToken/ApiContextCSRFToken';
@@ -30,6 +36,36 @@ root.render(
               <ApiProvider>
                 <Home />
               </ApiProvider>
+            }
+          />
+          <Route
+            path="/carrinho"
+            element={
+              <ApiProvider>
+                <Carrinho />
+              </ApiProvider>
+            }
+          />
+          <Route
+            path="/authentication/registrar"
+            element={
+              <SoftUIControllerProvider>
+                <ImageProvider>
+                  <SignUp />
+                </ImageProvider>
+              </SoftUIControllerProvider>
+            }
+          />
+          <Route
+            path="/authentication/registrar/dados"
+            element={
+              <ProtectedRoute authType="register">
+                <SoftUIControllerProvider>
+                  <ImageProvider>
+                    <RegisterDatas />
+                  </ImageProvider>
+                </SoftUIControllerProvider>
+              </ProtectedRoute>
             }
           />
           <Route
@@ -51,7 +87,7 @@ root.render(
           <Route
             path="/Dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute authType="login">
                 <SoftUIControllerProvider>
                   <Dashboard />
                 </SoftUIControllerProvider>
