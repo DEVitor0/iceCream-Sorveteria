@@ -4,7 +4,9 @@ const Product = require('../model/productModel');
 
 router.get('/products', async (req, res) => {
   try {
-    const products = await Product.find({});
+    const ids = req.query.ids ? req.query.ids.split(',') : null;
+    const query = ids ? { _id: { $in: ids } } : {};
+    const products = await Product.find(query);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar produtos', error });

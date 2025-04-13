@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
 import { Button, Box, Typography } from '@mui/material';
 
-const AddMoreProducts = () => {
-  const [count, setCount] = useState(0);
-
+const AddMoreProducts = ({ quantity, setQuantity }) => {
   const handleIncrement = () => {
-    setCount(count + 1);
+    setQuantity((prev) => prev + 1);
   };
 
   const handleDecrement = () => {
-    if (count > 0) setCount(count - 1);
+    if (quantity > 0) {
+      setQuantity((prev) => prev - 1);
+    }
   };
 
   return (
@@ -54,7 +53,7 @@ const AddMoreProducts = () => {
           textAlign: 'center',
         }}
       >
-        {count}
+        {quantity}
       </Typography>
 
       <Button

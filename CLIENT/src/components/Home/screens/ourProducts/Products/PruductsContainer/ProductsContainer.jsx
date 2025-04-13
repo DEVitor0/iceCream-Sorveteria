@@ -127,6 +127,7 @@ const ProductsContainer = ({ selectedTag }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -291,8 +292,12 @@ const ProductsContainer = ({ selectedTag }) => {
             </PriceSession>
 
             <ActionsContainer className="ProductsContainer__Actions">
-              <AddMoreProducts productId={product._id} />
-              <ShoppingCartButton productId={product._id} />
+              <AddMoreProducts quantity={quantity} setQuantity={setQuantity} />
+              <ShoppingCartButton
+                productId={product._id}
+                quantity={quantity}
+                setQuantity={setQuantity}
+              />
             </ActionsContainer>
           </ProductsContainerWrapper>
         ))}

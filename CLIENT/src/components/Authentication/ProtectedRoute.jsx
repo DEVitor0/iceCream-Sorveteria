@@ -6,42 +6,50 @@ import styles from './ProtectedRoute.module.scss';
 const ProtectedRoute = ({ children, authType = 'login' }) => {
   const [authState, setAuthState] = useState({
     loading: true,
+    token: null,
     isAuthenticated: false,
   });
 
   const location = useLocation();
-  const { loading: loadingFromHook } = useAuth();
+  const { isAuthenticated: isAuthFromHook, loading: loadingFromHook } =
+    useAuth();
 
   useEffect(() => {
-    // Função para verificar autenticação via API
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('http://localhost:8443/auth/verify', {
-          credentials: 'include', // Isso envia os cookies
-        });
+    const getCookie = (name) => {
+      if (typeof document === 'undefined') return null;
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    };
 
-        if (response.ok) {
-          setAuthState({
-            loading: false,
-            isAuthenticated: true,
-          });
-        } else {
-          setAuthState({
-            loading: false,
-            isAuthenticated: false,
-          });
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
+    const checkAuth = () => {
+      const token = getCookie('jwt');
+      console.log('Token encontrado:', token);
+
+      if (token) {
         setAuthState({
           loading: false,
-          isAuthenticated: false,
+          token,
+          isAuthenticated: true,
         });
+        return;
       }
+
+      setTimeout(() => {
+        const finalToken = getCookie('jwt');
+        console.log('Token após delay:', finalToken);
+
+        setAuthState({
+          loading: false,
+          token: finalToken,
+          isAuthenticated: !!finalToken || isAuthFromHook,
+        });
+      }, 50);
     };
 
     checkAuth();
-  }, [location.pathname]);
+  }, [location.pathname, isAuthFromHook]);
 
   const isLoading = authState.loading || loadingFromHook;
 
@@ -88,16 +96,31 @@ const ProtectedRoute = ({ children, authType = 'login' }) => {
   }
 
   if (authType === 'register') {
-    if (authState.isAuthenticated) {
+    console.log(`[ProtectedRoute][Registro] Estado:`, authState);
+
+    if (authState.token) {
+      console.log('[ProtectedRoute][Registro] Acesso permitido via cookie');
       return children;
     }
+
+    console.log('[ProtectedRoute][Registro] Redirecionando para registro');
     return <Navigate to="/authentication/registrar" replace />;
   }
 
   if (!authState.isAuthenticated) {
+    console.log('[ProtectedRoute] Redirecionando para login');
     return <Navigate to="/authentication/login" replace />;
   }
 
+  if (
+    authState.isAuthenticated &&
+    location.pathname === '/authentication/login'
+  ) {
+    console.log('[ProtectedRoute] Redirecionando para Dashboard');
+    return <Navigate to="/Dashboard" replace />;
+  }
+
+  console.log('[ProtectedRoute] Acesso permitido');
   return children;
 };
 
