@@ -10,18 +10,51 @@ Um projeto de loja online e sistema de gestão em andamento para a **IceCream So
 
 ## 🛠️ Tecnologias Usadas
 
-- **Frontend:** React, SCSS
-- **Backend:** Express, MongoDB, Mongoose
-- **Testes:** Jest, React Testing Library
-- **Segurança:** JWT, Helmet, Bcrypt
+### **Frontend**
+- **React** - Biblioteca JavaScript para construir interfaces de usuário.
+- **Material UI** - Componentes prontos para uma interface de usuário moderna e responsiva.
+- **Axios** - Biblioteca para fazer requisições HTTP.
+- **React Router DOM** - Gerenciamento de rotas no lado do cliente.
+- **Chart.js** - Biblioteca para criar gráficos interativos.
+- **Styled Components** - Para criar componentes de estilo de forma dinâmica.
+- **React Testing Library** - Biblioteca de testes para React.
+
+### **Backend**
+- **Express** - Framework web para Node.js para construir APIs.
+- **MongoDB** - Banco de dados NoSQL para armazenamento de dados.
+- **Mongoose** - ODM para MongoDB.
+- **JWT** - Autenticação baseada em token JSON Web Token.
+- **Bcrypt** - Criptografia de senhas.
+- **Helmet** - Middleware para ajudar a proteger o aplicativo definindo cabeçalhos HTTP.
+- **CORS** - Permite requisições de diferentes origens.
+- **cookie-parser** - Middleware para parsing de cookies.
+- **csurf** - Middleware para proteção contra CSRF (Cross-Site Request Forgery).
+- **express-rate-limit** - Limitação de taxa para prevenir abusos.
+- **dotenv** - Carrega variáveis de ambiente a partir de um arquivo `.env`.
+- **nodemailer** - Envio de e-mails no backend.
+
+### **Ferramentas de Desenvolvimento**
+- **Nodemon** - Ferramenta para reiniciar automaticamente o servidor durante o desenvolvimento.
+- **Husky** - Ganchos Git para automação de tarefas.
+- **ESLint** - Ferramenta para análise estática de código.
+- **Prettier** - Formatador de código.
+- **Concurrently** - Executa múltiplos comandos npm simultaneamente.
+- **Jest** - Framework de testes JavaScript.
+- **Babel** - Transpila código JavaScript moderno para versões mais antigas de navegadores.
 
 ---
 
-## 📸 Imagens
+## 🔒 Segurança
 
-![Imagem 1](./CLIENT/src/media/images/readme/Screenshot%20from%202025-02-04%2006-04-15.png)
-![Imagem 2](./CLIENT/src/media/images/readme/Screenshot%20from%202025-02-04%2006-09-10.png)
-![Imagem 3](./CLIENT/src/media/images/readme/Screenshot%20from%202025-02-04%2006-16-40.png)
+A aplicação utiliza as seguintes tecnologias para garantir a segurança:
 
+- **Autenticação JWT** para garantir a integridade e autenticidade do usuário.
+- **Helmet** para definir cabeçalhos HTTP seguros.
+- **Bcrypt** para criptografar as senhas dos usuários.
+- **CSRF Protection** com `csurf` para proteger contra ataques Cross-Site Request Forgery.
 
-### 🚀 Desenvolvido por [Seu Nome ou Nome da Equipe]
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença ISC - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
