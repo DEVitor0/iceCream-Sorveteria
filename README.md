@@ -52,6 +52,9 @@ A aplicação utiliza as seguintes tecnologias para garantir a segurança:
 - **Helmet** para definir cabeçalhos HTTP seguros.
 - **Bcrypt** para criptografar as senhas dos usuários.
 - **CSRF Protection** com `csurf` para proteger contra ataques Cross-Site Request Forgery.
+- **Dompurify** para proteger contra injeção de conteúdo malicioso no HTML.
+- **express-rate-limit** - Limitação de taxa para prevenir abusos.
+- **Joi** - Validação de dados para segurança e integridade das informações.
 
 ---
 
