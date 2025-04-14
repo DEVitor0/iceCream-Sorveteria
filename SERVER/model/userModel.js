@@ -43,13 +43,6 @@ const addressSchema = new mongoose.Schema({
 }, { _id: false });
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        unique: true,
-        trim: true,
-        minlength: [5, 'O nome de usuário deve ter pelo menos 3 caracteres.'],
-        maxlength: [35, 'O nome de usuário pode ter no máximo 30 caracteres.']
-    },
     password: {
         type: String,
         select: false,
@@ -66,9 +59,11 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        required: true,
         unique: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Por favor, insira um email válido']
     },
     photo: {
         type: String

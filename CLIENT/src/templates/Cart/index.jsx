@@ -16,6 +16,7 @@ import {
   styled,
   stepConnectorClasses,
   StepConnector,
+  CircularProgress,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -32,6 +33,7 @@ import {
 import { mdiIcePop } from '@mdi/js';
 import Icon from '@mdi/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AuthPopup from 'examples/Cards/AuthPopup/AuthPopup';
 import { useNavigate } from 'react-router-dom';
 
 // Conector personalizado para o stepper
@@ -92,6 +94,11 @@ const Cart = () => {
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+  const [authPopup, setAuthPopup] = useState({
+    open: false,
+    message: '',
+  });
   const navigate = useNavigate();
 
   // Etapas na ordem correta: Carrinho → Pagamento → Confirmação
@@ -168,6 +175,33 @@ const Cart = () => {
     );
     setCartItems(updatedItems);
     localStorage.setItem('cart', JSON.stringify(updatedItems));
+  };
+
+  const handleCheckout = async () => {
+    setIsCheckingAuth(true);
+
+    try {
+      const response = await fetch('/auth/verify-auth', {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        navigate('/pagamento');
+      } else {
+        setAuthPopup({
+          open: true,
+          message: 'Você precisa estar logado para finalizar a compra',
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao verificar autenticação:', error);
+      setAuthPopup({
+        open: true,
+        message: 'Erro ao verificar autenticação. Tente novamente.',
+      });
+    } finally {
+      setIsCheckingAuth(false);
+    }
   };
 
   // Update item quantity
@@ -353,6 +387,8 @@ const Cart = () => {
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 6px 16px rgba(82, 71, 140, 0.3)',
+                    backgroundColor: '#6356ad',
+                    color: '#fff',
                   },
                   transition: 'all 0.3s ease',
                 }}
@@ -876,8 +912,9 @@ const Cart = () => {
                 {/* Botão */}
                 <PrimaryButton
                   fullWidth
-                  onClick={() => navigate('/checkout')}
-                  endIcon={<ArrowForwardIcon />}
+                  onClick={handleCheckout}
+                  disabled={isCheckingAuth}
+                  endIcon={isCheckingAuth ? null : <ArrowForwardIcon />}
                   sx={{
                     py: 1.5,
                     fontSize: '1rem',
@@ -889,9 +926,26 @@ const Cart = () => {
                     },
                   }}
                 >
-                  Finalizar Compra
+                  {isCheckingAuth ? (
+                    <>
+                      <CircularProgress
+                        size={20}
+                        color="inherit"
+                        sx={{ mr: 1 }}
+                      />
+                      Verificando...
+                    </>
+                  ) : (
+                    'Finalizar Compra'
+                  )}
                 </PrimaryButton>
               </Paper>
+              <AuthPopup
+                open={authPopup.open}
+                message={authPopup.message}
+                onClose={() => setAuthPopup({ ...authPopup, open: false })}
+                onConfirm={() => navigate('/authentication/login')}
+              />
             </motion.div>
           </Grid>
         </Grid>

@@ -5,7 +5,12 @@ import SuccessPopup from '../../../../../../examples/Cards/SuccessPopup/SuccessP
 import ErrorPopup from '../../../../../../examples/Cards/ErrorPopup/index';
 import ReactDOM from 'react-dom';
 
-const ShoppingCartButton = ({ productId, quantity = 0 }) => {
+const ShoppingCartButton = ({
+  productId,
+  quantity,
+  currentQuantity,
+  onAddToCart,
+}) => {
   const [notification, setNotification] = useState(null);
 
   const showNotification = (type, message) => {
@@ -33,24 +38,25 @@ const ShoppingCartButton = ({ productId, quantity = 0 }) => {
 
   const addToCart = () => {
     try {
+      const quantity =
+        typeof currentQuantity === 'number' ? currentQuantity : 0;
+
       if (quantity <= 0) {
         showNotification('error', 'Selecione um ou mais itens');
         return;
       }
 
       const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-      const existingProductIndex = currentCart.findIndex(
+      const existingIndex = currentCart.findIndex(
         (item) => item.productId === productId,
       );
 
-      if (existingProductIndex >= 0) {
-        // Se o produto já existe, soma a nova quantidade
-        currentCart[existingProductIndex].quantity += quantity;
+      if (existingIndex >= 0) {
+        currentCart[existingIndex].quantity += quantity;
       } else {
-        // Se não existe, adiciona novo item
         currentCart.push({
           productId,
-          quantity: quantity,
+          quantity,
           addedAt: new Date().toISOString(),
         });
       }
@@ -62,6 +68,10 @@ const ShoppingCartButton = ({ productId, quantity = 0 }) => {
           quantity > 1 ? 's' : ''
         } ao carrinho!`,
       );
+
+      if (onAddToCart) {
+        onAddToCart();
+      }
     } catch (error) {
       console.error('Erro ao adicionar ao carrinho:', error);
       showNotification('error', 'Erro ao adicionar produto ao carrinho');

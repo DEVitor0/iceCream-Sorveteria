@@ -127,7 +127,9 @@ const ProductsContainer = ({ selectedTag }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [quantity, setQuantity] = useState(1);
+  const [quantities, setQuantities] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -166,6 +168,23 @@ const ProductsContainer = ({ selectedTag }) => {
       controller.abort();
     };
   }, [selectedTag]);
+
+  const updateQuantity = (productId, newValue) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]:
+        typeof newValue === 'function'
+          ? newValue(prev[productId] || 0)
+          : newValue,
+    }));
+  };
+
+  const handleAddToCart = (productId) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: 0,
+    }));
+  };
 
   if (loading) {
     return (
@@ -292,11 +311,14 @@ const ProductsContainer = ({ selectedTag }) => {
             </PriceSession>
 
             <ActionsContainer className="ProductsContainer__Actions">
-              <AddMoreProducts quantity={quantity} setQuantity={setQuantity} />
+              <AddMoreProducts
+                quantity={quantities[product._id] || 0}
+                setQuantity={(newQty) => updateQuantity(product._id, newQty)}
+              />
               <ShoppingCartButton
                 productId={product._id}
-                quantity={quantity}
-                setQuantity={setQuantity}
+                currentQuantity={quantities[product._id] || 0}
+                onAddToCart={() => handleAddToCart(product._id)}
               />
             </ActionsContainer>
           </ProductsContainerWrapper>

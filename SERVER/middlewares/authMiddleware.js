@@ -1,29 +1,23 @@
 const { verifyToken } = require('../utils/auth');
 
 const authenticateJWT = (req, res, next) => {
-  // Verifica tanto o cookie quanto o header
   const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    console.log('[AUTH] Nenhum token encontrado');
     return res.status(401).json({
       error: 'Acesso não autorizado',
-      message: 'Token de autenticação não fornecido'
+      message: 'Token não fornecido'
     });
   }
 
   try {
     const decoded = verifyToken(token);
-
     req.user = {
-      _id: decoded.id,
       id: decoded.id,
       role: decoded.role
     };
-
     next();
   } catch (error) {
-    console.error('[AUTH] Erro na verificação:', error.message);
     res.clearCookie('jwt');
     return res.status(401).json({
       error: 'Autenticação falhou',

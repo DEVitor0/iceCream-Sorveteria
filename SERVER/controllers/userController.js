@@ -2,16 +2,16 @@ const User = require('../model/userModel');
 
 const validateUserCredentials = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!username || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Forneça usuário e senha'
+        message: 'Forneça email e senha'
       });
     }
 
-    const user = await User.findOne({ username }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
       return res.status(404).json({

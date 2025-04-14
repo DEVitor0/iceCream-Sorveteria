@@ -2,13 +2,17 @@ import { Button, Box, Typography } from '@mui/material';
 
 const AddMoreProducts = ({ quantity, setQuantity }) => {
   const handleIncrement = () => {
-    setQuantity((prev) => prev + 1);
+    setQuantity((prev) => {
+      const current = typeof prev === 'number' ? prev : quantity;
+      return current + 1;
+    });
   };
 
   const handleDecrement = () => {
-    if (quantity > 0) {
-      setQuantity((prev) => prev - 1);
-    }
+    setQuantity((prev) => {
+      const current = typeof prev === 'number' ? prev : quantity;
+      return Math.max(0, current - 1);
+    });
   };
 
   return (
@@ -29,7 +33,7 @@ const AddMoreProducts = ({ quantity, setQuantity }) => {
         onClick={handleDecrement}
         sx={{
           minWidth: '35px',
-          color: '#fff',
+          color: '#fff !important',
           fontSize: '20px',
           height: '100%',
           borderRight: '2px solid white',
@@ -61,7 +65,7 @@ const AddMoreProducts = ({ quantity, setQuantity }) => {
         onClick={handleIncrement}
         sx={{
           minWidth: '35px',
-          color: '#fff',
+          color: '#fff !important',
           fontSize: '20px',
           height: '100%',
           borderLeft: '2px solid white',

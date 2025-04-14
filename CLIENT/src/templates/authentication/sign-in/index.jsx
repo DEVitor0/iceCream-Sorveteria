@@ -11,6 +11,7 @@ import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
 import ErrorPopup from '../../../examples/Cards/ErrorPopup/index';
 import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
 import useRedirectIfAuthenticated from '../../../hooks/Authentication/useRedirectIfAuthenticated';
+import { CircularProgress } from '@mui/material';
 
 const validateFields = (
   email,
@@ -67,6 +68,7 @@ function SignIn() {
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useRedirectIfAuthenticated();
@@ -95,6 +97,10 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     setError('');
 
     if (
@@ -105,8 +111,10 @@ function SignIn() {
         setEmailError,
         setPasswordError,
       )
-    )
+    ) {
+      setIsSubmitting(false);
       return;
+    }
 
     try {
       const response = await fetch('http://localhost:8443/login', {
@@ -130,6 +138,8 @@ function SignIn() {
       }
     } catch (error) {
       setError('Erro na conexão com o servidor. Tente novamente mais tarde.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -180,8 +190,18 @@ function SignIn() {
           </SoftTypography>
         </SoftBox>
         <SoftBox mt={4} mb={1}>
-          <SoftButton variant="gradient" color="info" fullWidth type="submit">
-            Sign in
+          <SoftButton
+            variant="gradient"
+            color="info"
+            fullWidth
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Entrar'
+            )}
           </SoftButton>
         </SoftBox>
         <SoftBox mt={3} textAlign="center">

@@ -3,16 +3,16 @@ const User = require('../model/userModel');
 
 const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!username || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Forneça usuário e senha'
+        message: 'Forneça email e senha'
       });
     }
 
-    const user = await User.findOne({ username }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({
@@ -36,7 +36,7 @@ const login = async (req, res) => {
         success: true,
         user: {
           id: user._id,
-          username: user.username,
+          email: user.email,
           role: user.role
         }
       });
@@ -52,18 +52,25 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ username });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Forneça email e senha'
+      });
+    }
+
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: 'Usuário já está em uso'
+        message: 'Este email já está cadastrado'
       });
     }
 
     const newUser = await User.create({
-      username,
+      email,
       password
     });
 
@@ -71,7 +78,7 @@ const register = async (req, res) => {
       success: true,
       user: {
         id: newUser._id,
-        username: newUser.username,
+        email: newUser.email,
         role: newUser.role
       }
     });
