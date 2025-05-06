@@ -527,7 +527,7 @@ const Cart = () => {
 
         <Grid container spacing={4}>
           {/* Product list */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <AnimatePresence>
               {cartItems.map((item) => {
                 const product = products.find((p) => p._id === item.productId);
@@ -554,7 +554,7 @@ const Cart = () => {
                     <ProductCard sx={{ mb: 3 }}>
                       <CardContent>
                         <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={4} sm={3} md={2}>
+                          <Grid size={{ xs: 4, sm: 3, md: 2 }}>
                             <Avatar
                               src={product.imageUrl}
                               alt={product.name}
@@ -569,7 +569,7 @@ const Cart = () => {
                               <Icon path={mdiIcePop} size={2} color="#a8acaf" />
                             </Avatar>
                           </Grid>
-                          <Grid item xs={8} sm={9} md={10}>
+                          <Grid size={{ xs: 8, sm: 9, md: 10 }}>
                             <Box display="flex" justifyContent="space-between">
                               <Box>
                                 <Typography
@@ -665,7 +665,7 @@ const Cart = () => {
           </Grid>
 
           {/* Order summary */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

@@ -113,3 +113,44 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: 'Erro ao excluir o produto.', error });
   }
 };
+
+exports.getAllProductsForCoupons = async (req, res) => {
+  try {
+    const products = await Product.find({}, 'id name');
+    res.status(200).json(products.map(p => ({
+      id: p._id,
+      name: p.name
+    })));
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar produtos', error });
+  }
+};
+
+exports.getUniqueCategoriesFromTags = async (req, res) => {
+  try {
+    // Agregação para obter tags únicas
+    const uniqueTags = await Product.aggregate([
+      { $match: { tag: { $exists: true, $ne: "" } } }, // Filtra produtos com tag
+      { $group: { _id: "$tag" } }, // Agrupa por tag
+      { $project: {
+          name: "$_id", // Renomeia _id para name
+          _id: 0
+        }
+      },
+      { $sort: { name: 1 } } // Ordena alfabeticamente
+    ]);
+
+    // Transforma no formato esperado pelo frontend (com id e name)
+    const categories = uniqueTags.map((tag, index) => ({
+      id: index + 1, // ID temporário (ou pode usar um hash da string)
+      name: tag.name
+    }));
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Erro ao buscar categorias a partir das tags',
+      error: error.message
+    });
+  }
+};

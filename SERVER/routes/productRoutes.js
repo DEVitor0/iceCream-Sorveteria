@@ -6,6 +6,7 @@ const authenticateJWT = require('../middlewares/authMiddleware');
 const upload = require('../configs/multerConfig');
 const csrfProtection = require('../configs/csrfProtectionConfigs');
 
+// Rotas protegidas por autenticação
 router.get(
   '/editar-produtos',
   csrfProtection,
@@ -38,12 +39,19 @@ router.put(
   productController.updateProduct
 );
 
-// Nova rota para exclusão de produtos
 router.delete(
   '/editar-produtos/:id',
   csrfProtection,
   authenticateJWT,
   productController.deleteProduct
 );
+
+// Rotas para o frontend (sem autenticação para simplificar)
+router.get('/products-for-coupons', productController.getAllProductsForCoupons);
+router.get('/unique-categories-from-tags', productController.getUniqueCategoriesFromTags);
+
+// Adicione estas novas rotas para compatibilidade
+router.get('/products', productController.getAllProductsForCoupons);
+router.get('/categories', productController.getUniqueCategoriesFromTags);
 
 module.exports = router;
