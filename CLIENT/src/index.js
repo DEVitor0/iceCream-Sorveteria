@@ -9,7 +9,7 @@ import './styles/scss/global-style.scss';
 
 // Components
 import { Home } from './templates/Home';
-import Carrinho from './templates/Cart';
+import Carrinho from './templates/Cart/cart';
 import SignIn from './templates/authentication/sign-in/index';
 import SignUp from './templates/authentication/sign-up/index';
 import RegisterDatas from './templates/authentication/registerData/index';

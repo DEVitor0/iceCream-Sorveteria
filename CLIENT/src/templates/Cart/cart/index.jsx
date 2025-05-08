@@ -181,24 +181,95 @@ const Cart = () => {
     setIsCheckingAuth(true);
 
     try {
-      const response = await fetch('/auth/verify-auth', {
+      // 1. Verificar autenticação
+      const authResponse = await fetch('/auth/verify', {
         credentials: 'include',
       });
 
-      if (response.ok) {
-        navigate('/pagamento');
-      } else {
+      if (!authResponse.ok) {
         setAuthPopup({
           open: true,
           message: 'Você precisa estar logado para finalizar a compra',
         });
+        return;
       }
-    } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
-      setAuthPopup({
-        open: true,
-        message: 'Erro ao verificar autenticação. Tente novamente.',
+
+      // 2. Preparar dados para verificação
+      const checkoutItems = cartItems.map((item) => {
+        const product = products.find((p) => p._id === item.productId);
+        return {
+          productId: item.productId,
+          price: product.price,
+          quantity: item.quantity,
+        };
       });
+
+      // 3. Verificar estoque e preços
+      const verifyResponse = await fetch('/Dashboard/verify-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')
+            .content,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ items: checkoutItems }),
+      });
+
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyResponse.ok) {
+        if (verifyResponse.status === 409) {
+          // Mostrar erros específicos ao usuário
+          let errorMessage = 'Problemas encontrados:\n';
+
+          if (verifyData.outOfStock?.length > 0) {
+            errorMessage += '\n- Estoque insuficiente para:\n';
+            verifyData.outOfStock.forEach((item) => {
+              errorMessage += `  ${item.name} (Disponível: ${item.available}, Solicitado: ${item.requested})\n`;
+            });
+          }
+
+          if (verifyData.priceChanged?.length > 0) {
+            errorMessage += '\n- Preços alterados para:\n';
+            verifyData.priceChanged.forEach((item) => {
+              errorMessage += `  ${item.name} (De: R$${item.oldPrice.toFixed(
+                2,
+              )}, Para: R$${item.newPrice.toFixed(2)})\n`;
+            });
+          }
+
+          errorMessage += `\nTotal atualizado: R$${verifyData.total.toFixed(
+            2,
+          )}`;
+
+          alert(errorMessage);
+
+          // Atualizar o carrinho com os novos preços se necessário
+          if (verifyData.priceChanged?.length > 0) {
+            const updatedCartItems = cartItems.map((item) => {
+              const changedItem = verifyData.priceChanged.find(
+                (pc) => pc.productId === item.productId,
+              );
+              if (changedItem) {
+                return { ...item, price: changedItem.newPrice };
+              }
+              return item;
+            });
+            setCartItems(updatedCartItems);
+            localStorage.setItem('cart', JSON.stringify(updatedCartItems));
+          }
+        } else {
+          alert(`Erro na verificação: ${verifyData.message}`);
+        }
+        return;
+      }
+
+      // 4. Se tudo estiver OK, prosseguir para o pagamento
+      navigate('/pagamento');
+    } catch (error) {
+      console.error('Erro no checkout:', error);
+      alert('Erro ao processar checkout. Tente novamente.');
     } finally {
       setIsCheckingAuth(false);
     }

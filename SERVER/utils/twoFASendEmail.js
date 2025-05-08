@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 function sendTwoFACodeEmail(email, codigoVerificacao) {
     return new Promise((resolve, reject) => {
-        const emailTemplatePath = path.join(__dirname, '../view/email.html');
+        const emailTemplatePath = path.join(__dirname, '../mail/email.html');
 
         fs.readFile(emailTemplatePath, 'utf8', (err, data) => {
             if (err) {
