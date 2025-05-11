@@ -37,12 +37,13 @@ export const fetchCategories = async () => {
   }
 };
 
-export const createCoupon = async (couponData) => {
-  try {
-    const response = await api.post('/Dashboard/Vendas/Cupom', couponData);
-    return response.data.data;
-  } catch (error) {
-    console.error('Error creating coupon:', error);
-    throw error;
-  }
+export const createCoupon = async (couponData, csrfToken) => {
+  const response = await axios.post('/coupons', couponData, {
+    withCredentials: true,
+    headers: {
+      'X-CSRF-Token': csrfToken,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
 };

@@ -7,7 +7,8 @@ const corsOptions = {
     'Authorization',
     'X-CSRF-Token',
     'CSRF-Token',
-    'X-Requested-With'
+    'X-Requested-With',
+    'Accept'
   ],
   optionsSuccessStatus: 200,
   exposedHeaders: ['CSRF-Token', 'set-cookie'],

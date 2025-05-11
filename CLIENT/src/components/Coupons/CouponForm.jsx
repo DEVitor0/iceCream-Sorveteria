@@ -42,6 +42,8 @@ import {
   Person,
   CheckCircle,
   Cancel,
+  AttachMoney,
+  Percent,
 } from '@mui/icons-material';
 import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
@@ -184,6 +186,24 @@ const CouponCreator = ({
   const [activeStep, setActiveStep] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
   const [previewData, setPreviewData] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const getCSRFToken = () => {
+    // Tenta pegar do cookie (padrão csurf)
+    const csrfCookie = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('_csrf='))
+      ?.split('=')[1];
+
+    // Se não encontrar, tenta pegar do header XSRF-TOKEN (padrão axios)
+    return (
+      csrfCookie ||
+      document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1]
+    );
+  };
 
   // Estados únicos para os dados
   const [fetchedProducts, setFetchedProducts] = useState([]);
@@ -197,6 +217,27 @@ const CouponCreator = ({
     categories: null,
   });
 
+  useEffect(() => {
+    // Configura proteção CSRF quando o componente monta
+    const setupCSRFProtection = async () => {
+      try {
+        if (!getCSRFToken()) {
+          await axios.get('/csrf-token', {
+            withCredentials: true,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao obter CSRF token:', error);
+      }
+    };
+
+    setupCSRFProtection();
+  }, []);
+
   // Efeito único para buscar dados
   useEffect(() => {
     const fetchData = async () => {
@@ -207,7 +248,7 @@ const CouponCreator = ({
         if (products.length === 0) {
           requests.push(
             axios
-              .get('/products')
+              .get('/api/products/coupons')
               .then((response) => setFetchedProducts(response.data))
               .catch((err) => {
                 console.error('Erro ao buscar produtos:', err);
@@ -222,7 +263,7 @@ const CouponCreator = ({
         if (categories.length === 0) {
           requests.push(
             axios
-              .get('/categories')
+              .get('/api/categories/unique-tags')
               .then((response) => setFetchedCategories(response.data))
               .catch((err) => {
                 console.error('Erro ao buscar categorias:', err);
@@ -257,13 +298,14 @@ const CouponCreator = ({
     watch,
     setValue,
     formState: { errors, isValid, isSubmitting },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       code: '',
       discountType: 'percentage',
       discountValue: 10,
-      expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias no futuro
+      expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       maxUses: 100,
       userMaxUses: 1,
       applicableProducts: [],
@@ -283,13 +325,40 @@ const CouponCreator = ({
     { label: 'Informações Básicas', icon: <LocalOffer /> },
     { label: 'Configurações', icon: <Settings /> },
     { label: 'Revisão', icon: <Category /> },
-    { label: 'Finalização', icon: <Check /> },
+    { label: 'Sucesso', icon: <Check /> },
   ];
 
   const currentIcon = steps[activeStep].icon;
 
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await axios.get('/csrf-token', {
+        withCredentials: true,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data.csrfToken;
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+      return null;
+    }
+  };
+
+  const handleFinalSubmit = () => {
+    const formData = watch();
+    const payload = {
+      ...formData,
+      applicableProducts: formData.applicableProducts.filter(Boolean),
+      expirationDate: formData.expirationDate.toISOString(),
+    };
+    onSubmit(payload);
+  };
+
   const handleNext = () => {
-    if (activeStep === steps.length - 2) {
+    if (activeStep === steps.length - 3) {
+      // Agora prepara a revisão no step 2
       const formData = watch();
       setPreviewData({
         code: formData.code,
@@ -299,6 +368,7 @@ const CouponCreator = ({
         validUntil: formData.expirationDate.toLocaleDateString(),
         usesLeft: formData.maxUses,
         status: formData.isActive ? 'Ativo' : 'Inativo',
+        userMaxUses: formData.userMaxUses,
       });
     }
     setActiveStep((prev) => prev + 1);
@@ -1402,96 +1472,464 @@ const CouponCreator = ({
                 </Grid>
               )}
 
-              {/* Step 3: Application - Pode ser implementado conforme necessário */}
+              {/* Step 3: Review */}
+              {activeStep === 2 && (
+                <Grid item xs={12} sx={{ maxWidth: '90%', mx: 'auto', py: 3 }}>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <StyledCard
+                      sx={{
+                        p: 4,
+                        borderRadius: 3,
+                        boxShadow: '0 4px 24px rgba(140, 79, 237, 0.15)',
+                      }}
+                    >
+                      {/* Cabeçalho */}
+                      <Box
+                        sx={{
+                          mb: 4,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                        }}
+                      >
+                        <CheckCircle
+                          sx={{
+                            fontSize: 40,
+                            color: '#8C4FED',
+                          }}
+                        />
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: 700,
+                            color: '#8C4FED',
+                          }}
+                        >
+                          Resumo do Cupom
+                        </Typography>
+                      </Box>
 
-              {/* Step 4: Review */}
-              {activeStep === 3 && (
-                <Grid item size={{ xs: 12, md: 8 }} sx={{ mx: 'auto' }}>
-                  <StyledCard>
-                    <CardContent>
-                      <SectionHeader variant="h6">
-                        <Check color="primary" />
-                        Revisão do Cupom
-                      </SectionHeader>
-
-                      {previewData && (
-                        <Grid container spacing={3}>
-                          <Grid item size={{ xs: 12, md: 6 }}>
-                            <Paper sx={{ p: 3, borderRadius: 2 }}>
+                      {/* Primeira linha de blocos */}
+                      <Grid container spacing={3} sx={{ mb: 3 }}>
+                        {/* Bloco Código */}
+                        <Grid item xs={12} md={3}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <LocalOffer
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
                               <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
                               >
                                 Código
                               </Typography>
-                              <Typography variant="h5" sx={{ mb: 2 }}>
-                                {previewData.code}
-                              </Typography>
+                            </Box>
+                            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                              {previewData?.code}
+                            </Typography>
+                          </Paper>
+                        </Grid>
 
+                        {/* Bloco Desconto */}
+                        <Grid item xs={12} md={3}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <Percent
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
                               <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
                               >
                                 Desconto
                               </Typography>
-                              <Typography variant="h5" sx={{ mb: 2 }}>
-                                {previewData.discount}
-                              </Typography>
+                            </Box>
+                            <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                              {previewData?.discount}
+                            </Typography>
+                          </Paper>
+                        </Grid>
 
+                        {/* Bloco Validade */}
+                        <Grid item xs={12} md={3}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <CalendarToday
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
                               <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
-                              >
-                                Status
-                              </Typography>
-                              <Typography variant="h5">
-                                {previewData.status}
-                              </Typography>
-                            </Paper>
-                          </Grid>
-
-                          <Grid item size={{ xs: 12, md: 6 }}>
-                            <Paper sx={{ p: 3, borderRadius: 2 }}>
-                              <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
                               >
                                 Válido até
                               </Typography>
-                              <Typography variant="h5" sx={{ mb: 2 }}>
-                                {previewData.validUntil}
-                              </Typography>
+                            </Box>
+                            <Typography variant="h5">
+                              {previewData?.validUntil}
+                            </Typography>
+                          </Paper>
+                        </Grid>
 
+                        {/* Bloco Status */}
+                        <Grid item xs={12} md={3}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: `4px solid ${
+                                previewData?.status === 'Ativo'
+                                  ? '#4CAF50'
+                                  : '#F44336'
+                              }`,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                              backgroundColor:
+                                previewData?.status === 'Ativo'
+                                  ? 'rgba(76, 175, 80, 0.08)'
+                                  : 'rgba(244, 67, 54, 0.08)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              {previewData?.status === 'Ativo' ? (
+                                <CheckCircle
+                                  color="success"
+                                  sx={{ mr: 1.5, fontSize: 24 }}
+                                />
+                              ) : (
+                                <Cancel
+                                  color="error"
+                                  sx={{ mr: 1.5, fontSize: 24 }}
+                                />
+                              )}
                               <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
+                              >
+                                Status
+                              </Typography>
+                            </Box>
+                            <Typography
+                              variant="h5"
+                              sx={{
+                                fontWeight: 700,
+                                color:
+                                  previewData?.status === 'Ativo'
+                                    ? '#4CAF50'
+                                    : '#F44336',
+                              }}
+                            >
+                              {previewData?.status}
+                            </Typography>
+                          </Paper>
+                        </Grid>
+                      </Grid>
+
+                      {/* Segunda linha de blocos */}
+                      <Grid container spacing={3}>
+                        {/* Bloco Usos */}
+                        <Grid item xs={12} md={4}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <People
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
+                              <Typography
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
                               >
                                 Usos disponíveis
                               </Typography>
-                              <Typography variant="h5" sx={{ mb: 2 }}>
-                                {previewData.usesLeft}
-                              </Typography>
+                            </Box>
+                            <Typography variant="h5">
+                              {previewData?.usesLeft}
+                            </Typography>
+                          </Paper>
+                        </Grid>
 
+                        {/* Bloco Usos por cliente */}
+                        <Grid item xs={12} md={4}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <Person
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
                               <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
                               >
                                 Usos por cliente
                               </Typography>
-                              <Typography variant="h5">
-                                {watch('userMaxUses')}
-                              </Typography>
-                            </Paper>
-                          </Grid>
+                            </Box>
+                            <Typography variant="h5">
+                              {previewData?.userMaxUses}
+                            </Typography>
+                          </Paper>
                         </Grid>
+
+                        {/* Bloco Aplicação */}
+                        <Grid item xs={12} md={4}>
+                          <Paper
+                            sx={{
+                              p: 3,
+                              height: '100%',
+                              borderRadius: 3,
+                              borderLeft: '4px solid #8C4FED',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 2,
+                              }}
+                            >
+                              <ShoppingBag
+                                color="primary"
+                                sx={{ mr: 1.5, fontSize: 24 }}
+                              />
+                              <Typography
+                                variant="subtitle1"
+                                sx={{ fontWeight: 600 }}
+                              >
+                                Aplicação
+                              </Typography>
+                            </Box>
+
+                            {/* Lógica simplificada para mostrar apenas quantidades */}
+                            {watch('applicableProducts')?.length > 0 ||
+                            watch('applicableCategories')?.length > 0 ? (
+                              <Box>
+                                {watch('applicableProducts')?.length > 0 && (
+                                  <Typography variant="body1" sx={{ mb: 1 }}>
+                                    {watch('applicableProducts').length}{' '}
+                                    produto(s) selecionado(s)
+                                  </Typography>
+                                )}
+
+                                {watch('applicableCategories')?.length > 0 && (
+                                  <Typography variant="body1">
+                                    {watch('applicableCategories').length}{' '}
+                                    categoria(s) selecionada(s)
+                                  </Typography>
+                                )}
+                              </Box>
+                            ) : (
+                              <Typography variant="body1">
+                                Aplicável a todos os produtos
+                              </Typography>
+                            )}
+                          </Paper>
+                        </Grid>
+                      </Grid>
+
+                      {/* Mensagem final */}
+                      <Box
+                        sx={{
+                          mt: 4,
+                          p: 3,
+                          backgroundColor: '#FAF7FF',
+                          borderRadius: 2,
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: '1px solid #EDE7F6',
+                        }}
+                      >
+                        <Info
+                          sx={{
+                            color: '#5E35B1',
+                            fontSize: 24,
+                            mr: 2,
+                          }}
+                        />
+                        <Typography variant="body1">
+                          Após a criação, você poderá editar todas as
+                          configurações deste cupom, exceto o código.
+                        </Typography>
+                      </Box>
+                    </StyledCard>
+                  </motion.div>
+                </Grid>
+              )}
+              {/* Step 4: Review */}
+              {activeStep === 3 && (
+                <Grid item xs={12} sx={{ textAlign: 'center', my: 8 }}>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Box sx={{ maxWidth: 500, mx: 'auto' }}>
+                      {submitStatus === 'success' ? (
+                        <>
+                          <CheckCircle
+                            sx={{
+                              fontSize: 80,
+                              color: '#4CAF50',
+                              mb: 3,
+                            }}
+                          />
+                          <Typography
+                            variant="h4"
+                            gutterBottom
+                            sx={{ fontWeight: 700 }}
+                          >
+                            Cupom criado com sucesso!
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            color="text.secondary"
+                            sx={{ mb: 4 }}
+                          >
+                            O cupom {previewData?.code} foi criado e está{' '}
+                            {previewData?.status.toLowerCase()}. Você pode
+                            gerenciá-lo a qualquer momento na área de cupons.
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Cancel
+                            sx={{
+                              fontSize: 80,
+                              color: '#F44336',
+                              mb: 3,
+                            }}
+                          />
+                          <Typography
+                            variant="h4"
+                            gutterBottom
+                            sx={{ fontWeight: 700 }}
+                          >
+                            Erro ao criar cupom
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            color="text.secondary"
+                            sx={{ mb: 4 }}
+                          >
+                            Não foi possível concluir o cadastro do cupom. Por
+                            favor, tente novamente.
+                          </Typography>
+                        </>
                       )}
 
-                      <Alert severity="info" sx={{ mt: 3 }}>
-                        Após a criação, você poderá editar todas as
-                        configurações deste cupom, exceto o código do cupom.
-                      </Alert>
-                    </CardContent>
-                  </StyledCard>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: 2,
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <SecondaryButton
+                          onClick={onCancel}
+                          size="large"
+                          sx={{ px: 4 }}
+                        >
+                          Voltar para Cupons
+                        </SecondaryButton>
+                        {activeStep === 3 && submitStatus === 'success' && (
+                          <PrimaryButton
+                            onClick={() => {
+                              reset(); // Reseta o formulário
+                              setActiveStep(0); // Volta para o primeiro passo
+                              setSubmitStatus(null);
+                            }}
+                            size="large"
+                            sx={{ mt: 2, px: 4 }}
+                            startIcon={<LocalOffer />}
+                          >
+                            Criar Novo Cupom
+                          </PrimaryButton>
+                        )}
+                      </Box>
+                    </Box>
+                  </motion.div>
                 </Grid>
               )}
             </Grid>
@@ -1532,28 +1970,19 @@ const CouponCreator = ({
                     whileTap={{ scale: 0.98 }}
                   >
                     <PrimaryButton
-                      onClick={handleNext}
-                      disabled={!isValid}
-                      size="large"
-                    >
-                      {activeStep === steps.length - 2 ? 'Revisar' : 'Próximo'}
-                    </PrimaryButton>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <PrimaryButton
-                      type="submit"
+                      onClick={
+                        activeStep === 2 ? handleFinalSubmit : handleNext
+                      }
                       disabled={!isValid || isSubmitting}
-                      startIcon={<Check />}
                       size="large"
+                      sx={{ color: '#fff !important' }}
                     >
-                      {isSubmitting ? 'Criando...' : 'Criar Cupom'}
+                      {activeStep === steps.length - 2
+                        ? 'Finalizar'
+                        : 'Próximo'}
                     </PrimaryButton>
                   </motion.div>
-                )}
+                ) : null}
               </Box>
             </Box>
           </Box>

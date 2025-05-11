@@ -1,166 +1,240 @@
-import { Box, Typography, Chip, Paper, IconButton } from '@mui/material';
+import React from 'react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  useTheme,
+  Stack,
+  Avatar,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import {
+  LocalOffer as DiscountIcon,
+  Event as CalendarIcon,
+  People as UsersIcon,
+  CheckCircle as ActiveIcon,
+  Warning as ExpiredIcon,
+  Block as UsedIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  ContentCopy as CopyIcon,
+} from '@mui/icons-material';
 import { motion } from 'framer-motion';
-import EditIcon from '@mui/icons-material/Edit';
-import ErrorIcon from '@mui/icons-material/Error';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
-const COLUMN_CONFIG = [
-  { key: 'code', label: 'Código', flex: '20%' },
-  { key: 'status', label: 'Status', flex: '15%' },
-  { key: 'uses', label: 'Usos', flex: '15%' },
-  { key: 'type', label: 'Tipo', flex: '10%' },
-  { key: 'value', label: 'Valor', flex: '15%' },
-  { key: 'expire', label: 'Validade', flex: '15%' },
-  { key: 'actions', label: 'Ações', flex: '10%' },
-];
+const CouponStatusChip = ({ status }) => {
+  const theme = useTheme();
 
-const CouponList = ({ coupons, filter }) => {
-  const filtered = coupons.filter((c) => {
-    if (filter === 'active')
-      return c.isActive && new Date(c.expirationDate) > new Date();
-    if (filter === 'expired') return new Date(c.expirationDate) <= new Date();
-    if (filter === 'used') return c.currentUses >= c.maxUses;
-    return true;
-  });
-
-  if (!filtered.length) {
-    return (
-      <Typography variant="body1" align="center" sx={{ mt: 4 }}>
-        Nenhum cupom encontrado
-      </Typography>
-    );
-  }
-
-  return (
-    <Paper sx={{ width: '100%', overflowX: 'auto', p: 1 }}>
-      {/* Linha de cabeçalho */}
-      <Box
-        display="flex"
-        width="100%"
-        justifyContent="space-around"
-        alignItems="center"
-        sx={{ borderBottom: 1, borderColor: 'divider', pb: 1 }}
-      >
-        {COLUMN_CONFIG.map((col) => (
-          <Typography
-            key={col.key}
-            variant="subtitle2"
-            fontWeight="bold"
-            sx={{ flexBasis: col.flex, textAlign: 'center' }}
-          >
-            {col.label}
-          </Typography>
-        ))}
-      </Box>
-
-      {/* Linhas de dados */}
-      {filtered.map((c) => (
-        <motion.div
-          key={c.id}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Box
-            display="flex"
-            width="100%"
-            justifyContent="space-around"
-            alignItems="center"
-            sx={{
-              py: 1,
-              '&:not(:last-child)': { borderBottom: 1, borderColor: 'divider' },
-            }}
-          >
-            <Typography
-              sx={{
-                flexBasis: '20%',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {c.code}
-            </Typography>
-
-            <Box sx={{ flexBasis: '15%', textAlign: 'center' }}>
-              <CouponStatus status={getCouponStatus(c)} />
-            </Box>
-
-            <Typography sx={{ flexBasis: '15%', textAlign: 'center' }}>
-              {c.currentUses} / {c.maxUses}
-            </Typography>
-
-            <Typography sx={{ flexBasis: '10%', textAlign: 'center' }}>
-              {c.discountType === 'percentage' ? '%' : 'R$'}
-            </Typography>
-
-            <Typography
-              sx={{
-                flexBasis: '15%',
-                textAlign: 'center',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {c.discountType === 'percentage'
-                ? `${c.discountValue}%`
-                : `R$ ${c.discountValue.toFixed(2)}`}
-            </Typography>
-
-            <Typography sx={{ flexBasis: '15%', textAlign: 'center' }}>
-              {c.discountType === 'percentage'
-                ? `${c.discountValue}%`
-                : `R$ ${c.discountValue.toFixed(2)}`}
-            </Typography>
-
-            <Box sx={{ flexBasis: '10%', textAlign: 'center' }}>
-              <IconButton href={`/coupons/edit/${c.id}`} size="small">
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Box>
-        </motion.div>
-      ))}
-    </Paper>
-  );
-};
-
-const CouponStatus = ({ status }) => {
-  const iconMap = {
-    expired: <ErrorIcon fontSize="small" />,
+  const statusConfig = {
+    active: {
+      icon: <ActiveIcon fontSize="small" />,
+      label: 'Ativo',
+      color: theme.palette.success.main,
+      bgColor: theme.palette.success.light,
+    },
+    expired: {
+      icon: <ExpiredIcon fontSize="small" />,
+      label: 'Expirado',
+      color: theme.palette.warning.main,
+      bgColor: theme.palette.warning.light,
+    },
+    used: {
+      icon: <UsedIcon fontSize="small" />,
+      label: 'Usado',
+      color: theme.palette.error.main,
+      bgColor: theme.palette.error.light,
+    },
+    inactive: {
+      icon: <UsedIcon fontSize="small" />,
+      label: 'Inativo',
+      color: theme.palette.grey[500],
+      bgColor: theme.palette.grey[200],
+    },
   };
 
-  const colorMap = {
-    active: 'success',
-    expired: 'error',
-    used: 'warning',
-    inactive: 'default',
-  };
-
-  const labelMap = {
-    active: 'Ativo',
-    expired: 'Expirado',
-    used: 'Usado',
-    inactive: 'Inativo',
-  };
+  const config = statusConfig[status] || statusConfig.inactive;
 
   return (
     <Chip
-      icon={iconMap[status]}
-      label={labelMap[status]}
-      color={colorMap[status]}
+      icon={config.icon}
+      label={config.label}
+      sx={{
+        color: config.color,
+        backgroundColor: config.bgColor,
+        fontWeight: 600,
+        px: 1,
+        borderRadius: 1,
+      }}
       size="small"
-      sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
     />
   );
 };
 
-const getCouponStatus = (c) => {
-  if (!c.isActive) return 'inactive';
-  if (c.currentUses >= c.maxUses) return 'used';
-  if (new Date(c.expirationDate) <= new Date()) return 'expired';
-  return 'active';
+const CouponCard = ({ coupon, onEdit, onDelete, onCopy }) => {
+  const theme = useTheme();
+  const status =
+    coupon.currentUses >= coupon.maxUses
+      ? 'used'
+      : new Date(coupon.expirationDate) <= new Date()
+      ? 'expired'
+      : coupon.isActive
+      ? 'active'
+      : 'inactive';
+
+  const formattedDate = (date) =>
+    format(parseISO(new Date(date).toISOString()), 'dd/MM/yyyy', {
+      locale: ptBR,
+    });
+
+  return (
+    <Card
+      component={motion.div}
+      whileHover={{ y: -4 }}
+      sx={{
+        mb: 2,
+        borderRadius: 3,
+        boxShadow: theme.shadows[2],
+        borderLeft: `4px solid ${
+          status === 'active'
+            ? theme.palette.success.main
+            : status === 'expired'
+            ? theme.palette.warning.main
+            : status === 'used'
+            ? theme.palette.error.main
+            : theme.palette.grey[500]
+        }`,
+      }}
+    >
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Avatar
+              sx={{
+                bgcolor: theme.palette.primary.main,
+                color: '#fff',
+                width: 36,
+                height: 36,
+              }}
+            >
+              <DiscountIcon fontSize="small" />
+            </Avatar>
+            <Typography variant="h6" fontWeight="bold">
+              {coupon.code}
+            </Typography>
+          </Box>
+          <CouponStatusChip status={status} />
+        </Box>
+
+        <Divider sx={{ my: 1.5 }} />
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Desconto
+            </Typography>
+            <Typography variant="h5" fontWeight="bold">
+              {coupon.discountValue}
+              {coupon.discountType === 'percentage' ? '%' : 'R$'}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Usos
+            </Typography>
+            <Typography variant="h6" fontWeight="bold">
+              {coupon.currentUses} / {coupon.maxUses}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Criado em
+            </Typography>
+            <Typography variant="body2">
+              {formattedDate(coupon.createdAt)}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Expira em
+            </Typography>
+            <Typography variant="body2">
+              {formattedDate(coupon.expirationDate)}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Box
+          sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1 }}
+        >
+          <Tooltip title="Copiar código">
+            <IconButton onClick={() => onCopy(coupon.code)} size="small">
+              <CopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Editar">
+            <IconButton onClick={() => onEdit(coupon)} size="small">
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Excluir">
+            <IconButton onClick={() => onDelete(coupon._id)} size="small">
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
+
+const CouponList = ({
+  coupons,
+  filter,
+  emptyMessage,
+  onEdit,
+  onDelete,
+  onCopy,
+}) => {
+  const filteredCoupons = coupons.filter((coupon) => {
+    if (filter === 'all') return true;
+
+    const status =
+      coupon.currentUses >= coupon.maxUses
+        ? 'used'
+        : new Date(coupon.expirationDate) <= new Date()
+        ? 'expired'
+        : coupon.isActive
+        ? 'active'
+        : 'inactive';
+
+    return filter === status;
+  });
+
+  if (filteredCoupons.length === 0) {
+    return emptyMessage;
+  }
+
+  return (
+    <Box>
+      {filteredCoupons.map((coupon) => (
+        <CouponCard
+          key={coupon._id}
+          coupon={coupon}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onCopy={onCopy}
+        />
+      ))}
+    </Box>
+  );
 };
 
 export default CouponList;

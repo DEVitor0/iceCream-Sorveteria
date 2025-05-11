@@ -8,6 +8,8 @@
 # testing
 /coverage
 
+SERVER/logs/server/*
+
 # production
 /build
 

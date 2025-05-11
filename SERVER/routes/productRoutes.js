@@ -52,8 +52,8 @@ router.get('/products-for-coupons', productController.getAllProductsForCoupons);
 router.get('/unique-categories-from-tags', productController.getUniqueCategoriesFromTags);
 
 // Adicione estas novas rotas para compatibilidade
-router.get('/products', productController.getAllProductsForCoupons);
-router.get('/categories', productController.getUniqueCategoriesFromTags);
+router.get('/products/coupons', productController.getAllProductsForCoupons);
+router.get('/categories/unique-tags', productController.getUniqueCategoriesFromTags);
 
 // Nova rota para verificar estoque e preços
 router.post(

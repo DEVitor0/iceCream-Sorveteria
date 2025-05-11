@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Container } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import axios from 'axios';
 import VerticalMenu from '../../../components/DashboardBar/VerticalMenu';
 import DashboardNavbar from '../../../../../examples/Navbars/DashboardNavbar';
 import CouponForm from '../../../../../components/Coupons/CouponForm';
@@ -12,20 +13,47 @@ import useCoupons from '../../../../../hooks/Coupons/useCoupons';
 const CreateCouponPage = () => {
   const { products, categories, loading, error, createCoupon } = useCoupons();
   const navigate = useNavigate();
+  const [csrfToken, setCsrfToken] = useState('');
+
+  // Busca o token CSRF quando o componente monta
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await axios.get('/csrf-token', {
+          withCredentials: true,
+        });
+        setCsrfToken(response.data.csrfToken);
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   const handleSubmit = async (couponData) => {
     try {
-      await createCoupon({
-        ...couponData,
-        // Garante que as datas são strings ISO
-        expirationDate: couponData.expirationDate.toISOString(),
-        // Converte arrays para ObjectIds se necessário
-        applicableProducts: couponData.applicableProducts.map((p) => p.id),
-        applicableCategories: couponData.applicableCategories.map((c) => c.id),
+      await axios.post('/coupons', couponData, {
+        withCredentials: true,
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Content-Type': 'application/json',
+        },
       });
       navigate('/Dashboard/Vendas/Cupom');
     } catch (error) {
       console.error('Error creating coupon:', error);
+      // Se for erro de CSRF, tenta renovar o token
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.error?.includes('CSRF')
+      ) {
+        const newToken = await axios.get('/csrf-token', {
+          withCredentials: true,
+        });
+        setCsrfToken(newToken.data.csrfToken);
+        // Tenta novamente com o novo token
+        return handleSubmit(couponData);
+      }
     }
   };
 

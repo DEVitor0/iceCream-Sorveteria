@@ -115,41 +115,42 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getAllProductsForCoupons = async (req, res) => {
+  console.log('Acessando getAllProductsForCoupons'); // Log de depuração
   try {
     const products = await Product.find({}, 'id name');
+    console.log('Produtos encontrados:', products.length); // Log de depuração
     res.status(200).json(products.map(p => ({
       id: p._id,
       name: p.name
     })));
   } catch (error) {
+    console.error('Erro em getAllProductsForCoupons:', error); // Log de erro
     res.status(500).json({ message: 'Erro ao buscar produtos', error });
   }
 };
 
 exports.getUniqueCategoriesFromTags = async (req, res) => {
+  console.log('Acessando getUniqueCategoriesFromTags'); // Log de depuração
   try {
-    // Agregação para obter tags únicas
     const uniqueTags = await Product.aggregate([
-      { $match: { tag: { $exists: true, $ne: "" } } }, // Filtra produtos com tag
-      { $group: { _id: "$tag" } }, // Agrupa por tag
-      { $project: {
-          name: "$_id", // Renomeia _id para name
-          _id: 0
-        }
-      },
-      { $sort: { name: 1 } } // Ordena alfabeticamente
+      { $match: { tag: { $exists: true, $ne: "" } } },
+      { $group: { _id: "$tag" } },
+      { $project: { name: "$_id", _id: 0 } },
+      { $sort: { name: 1 } }
     ]);
 
-    // Transforma no formato esperado pelo frontend (com id e name)
+    console.log('Categorias únicas encontradas:', uniqueTags.length); // Log de depuração
+
     const categories = uniqueTags.map((tag, index) => ({
-      id: index + 1, // ID temporário (ou pode usar um hash da string)
+      id: index + 1,
       name: tag.name
     }));
 
     res.status(200).json(categories);
   } catch (error) {
+    console.error('Erro em getUniqueCategoriesFromTags:', error); // Log de erro
     res.status(500).json({
-      message: 'Erro ao buscar categorias a partir das tags',
+      message: 'Erro ao buscar categorias',
       error: error.message
     });
   }

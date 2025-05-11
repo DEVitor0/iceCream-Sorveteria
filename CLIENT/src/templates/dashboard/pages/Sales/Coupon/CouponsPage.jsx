@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -114,6 +115,20 @@ const CouponsPage = () => {
     },
     { active: 0, expired: 0, used: 0, inactive: 0 },
   );
+
+  const handleEditCoupon = (coupon) => {
+    navigate(`/Dashboard/Vendas/Cupom/Editar/${coupon._id}`);
+  };
+
+  const handleDeleteCoupon = async (couponId) => {
+    // Implemente a lógica de exclusão aqui
+    console.log('Deletar cupom:', couponId);
+  };
+
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    toast.success('Código copiado!');
+  };
 
   return (
     <Box
@@ -403,31 +418,24 @@ const CouponsPage = () => {
                   coupons={filteredCoupons}
                   filter={filter}
                   emptyMessage={
-                    <Box
-                      sx={{
-                        textAlign: 'center',
-                        p: 4,
-                        backgroundColor: 'rgba(140, 79, 237, 0.05)',
-                        borderRadius: 3,
-                      }}
-                    >
+                    <Box sx={{ textAlign: 'center', p: 4 }}>
                       <Typography variant="h6" color="textSecondary">
                         Nenhum cupom encontrado
                       </Typography>
                       <Button
                         variant="contained"
-                        sx={{
-                          mt: 2,
-                          backgroundColor: '#8C4FED',
-                          '&:hover': {
-                            backgroundColor: '#7B44D8',
-                          },
-                        }}
+                        sx={{ mt: 2 }}
+                        onClick={() =>
+                          navigate('/Dashboard/Vendas/Cupom/Criar')
+                        }
                       >
                         Criar Primeiro Cupom
                       </Button>
                     </Box>
                   }
+                  onEdit={handleEditCoupon}
+                  onDelete={handleDeleteCoupon}
+                  onCopy={handleCopyCode}
                 />
               </motion.div>
             )}

@@ -8,7 +8,7 @@ const csrfProtection = csurf({
     sameSite: 'strict',
   },
   value: (req) => {
-    return req.headers['x-csrf-token'];
+    return req.headers['x-csrf-token'] || req.headers['xsrf-token'] || req.body._csrf;
   },
 });
 module.exports = csrfProtection;
