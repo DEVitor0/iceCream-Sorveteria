@@ -12,6 +12,7 @@ const useCoupons = () => {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [coupons, setCoupons] = useState([]); // Novo estado para os cupons
   const [csrfToken, setCsrfToken] = useState('');
 
   // Função para obter o token CSRF
@@ -28,12 +29,47 @@ const useCoupons = () => {
     }
   };
 
+  // Nova função para buscar os cupons
+  const fetchCoupons = async () => {
+    try {
+      setLoading(true);
+      const token = await fetchCsrfToken();
+      const response = await axios.get('/coupons', {
+        headers: {
+          'X-CSRF-Token': token,
+        },
+        withCredentials: true,
+      });
+
+      // Processa os cupons para adicionar status
+      const processedCoupons = response.data.data.map((coupon) => {
+        let status = 'active';
+        if (!coupon.isActive) {
+          status = 'inactive';
+        } else if (coupon.currentUses >= coupon.maxUses) {
+          status = 'used';
+        } else if (new Date(coupon.expirationDate) <= new Date()) {
+          status = 'expired';
+        }
+        return { ...coupon, status };
+      });
+
+      setCoupons(processedCoupons);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      toast.error('Erro ao carregar cupons');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
       const [productsData, categoriesData] = await Promise.all([
         fetchProducts(),
         fetchCategories(),
+        fetchCoupons(), // Adiciona a busca de cupons
       ]);
       setProducts(productsData);
       setCategories(categoriesData);
@@ -48,29 +84,26 @@ const useCoupons = () => {
   const handleCreateCoupon = async (couponData) => {
     try {
       setLoading(true);
-
-      // Garante que temos um token CSRF válido
       let token = csrfToken;
       if (!token) {
         token = await fetchCsrfToken();
       }
 
-      const response = await createCoupon(couponData, token); // Passa o token CSRF
+      const response = await createCoupon(couponData, token);
       toast.success('Cupom criado com sucesso!');
+      await fetchCoupons(); // Atualiza a lista de cupons após criação
       return response;
     } catch (err) {
       setError(err);
-
-      // Tratamento especial para erro de CSRF
       if (
         err.response?.status === 403 &&
         err.response?.data?.error?.includes('CSRF')
       ) {
         toast.warning('Sessão expirada. Tentando novamente...');
         try {
-          // Tenta renovar o token e enviar novamente
           const newToken = await fetchCsrfToken();
           const retryResponse = await createCoupon(couponData, newToken);
+          await fetchCoupons(); // Atualiza a lista após sucesso
           toast.success('Cupom criado com sucesso!');
           return retryResponse;
         } catch (retryErr) {
@@ -87,7 +120,6 @@ const useCoupons = () => {
   };
 
   useEffect(() => {
-    // Busca o token CSRF quando o componente monta
     fetchCsrfToken();
     loadData();
   }, []);
@@ -95,11 +127,13 @@ const useCoupons = () => {
   return {
     products,
     categories,
+    coupons, // Adiciona os cupons no retorno
     loading,
     error,
     createCoupon: handleCreateCoupon,
     refreshData: loadData,
-    csrfToken, // Opcional: expor o token se necessário
+    refreshCoupons: fetchCoupons, // Nova função para atualizar apenas cupons
+    csrfToken,
   };
 };
 

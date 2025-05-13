@@ -66,42 +66,33 @@ exports.createCoupon = async (req, res, next) => {
 
 // Listar todos os cupons
 exports.getAllCoupons = async (req, res, next) => {
-    try {
-        const { status, search } = req.query;
+  try {
+      const coupons = await Coupon.find({})
+          .sort({ createdAt: -1 });
 
-        let query = {};
+      // Formatar os dados conforme necessário para o frontend
+      const formattedCoupons = coupons.map(coupon => ({
+          id: coupon._id,
+          code: coupon.code,
+          discount: coupon.discountType === 'fixed'
+              ? `R$${coupon.discountValue.toFixed(2)}`
+              : `${coupon.discountValue}%`,
+          discountType: coupon.discountType,
+          discountValue: coupon.discountValue,
+          currentUses: coupon.currentUses,
+          expirationDate: coupon.expirationDate,
+          maxUses: coupon.maxUses,
+          isActive: coupon.isActive,
+          status: coupon.status // usando o virtual field do schema
+      }));
 
-        if (status) {
-            if (status === 'active') {
-                query.isActive = true;
-                query.expirationDate = { $gt: new Date() };
-                query.currentUses = { $lt: '$maxUses' };
-            } else if (status === 'inactive') {
-                query.isActive = false;
-            } else if (status === 'expired') {
-                query.expirationDate = { $lt: new Date() };
-            } else if (status === 'used') {
-                query.$expr = { $gte: ['$currentUses', '$maxUses'] };
-            }
-        }
-
-        if (search) {
-            query.code = { $regex: search, $options: 'i' };
-        }
-
-        const coupons = await Coupon.find(query)
-            .populate('applicableProducts', 'name')
-            .populate('applicableCategories', 'name')
-            .sort({ createdAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            count: coupons.length,
-            data: coupons
-        });
-    } catch (error) {
-        next(error);
-    }
+      res.status(200).json({
+          success: true,
+          data: formattedCoupons
+      });
+  } catch (error) {
+      next(error);
+  }
 };
 
 // Obter detalhes de um cupom

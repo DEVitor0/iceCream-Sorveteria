@@ -15,6 +15,8 @@ import {
   useTheme,
   useMediaQuery,
   Container,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Add, FilterList, Search, Sort, Refresh } from '@mui/icons-material';
@@ -83,6 +85,8 @@ const CouponsPage = () => {
   const { coupons, loading, error, refreshCoupons } = useCoupons();
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
@@ -91,11 +95,10 @@ const CouponsPage = () => {
     // Filtro por status
     const statusMatch =
       filter === 'all' ||
-      (filter === 'active' &&
-        coupon.isActive &&
-        new Date(coupon.expirationDate) > new Date()) ||
-      (filter === 'expired' && new Date(coupon.expirationDate) <= new Date()) ||
-      (filter === 'used' && coupon.currentUses >= coupon.maxUses);
+      (filter === 'active' && coupon.status === 'active') ||
+      (filter === 'used' && coupon.status === 'used') ||
+      (filter === 'expired' && coupon.status === 'expired') ||
+      (filter === 'inactive' && coupon.status === 'inactive');
 
     // Filtro por busca
     const searchMatch =
@@ -107,10 +110,7 @@ const CouponsPage = () => {
 
   const statusCounts = (coupons || []).reduce(
     (acc, coupon) => {
-      if (!coupon.isActive) acc.inactive++;
-      else if (coupon.currentUses >= coupon.maxUses) acc.used++;
-      else if (new Date(coupon.expirationDate) <= new Date()) acc.expired++;
-      else acc.active++;
+      acc[coupon.status]++; // Usamos o status que calculamos no hook
       return acc;
     },
     { active: 0, expired: 0, used: 0, inactive: 0 },
@@ -127,7 +127,8 @@ const CouponsPage = () => {
 
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code);
-    toast.success('Código copiado!');
+    setSnackbarMessage('Código copiado com sucesso!');
+    setOpenSnackbar(true);
   };
 
   return (
@@ -151,7 +152,7 @@ const CouponsPage = () => {
         <Box
           sx={{
             width: '95%',
-            margin: '30px auto 0 auto',
+            margin: '30px auto 30px auto',
             backgroundColor: 'white',
             boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
             borderRadius: 3,
@@ -239,18 +240,15 @@ const CouponsPage = () => {
           >
             <Grid
               container
-              spacing={0}
+              spacing={0} // Removemos o espaçamento padrão do Grid
               sx={{
                 width: '100%',
                 marginLeft: 0,
-                gap: '16px', // Espaçamento maior entre os itens (16px)
-                '& .MuiGrid-item': {
-                  minWidth: 0,
-                  flex: '1 1 calc(25% - 12px)', // Ajuste para compensar o gap de 16px
-                },
+                display: 'flex',
+                justifyContent: 'space-between', // Distribui o espaço uniformemente
               }}
             >
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, p: 1 }}>
                 <StatCard
                   value={statusCounts.active}
                   label="Ativos"
@@ -258,11 +256,13 @@ const CouponsPage = () => {
                   icon="active"
                   sx={{
                     height: '100%',
-                    borderRadius: '12px 0 0 12px',
+                    minHeight: '120px', // Altura mínima aumentada
+                    borderRadius: '12px',
+                    boxShadow: 1, // Adiciona sombra para melhor visualização
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, p: 1 }}>
                 <StatCard
                   value={statusCounts.used}
                   label="Usados"
@@ -270,13 +270,14 @@ const CouponsPage = () => {
                   icon="used"
                   sx={{
                     height: '100%',
-                    // Adiciona uma borda visual à esquerda para separação
-                    borderLeft: '1px solid rgba(0,0,0,0.08)',
-                    paddingLeft: '8px',
+                    minHeight: '120px',
+                    borderRadius: '12px',
+                    boxShadow: 1,
+                    ml: 2, // Margem entre os cards
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, p: 1 }}>
                 <StatCard
                   value={statusCounts.expired}
                   label="Expirados"
@@ -284,13 +285,14 @@ const CouponsPage = () => {
                   icon="expired"
                   sx={{
                     height: '100%',
-                    // Adiciona uma borda visual à esquerda para separação
-                    borderLeft: '1px solid rgba(0,0,0,0.08)',
-                    paddingLeft: '8px',
+                    minHeight: '120px',
+                    borderRadius: '12px',
+                    boxShadow: 1,
+                    ml: 2,
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={3}>
+              <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, p: 1 }}>
                 <StatCard
                   value={statusCounts.inactive}
                   label="Inativos"
@@ -298,10 +300,10 @@ const CouponsPage = () => {
                   icon="inactive"
                   sx={{
                     height: '100%',
-                    borderRadius: '0 12px 12px 0',
-                    // Adiciona uma borda visual à esquerda para separação
-                    borderLeft: '1px solid rgba(0,0,0,0.08)',
-                    paddingLeft: '8px',
+                    minHeight: '120px',
+                    borderRadius: '12px',
+                    boxShadow: 1,
+                    ml: 2,
                   }}
                 />
               </Grid>
@@ -396,6 +398,10 @@ const CouponsPage = () => {
                   label={`Expirados (${statusCounts.expired})`}
                   value="expired"
                 />
+                <Tab
+                  label={`Inativos (${statusCounts.inactive})`}
+                  value="inactive"
+                />
               </Tabs>
             </CardContent>
           </Card>
@@ -441,6 +447,16 @@ const CouponsPage = () => {
             )}
           </AnimatePresence>
         </Container>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={2000}
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );
