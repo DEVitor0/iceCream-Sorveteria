@@ -44,7 +44,6 @@ const couponSchema = new Schema({
     }],
     applicableCategories: [{
         type: Schema.Types.ObjectId,
-        ref: 'Category'
     }],
     isActive: {
         type: Boolean,

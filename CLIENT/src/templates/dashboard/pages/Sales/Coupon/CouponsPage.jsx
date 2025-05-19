@@ -92,7 +92,6 @@ const CouponsPage = () => {
   const navigate = useNavigate();
 
   const filteredCoupons = (coupons || []).filter((coupon) => {
-    // Filtro por status
     const statusMatch =
       filter === 'all' ||
       (filter === 'active' && coupon.status === 'active') ||
@@ -100,7 +99,6 @@ const CouponsPage = () => {
       (filter === 'expired' && coupon.status === 'expired') ||
       (filter === 'inactive' && coupon.status === 'inactive');
 
-    // Filtro por busca
     const searchMatch =
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coupon.discountValue.toString().includes(searchQuery);
@@ -110,18 +108,22 @@ const CouponsPage = () => {
 
   const statusCounts = (coupons || []).reduce(
     (acc, coupon) => {
-      acc[coupon.status]++; // Usamos o status que calculamos no hook
+      acc[coupon.status]++;
       return acc;
     },
     { active: 0, expired: 0, used: 0, inactive: 0 },
   );
 
   const handleEditCoupon = (coupon) => {
-    navigate(`/Dashboard/Vendas/Cupom/Editar/${coupon._id}`);
+    console.log('ID do cupom antes da navegação:', coupon._id || coupon.id); // Adicione este log
+    if (!coupon._id && !coupon.id) {
+      toast.error('ID do cupom não encontrado');
+      return;
+    }
+    navigate(`/Dashboard/Vendas/Cupom/Editar/${coupon._id || coupon.id}`);
   };
 
   const handleDeleteCoupon = async (couponId) => {
-    // Implemente a lógica de exclusão aqui
     console.log('Deletar cupom:', couponId);
   };
 

@@ -1,126 +1,139 @@
 const morgan = require('morgan');
 const colors = require('colors');
 
-// Definindo tokens personalizados com formatação
-morgan.token('body', (req) => {
-  if (!req.body) return colors.gray('{}');
-
-  const body = {...req.body};
-  if (body.password) body.password = '******';
-  return colors.gray(JSON.stringify(body, null, 2));
+// Configuração de cores
+colors.setTheme({
+  info: 'cyan',
+  success: 'green',
+  warning: 'yellow',
+  error: 'red',
+  debug: 'blue',
+  timestamp: 'gray',
+  highlight: 'rainbow',
+  section: ['underline', 'bold']
 });
 
-morgan.token('headers', (req) =>
-  colors.gray(JSON.stringify(req.headers, null, 2))
-);
+// Tokens personalizados com formatação melhorada
+morgan.token('custom-date', () => {
+  return colors.timestamp(new Date().toISOString());
+});
 
-morgan.token('query', (req) =>
-  colors.gray(JSON.stringify(req.query, null, 2))
-);
-
-morgan.token('params', (req) =>
-  colors.gray(JSON.stringify(req.params, null, 2))
-);
-
-morgan.token('cookies', (req) =>
-  colors.gray(JSON.stringify(req.cookies, null, 2))
-);
-
-morgan.token('user-agent', (req) =>
-  colors.blue(req.headers['user-agent'])
-);
-
-morgan.token('ip', (req) =>
-  colors.blue(req.ip || req.connection.remoteAddress)
-);
-
-morgan.token('date-colored', () =>
-  colors.gray(new Date().toISOString())
-);
-
-morgan.token('method-colored', (req) => {
+morgan.token('custom-method', (req) => {
   const method = req.method;
-  const color =
-    method === 'GET' ? 'green' :
-    method === 'POST' ? 'yellow' :
-    method === 'PUT' ? 'blue' :
-    method === 'DELETE' ? 'red' : 'white';
-  return colors[color](method);
+  const colorMap = {
+    'GET': 'success',
+    'POST': 'warning',
+    'PUT': 'info',
+    'DELETE': 'error',
+    'PATCH': 'debug'
+  };
+  return colors[colorMap[method] || 'white'](method.padEnd(7));
 });
 
-morgan.token('url-colored', (req) =>
-  colors.cyan(req.url)
-);
-
-morgan.token('status-colored', (req, res) => {
+morgan.token('custom-status', (req, res) => {
   const status = res.statusCode;
   const color =
-    status >= 500 ? 'red' :
-    status >= 400 ? 'yellow' :
-    status >= 300 ? 'cyan' :
-    status >= 200 ? 'green' : 'white';
-  return colors[color](status);
+    status >= 500 ? 'error' :
+    status >= 400 ? 'warning' :
+    status >= 300 ? 'info' :
+    status >= 200 ? 'success' : 'white';
+  return colors[color](status.toString().padStart(3));
 });
 
-// Formatos melhorados
+morgan.token('custom-url', (req) => {
+  return colors.cyan(req.url);
+});
+
+morgan.token('custom-response-time', (req, res) => {
+  const time = parseFloat(req._responseTime || 0);
+  let color = 'green';
+  if (time > 1000) color = 'error';
+  else if (time > 500) color = 'warning';
+  else if (time > 200) color = 'yellow';
+  return colors[color](time.toFixed(2) + ' ms');
+});
+
+morgan.token('divider', () => {
+  return colors.gray('---------------------------------------');
+});
+
+morgan.token('section-title', (req, res, section) => {
+  return colors.section(`=== ${section.toUpperCase()} ===`);
+});
+
+// Formatos personalizados
 const formats = {
-  combined: [
-    colors.yellow('----------------------------------------'),
-    `${colors.bold('Request:')} :date-colored :method-colored :url-colored :status-colored :res[content-length] - :response-time ms`,
-    `${colors.bold('IP:')} :ip`,
-    `${colors.bold('User Agent:')} :user-agent`,
-    '',
-    `${colors.bold.yellow('Headers:')}`,
+  detailed: [
+    '[0] :divider',
+    '[0] :section-title:início da requisição',
+    '[0] Ambiente: :env',
+    '[0] :divider',
+    '[0] Método: :custom-method',
+    '[0] URL: :custom-url',
+    '[0] Status: :custom-status',
+    '[0] Tempo: :custom-response-time',
+    '[0] IP: :ip',
+    '[0] User Agent: :user-agent',
+    '[0] :divider',
+    '[0] Headers:',
     ':headers',
-    '',
-    `${colors.bold.yellow('Query:')}`,
+    '[0] ',
+    '[0] Query:',
     ':query',
-    '',
-    `${colors.bold.yellow('Params:')}`,
+    '[0] ',
+    '[0] Params:',
     ':params',
-    '',
-    `${colors.bold.yellow('Body:')}`,
+    '[0] ',
+    '[0] Body:',
     ':body',
-    '',
-    `${colors.bold.yellow('Cookies:')}`,
+    '[0] ',
+    '[0] Cookies:',
     ':cookies',
-    colors.yellow('----------------------------------------')
+    '[0] :divider'
   ].join('\n'),
 
-  dev: [
-    '[:date-colored]',
-    ':method-colored',
-    ':url-colored',
-    ':status-colored',
-    ':response-time ms -',
-    ':res[content-length]'
-  ].join(' '),
-
-  minimal: [
-    ':method-colored',
-    ':url-colored',
-    ':status-colored',
-    ':res[content-length] -',
-    ':response-time ms'
-  ].join(' '),
-
-  error: [
-    colors.yellow('----------------------------------------'),
-    `${colors.bold.red('ERROR:')} :date-colored :method-colored :url-colored :status-colored - :response-time ms`,
-    `${colors.bold('Error:')} :error`,
-    `${colors.bold('Stack:')} :stack`,
-    colors.yellow('----------------------------------------')
-  ].join('\n')
+  // Adicione outros formatos conforme necessário
 };
 
-// Tokens para erros
-morgan.token('error', (req, res) =>
-  res.locals.error ? colors.red(res.locals.error.message || res.locals.error) : ''
-);
+// Tokens adicionais
+morgan.token('env', () => process.env.NODE_ENV || 'development');
+morgan.token('ip', (req) => colors.info(req.ip || req.connection.remoteAddress));
+morgan.token('user-agent', (req) => colors.debug(req.headers['user-agent']));
 
-morgan.token('stack', (req, res) =>
-  res.locals.errorStack ? colors.gray(res.locals.errorStack) : ''
-);
+// Configuração para objetos (headers, query, etc.)
+const formatObject = (obj) => {
+  if (!obj || Object.keys(obj).length === 0) return colors.gray('{}');
+  return colors.white(JSON.stringify(obj, null, 2)
+    .split('\n')
+    .map(line => `[0] ${line}`)
+    .join('\n'));
+};
+
+morgan.token('headers', (req) => formatObject(req.headers));
+morgan.token('query', (req) => formatObject(req.query));
+morgan.token('params', (req) => formatObject(req.params));
+morgan.token('body', (req) => {
+  if (!req.body || Object.keys(req.body).length === 0) return colors.gray('{}');
+
+  const body = {...req.body};
+  // Esconde informações sensíveis
+  if (body.password) body.password = '******';
+  if (body.token) body.token = '******';
+  if (body.jwt) body.jwt = '******';
+
+  return formatObject(body);
+});
+
+morgan.token('cookies', (req) => {
+  if (!req.cookies || Object.keys(req.cookies).length === 0) return colors.gray('{}');
+
+  const cookies = {...req.cookies};
+  // Esconde informações sensíveis
+  if (cookies.jwt) cookies.jwt = '******';
+  if (cookies.token) cookies.token = '******';
+
+  return formatObject(cookies);
+});
 
 module.exports = {
   formats,

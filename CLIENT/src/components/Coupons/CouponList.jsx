@@ -57,16 +57,15 @@ const CouponCard = ({
 
   // Valores padrão para evitar erros
   const safeCoupon = {
-    discountType: 'percentage',
-    discountValue: 0,
+    ...coupon,
+    discountType: coupon.discountType || 'percentage',
+    discountValue: coupon.discountValue || 0,
     currentUses: 0,
     maxUses: 1,
     expirationDate: new Date(),
     createdAt: new Date(),
     code: '',
     status: 'inactive',
-    _id: '',
-    ...coupon,
   };
 
   const handleCopy = (code) => {
@@ -380,7 +379,13 @@ const CouponCard = ({
 
           <Tooltip title="Editar">
             <IconButton
-              onClick={() => onEdit(safeCoupon)}
+              onClick={() => {
+                console.log('Editando cupom:', safeCoupon); // Adicione este log
+                onEdit({
+                  ...safeCoupon,
+                  _id: safeCoupon._id || safeCoupon.id, // Garante que _id exista
+                });
+              }}
               sx={{
                 bgcolor: 'transparent',
                 '&:hover': {
@@ -493,15 +498,21 @@ const CouponList = ({
         },
       }}
     >
-      {filteredCoupons.map((coupon) => (
-        <CouponCard
-          key={coupon._id}
-          coupon={coupon}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onCopy={onCopy}
-        />
-      ))}
+      {filteredCoupons.map((coupon, index) => {
+        const uniqueKey = coupon._id
+          ? coupon._id
+          : `coupon-${coupon.code}-${index}`; // Fallback com código + índice
+
+        return (
+          <CouponCard
+            key={uniqueKey}
+            coupon={coupon}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onCopy={onCopy}
+          />
+        );
+      })}
     </Box>
   );
 };

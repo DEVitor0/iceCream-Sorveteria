@@ -190,16 +190,14 @@ root.render(
                     }
                   />
                   <Route
-                    path="/Dashboard/Vendas/Cupom/edit/:id"
+                    path="/Dashboard/Vendas/Cupom/Editar/:couponId"
                     element={
                       <ProtectedRoute
                         authType="login"
                         requiredRoles={['admin', 'moder']}
                         geoRestricted={true}
                       >
-                        <AnimatePresence mode="wait">
-                          <EditCouponPage />
-                        </AnimatePresence>
+                        <EditCouponPage />
                       </ProtectedRoute>
                     }
                   />
