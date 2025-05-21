@@ -38,13 +38,31 @@ const couponSchema = new Schema({
         required: [true, 'O limite de uso por cliente é obrigatório'],
         min: [1, 'O limite de uso por cliente deve ser pelo menos 1']
     },
-    applicableProducts: [{
+    applicableProducts: {
+      type: [{
         type: Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
-    applicableCategories: [{
+        ref: 'Product',
+        validate: {
+          validator: function(v) {
+            return mongoose.Types.ObjectId.isValid(v);
+          },
+          message: props => `${props.value} não é um ID de produto válido!`
+        }
+      }],
+      default: []
+    },
+    applicableCategories: {
+      type: [{
         type: Schema.Types.ObjectId,
-    }],
+        validate: {
+          validator: function(v) {
+            return mongoose.Types.ObjectId.isValid(v);
+          },
+          message: props => `${props.value} não é um ID de categoria válido!`
+        }
+      }],
+      default: []
+    },
     isActive: {
         type: Boolean,
         default: true

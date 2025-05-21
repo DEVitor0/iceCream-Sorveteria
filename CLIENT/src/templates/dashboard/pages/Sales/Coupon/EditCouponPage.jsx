@@ -5,9 +5,6 @@ import {
   Box,
   Typography,
   Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   Switch,
   Button,
   Divider,
@@ -26,14 +23,10 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  List,
-  ListItem,
   Checkbox,
-  ListItemText,
   TextField,
   Paper,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
@@ -113,27 +106,6 @@ const CustomInput = styled('input')(({ theme }) => ({
   '&::placeholder': {
     color: theme.palette.text.secondary,
     opacity: 0.7,
-  },
-}));
-
-const CustomSelect = styled(Select)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '12px',
-    backgroundColor: 'rgba(127, 70, 222, 0.05)',
-    '& fieldset': {
-      borderColor: 'rgba(127, 70, 222, 0.3)',
-    },
-    '&:hover fieldset': {
-      borderColor: 'rgba(127, 70, 222, 0.5)',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#7F46DE',
-      boxShadow: '0 0 0 2px rgba(127, 70, 222, 0.2)',
-    },
-  },
-  '& .MuiSelect-select': {
-    padding: '10px 14px',
-    fontSize: '0.875rem',
   },
 }));
 
@@ -429,19 +401,79 @@ const CouponEditPage = () => {
     setIsSubmitting(true);
 
     try {
-      const csrfToken = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
+      // 1. Log do formData inicial
+      console.log('formData inicial:', JSON.parse(JSON.stringify(formData)));
 
-      const response = await axios.put(`/coupons/${couponId}`, formData, {
+      // Obter o token CSRF
+      const csrfResponse = await axios.get('/csrf-token', {
         headers: {
-          'Content-Type': 'application/json',
-          'X-XSRF-TOKEN': csrfToken,
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         withCredentials: true,
       });
+
+      const csrfToken = csrfResponse.data.csrfToken;
+
+      // 2. Transformação dos produtos - com logs detalhados
+      const productIds = formData.applicableProducts
+        .map((product, index) => {
+          console.log(`Processando produto ${index}:`, product);
+
+          if (!product) {
+            console.warn(`Produto ${index} é nulo`);
+            return null;
+          }
+
+          const id = product.id || product._id || product;
+          console.log(`ID extraído: ${id}`);
+
+          if (!id) {
+            console.warn(`Não foi possível extrair ID do produto ${index}`);
+          }
+
+          return id;
+        })
+        .filter((id) => {
+          const isValid = id && typeof id === 'string';
+          if (!isValid) {
+            console.warn(`ID inválido filtrado: ${id}`);
+          }
+          return isValid;
+        });
+
+      console.log('IDs de produtos válidos:', productIds);
+
+      // 3. Transformação similar para categorias
+      const categoryIds = formData.applicableCategories
+        .map((category) => category?.id || category?._id || category)
+        .filter((id) => id && typeof id === 'string');
+
+      // 4. Criar payload com proteção contra valores nulos
+      const payload = {
+        code: formData.code,
+        discountType: formData.discountType,
+        discountValue: formData.discountValue,
+        expirationDate: formData.expirationDate.toISOString(),
+        maxUses: formData.maxUses,
+        userMaxUses: formData.userMaxUses,
+        applicableProducts: productIds.length ? productIds : undefined,
+        applicableCategories: categoryIds.length ? categoryIds : undefined,
+        isActive: formData.isActive,
+      };
+
+      console.log('Payload final antes do envio:', payload);
+
+      // 5. Enviar com tratamento de erro detalhado
+      const response = await axios.put(`/coupons/${couponId}`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        withCredentials: true,
+      });
+
+      console.log('Resposta do servidor:', response.data);
 
       setSnackbar({
         open: true,
@@ -449,9 +481,14 @@ const CouponEditPage = () => {
         severity: 'success',
       });
 
-      setTimeout(() => navigate('/Dashboard/Vendas/Cupom'), 2000);
+      setTimeout(() => navigate('/Dashboard/Vendas/Cupom'), 1000);
     } catch (error) {
-      console.error('Erro ao atualizar cupom:', error);
+      console.error('Erro detalhado:', {
+        message: error.message,
+        response: error.response?.data,
+        stack: error.stack,
+      });
+
       setSnackbar({
         open: true,
         message: error.response?.data?.message || 'Erro ao atualizar cupom',
@@ -512,16 +549,20 @@ const CouponEditPage = () => {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          width: 'calc(100% - 240px)',
-          [theme.breakpoints.down('lg')]: {
-            width: 'calc(100% - 80px)',
-          },
-          [theme.breakpoints.down('sm')]: {
-            width: '100%',
-          },
+          width: '100%', // Largura fixa de 95%
+          alignItems: 'center',
         }}
       >
-        <DashboardNavbar />
+        <Box
+          sx={{
+            width: '95%',
+            marginTop: '15px',
+            backgroundColor: '#F8FAFC',
+            borderRadius: '15px',
+          }}
+        >
+          <DashboardNavbar />
+        </Box>
 
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <AnimatePresence>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   TextField,
@@ -183,6 +184,7 @@ const CouponCreator = ({
   categories = [],
 }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
   const [previewData, setPreviewData] = useState(null);
@@ -242,40 +244,56 @@ const CouponCreator = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Busca paralela para melhor performance
-        const requests = [];
+        // Verifica se já temos os dados ou se já está carregando
+        if (
+          (products.length === 0 &&
+            fetchedProducts.length === 0 &&
+            !loading.products) ||
+          (categories.length === 0 &&
+            fetchedCategories.length === 0 &&
+            !loading.categories)
+        ) {
+          setLoading({
+            products: products.length === 0,
+            categories: categories.length === 0,
+          });
 
-        if (products.length === 0) {
-          requests.push(
-            axios
-              .get('/api/products/coupons')
-              .then((response) => setFetchedProducts(response.data))
-              .catch((err) => {
-                console.error('Erro ao buscar produtos:', err);
-                setError((prev) => ({
-                  ...prev,
-                  products: 'Erro ao carregar produtos',
-                }));
-              }),
-          );
+          const requests = [];
+
+          if (products.length === 0 && fetchedProducts.length === 0) {
+            requests.push(
+              axios
+                .get('/api/products/coupons')
+                .then((response) => setFetchedProducts(response.data))
+                .catch((err) => {
+                  console.error('Erro ao buscar produtos:', err);
+                  setError((prev) => ({
+                    ...prev,
+                    products: 'Erro ao carregar produtos',
+                  }));
+                }),
+            );
+          }
+
+          if (categories.length === 0 && fetchedCategories.length === 0) {
+            requests.push(
+              axios
+                .get('/api/categories/unique-tags')
+                .then((response) => setFetchedCategories(response.data))
+                .catch((err) => {
+                  console.error('Erro ao buscar categorias:', err);
+                  setError((prev) => ({
+                    ...prev,
+                    categories: 'Erro ao carregar categorias',
+                  }));
+                }),
+            );
+          }
+
+          if (requests.length > 0) {
+            await Promise.all(requests);
+          }
         }
-
-        if (categories.length === 0) {
-          requests.push(
-            axios
-              .get('/api/categories/unique-tags')
-              .then((response) => setFetchedCategories(response.data))
-              .catch((err) => {
-                console.error('Erro ao buscar categorias:', err);
-                setError((prev) => ({
-                  ...prev,
-                  categories: 'Erro ao carregar categorias',
-                }));
-              }),
-          );
-        }
-
-        await Promise.all(requests);
       } finally {
         setLoading({
           products: false,
@@ -285,7 +303,7 @@ const CouponCreator = ({
     };
 
     fetchData();
-  }, [products, categories]);
+  }, [products, categories]); // Adicione outras dependências se necessário
 
   // Dados finais a serem usados - com fallback seguro
   const productsToUse = products.length > 0 ? products : fetchedProducts || [];
@@ -346,14 +364,40 @@ const CouponCreator = ({
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const formData = watch();
+
+    // Garantir que temos arrays válidos (não undefined) e filtrar valores vazios
+    const applicableProducts = Array.isArray(formData.applicableProducts)
+      ? formData.applicableProducts.filter(Boolean).map((id) => String(id))
+      : [];
+
+    const applicableCategories = Array.isArray(formData.applicableCategories)
+      ? formData.applicableCategories.filter(Boolean).map((id) => String(id))
+      : [];
+
     const payload = {
       ...formData,
-      applicableProducts: formData.applicableProducts.filter(Boolean),
+      applicableProducts,
+      applicableCategories,
       expirationDate: formData.expirationDate.toISOString(),
     };
-    onSubmit(payload);
+
+    try {
+      // Chama a função onSubmit passada como prop
+      await onSubmit(payload);
+
+      // Se chegou aqui, o envio foi bem-sucedido
+      setSubmitStatus('success');
+
+      // Redireciona após 2 segundos (tempo para o usuário ver a mensagem de sucesso)
+      setTimeout(() => {
+        navigate('/Dashboard/Vendas/Cupom');
+      }, 300);
+    } catch (error) {
+      setSubmitStatus('error');
+      console.error('Erro ao criar cupom:', error);
+    }
   };
 
   const handleNext = () => {

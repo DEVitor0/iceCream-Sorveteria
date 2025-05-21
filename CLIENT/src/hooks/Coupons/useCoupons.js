@@ -26,8 +26,19 @@ const useCoupons = (couponId = null) => {
     try {
       setLoading(true);
       const data = await fetchCoupons();
-      console.log('Cupons carregados:', data);
-      setCoupons(data);
+
+      // Garante que os dados tenham a estrutura esperada
+      const formattedCoupons = data.map((coupon) => ({
+        ...coupon,
+        expirationDate: coupon.expirationDate || new Date(),
+        createdAt: coupon.createdAt || new Date(),
+        currentUses: coupon.currentUses || 0,
+        maxUses: coupon.maxUses || 1,
+        isActive: coupon.isActive || false,
+      }));
+
+      console.log('Cupons formatados:', formattedCoupons);
+      setCoupons(formattedCoupons);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       toast.error('Erro ao carregar cupons');

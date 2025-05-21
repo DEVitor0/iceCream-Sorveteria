@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    price: { type: Number, required: true }, // Renomeado de 'price' para 'productPrice'
-    costPrice: { type: Number, required: true }, // Novo campo para preço de custo
-    brand: { type: String }, // Novo campo para marca
-    quantity: { type: Number, required: true }, // Novo campo para quantidade
-    expirationDate: { type: Date, required: true }, // Novo campo para validade
+    price: { type: Number, required: true },
+    costPrice: { type: Number, required: true },
+    brand: { type: String },
+    quantity: { type: Number, required: true },
+    expirationDate: { type: Date, required: true },
     tag: { type: String, required: true },
     imageUrl: { type: String },
     webImageUrl: { type: String },

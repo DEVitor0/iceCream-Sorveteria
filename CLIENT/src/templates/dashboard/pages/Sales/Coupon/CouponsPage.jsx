@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,6 +17,11 @@ import {
   Container,
   Snackbar,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Add, FilterList, Search, Sort, Refresh } from '@mui/icons-material';
@@ -87,17 +92,49 @@ const CouponsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [couponToDelete, setCouponToDelete] = useState(null);
+  const [csrfToken, setCsrfToken] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const getCSRFToken = async () => {
+      try {
+        const response = await fetch('/csrf-token', {
+          credentials: 'include',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const data = await response.json();
+        setCsrfToken(data.csrfToken);
+      } catch (error) {
+        console.error('Erro ao obter CSRF token:', error);
+      }
+    };
+
+    getCSRFToken();
+  }, []);
+
   const filteredCoupons = (coupons || []).filter((coupon) => {
+    if (filter === 'used') {
+      return coupon.currentUses >= 1;
+    }
+
+    const isExpired = new Date(coupon.expirationDate) <= new Date();
+
     const statusMatch =
-      filter === 'all' ||
-      (filter === 'active' && coupon.status === 'active') ||
-      (filter === 'used' && coupon.status === 'used') ||
-      (filter === 'expired' && coupon.status === 'expired') ||
-      (filter === 'inactive' && coupon.status === 'inactive');
+      filter === 'all'
+        ? true
+        : filter === 'active'
+        ? coupon.isActive && !isExpired // Cupom ativo e não expirado
+        : filter === 'expired'
+        ? isExpired
+        : filter === 'inactive'
+        ? !coupon.isActive || isExpired // Inclui inativos E expirados
+        : true;
 
     const searchMatch =
       coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -108,7 +145,18 @@ const CouponsPage = () => {
 
   const statusCounts = (coupons || []).reduce(
     (acc, coupon) => {
-      acc[coupon.status]++;
+      const isExpired = new Date(coupon.expirationDate) <= new Date();
+
+      if (isExpired) {
+        acc.expired += 1;
+        acc.inactive += 1; // Adiciona também aos inativos (soma total)
+      } else if (coupon.isActive) {
+        acc.active += 1;
+      } else {
+        acc.inactive += 1; // Cupons inativos normais
+      }
+
+      acc.used += coupon.currentUses >= 1 ? 1 : 0;
       return acc;
     },
     { active: 0, expired: 0, used: 0, inactive: 0 },
@@ -124,7 +172,28 @@ const CouponsPage = () => {
   };
 
   const handleDeleteCoupon = async (couponId) => {
-    console.log('Deletar cupom:', couponId);
+    try {
+      const response = await fetch(`/coupons/${couponId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'X-CSRF-Token': csrfToken,
+        },
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao excluir cupom');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao excluir cupom:', error);
+      throw error;
+    }
   };
 
   const handleCopyCode = (code) => {
@@ -151,6 +220,43 @@ const CouponsPage = () => {
           flexDirection: 'column',
         }}
       >
+        <Dialog
+          open={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Confirmar exclusão</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Tem certeza que deseja excluir este cupom? Esta ação não pode ser
+              desfeita.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteModalOpen(false)} color="primary">
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  await handleDeleteCoupon(couponToDelete);
+                  setDeleteModalOpen(false);
+                  refreshCoupons();
+                  toast.success('Cupom excluído com sucesso!');
+                } catch (error) {
+                  toast.error(error.message || 'Erro ao excluir cupom');
+                  setDeleteModalOpen(false);
+                }
+              }}
+              color="error"
+              autoFocus
+            >
+              Confirmar
+            </Button>
+          </DialogActions>
+        </Dialog>
+        ;
         <Box
           sx={{
             width: '95%',
@@ -163,7 +269,6 @@ const CouponsPage = () => {
         >
           <DashboardNavbar />
         </Box>
-
         <Container
           maxWidth="xl"
           component="main"
@@ -270,12 +375,14 @@ const CouponsPage = () => {
                   label="Usados"
                   color="#FF9800"
                   icon="used"
+                  onClick={() => setFilter('used')} // Adicione esta prop
                   sx={{
                     height: '100%',
                     minHeight: '120px',
                     borderRadius: '12px',
                     boxShadow: 1,
-                    ml: 2, // Margem entre os cards
+                    ml: 2,
+                    cursor: 'pointer', // Adicione cursor pointer
                   }}
                 />
               </Grid>
@@ -442,7 +549,10 @@ const CouponsPage = () => {
                     </Box>
                   }
                   onEdit={handleEditCoupon}
-                  onDelete={handleDeleteCoupon}
+                  onDelete={(couponId) => {
+                    setCouponToDelete(couponId);
+                    setDeleteModalOpen(true);
+                  }}
                   onCopy={handleCopyCode}
                 />
               </motion.div>

@@ -4,6 +4,7 @@ const router = express.Router();
 const couponController = require('../controllers/couponController');
 const { body } = require('express-validator');
 const validateCouponInput = require('../middlewares/validateCouponInput');
+const csrfProtection = require('../configs/csrfProtectionConfigs');
 
 // Middlewares
 const authenticateJWT = require('../middlewares/authMiddleware');
@@ -51,6 +52,7 @@ router.route('/:id')
         authenticateJWT,
         checkAdminOrModer,
         geoRestrictionMiddleware,
+        csrfProtection,
         couponValidations,
         validateCouponInput,
         couponController.updateCoupon

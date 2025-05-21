@@ -60,19 +60,26 @@ const CouponCard = ({
     ...coupon,
     discountType: coupon.discountType || 'percentage',
     discountValue: coupon.discountValue || 0,
-    currentUses: 0,
-    maxUses: 1,
-    expirationDate: new Date(),
-    createdAt: new Date(),
-    code: '',
-    status: 'inactive',
+    currentUses: coupon.currentUses || 0,
+    maxUses: coupon.maxUses || 1,
+    expirationDate: coupon.expirationDate || new Date(),
+    createdAt: coupon.createdAt || new Date(),
+    code: coupon.code || '',
+    status: coupon.status || 'inactive',
+    isActive: coupon.isActive || false,
+    _id: coupon._id || coupon.id || '', // Garante que _id exista
   };
 
   const handleCopy = (code) => {
+    if (!code) {
+      console.error('Nenhum código para copiar');
+      return;
+    }
+
     navigator.clipboard
       .writeText(code)
       .then(() => {
-        if (onCopy) onCopy(code); // Chama a função do pai
+        if (onCopy) onCopy(code);
       })
       .catch((err) => console.error('Falha ao copiar código: ', err));
   };
@@ -101,32 +108,33 @@ const CouponCard = ({
   // Configurações de status
   const statusConfig = {
     active: {
-      icon: <ActiveIcon />,
+      icon: <ActiveIcon />, // Ícone de check (verde)
       label: 'Ativo',
-      color: palette.success,
+      color: palette.success, // Verde
       bgColor: '#E8F5E9',
     },
     expired: {
-      icon: <ExpiredIcon />,
+      icon: <ExpiredIcon sx={{ fontSize: '15px !important' }} />, // Ícone de alerta (vermelho)
       label: 'Expirado',
-      color: palette.warning,
-      bgColor: '#FFF8E1',
-    },
-    used: {
-      icon: <InactiveIcon />,
-      label: 'Usado',
-      color: palette.error,
+      color: palette.error, // Vermelho
       bgColor: '#FFEBEE',
     },
     inactive: {
-      icon: <InactiveIcon />,
+      icon: <InactiveIcon />, // Ícone de bloqueio (cinza)
       label: 'Inativo',
-      color: palette.textSecondary,
+      color: palette.textSecondary, // Cinza
       bgColor: palette.grey,
     },
   };
 
-  const status = statusConfig[safeCoupon.status] || statusConfig.inactive;
+  const getCouponStatus = () => {
+    if (new Date(safeCoupon.expirationDate) <= new Date()) {
+      return statusConfig.expired;
+    }
+    return safeCoupon.isActive ? statusConfig.active : statusConfig.inactive;
+  };
+
+  const status = getCouponStatus();
 
   if (loading) {
     return (
@@ -279,7 +287,6 @@ const CouponCard = ({
           />
         </Box>
 
-        {/* Informações principais */}
         <Box
           sx={{
             display: 'flex',
@@ -380,10 +387,10 @@ const CouponCard = ({
           <Tooltip title="Editar">
             <IconButton
               onClick={() => {
-                console.log('Editando cupom:', safeCoupon); // Adicione este log
+                console.log('Editando cupom:', safeCoupon);
                 onEdit({
                   ...safeCoupon,
-                  _id: safeCoupon._id || safeCoupon.id, // Garante que _id exista
+                  _id: safeCoupon._id || safeCoupon.id,
                 });
               }}
               sx={{
@@ -441,20 +448,20 @@ const CouponList = ({
   onCopy,
   loading = false,
 }) => {
-  // Filtra os cupons baseado no status e no filtro selecionado
   const filteredCoupons = coupons.filter((coupon) => {
+    const isExpired = new Date(coupon.expirationDate) <= new Date();
+
+    if (filter === 'used') {
+      return coupon.currentUses >= 1;
+    }
+
     if (filter === 'all') return true;
 
-    const status =
-      coupon.currentUses >= coupon.maxUses
-        ? 'used'
-        : new Date(coupon.expirationDate) <= new Date()
-        ? 'expired'
-        : coupon.isActive
-        ? 'active'
-        : 'inactive';
+    if (isExpired) {
+      return filter === 'expired' || filter === 'inactive'; // Mostra em ambos
+    }
 
-    return filter === status;
+    return filter === (coupon.isActive ? 'active' : 'inactive');
   });
 
   if (loading) {
@@ -498,10 +505,11 @@ const CouponList = ({
         },
       }}
     >
-      {filteredCoupons.map((coupon, index) => {
+      {filteredCoupons.map((coupon) => {
+        // Usa _id se disponível, caso contrário cria um hash do código + timestamp
         const uniqueKey = coupon._id
           ? coupon._id
-          : `coupon-${coupon.code}-${index}`; // Fallback com código + índice
+          : `coupon-${coupon.code}-${new Date(coupon.createdAt).getTime()}`;
 
         return (
           <CouponCard
