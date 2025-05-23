@@ -458,11 +458,36 @@ const CouponList = ({
     if (filter === 'all') return true;
 
     if (isExpired) {
-      return filter === 'expired' || filter === 'inactive'; // Mostra em ambos
+      return filter === 'expired' || filter === 'inactive';
     }
 
     return filter === (coupon.isActive ? 'active' : 'inactive');
   });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.8 },
+  };
+
+  const emptyVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.4 },
+    },
+  };
 
   if (loading) {
     return (
@@ -478,17 +503,21 @@ const CouponList = ({
 
   if (filteredCoupons.length === 0) {
     return (
-      <Box
-        sx={{
-          textAlign: 'center',
-          p: 4,
-          border: '1px dashed',
-          borderColor: 'divider',
-          borderRadius: 2,
-        }}
-      >
-        {emptyMessage}
-      </Box>
+      <motion.div variants={emptyVariants} initial="hidden" animate="visible">
+        <Box
+          sx={{
+            textAlign: 'center',
+            p: 4,
+            border: '1px dashed',
+            borderColor: 'divider',
+            borderRadius: 2,
+          }}
+          component={motion.div}
+          whileHover={{ scale: 1.02 }}
+        >
+          {emptyMessage}
+        </Box>
+      </motion.div>
     );
   }
 

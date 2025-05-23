@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  InputAdornment,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Add, FilterList, Search, Sort, Refresh } from '@mui/icons-material';
@@ -34,6 +35,32 @@ import VerticalMenu from '../../../components/DashboardBar/VerticalMenu/index';
 import DashboardNavbar from '../../../../../examples/Navbars/DashboardNavbar/index';
 import CouponList from '../../../../../components/Coupons/CouponList';
 import useCoupons from '../../../../../hooks/Coupons/useCoupons';
+
+const searchVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.05,
+      duration: 0.3,
+    },
+  }),
+};
+
+const emptyVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.4 },
+  },
+};
 
 const StatCard = ({ value, label, color, icon }) => {
   const getIcon = () => {
@@ -129,16 +156,19 @@ const CouponsPage = () => {
       filter === 'all'
         ? true
         : filter === 'active'
-        ? coupon.isActive && !isExpired // Cupom ativo e não expirado
+        ? coupon.isActive && !isExpired
         : filter === 'expired'
         ? isExpired
         : filter === 'inactive'
-        ? !coupon.isActive || isExpired // Inclui inativos E expirados
+        ? !coupon.isActive || isExpired
         : true;
 
-    const searchMatch =
-      coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      coupon.discountValue.toString().includes(searchQuery);
+    // Melhorando a lógica de busca para pesquisar em mais campos
+    const searchMatch = searchQuery
+      ? coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        coupon.discountValue.toString().includes(searchQuery) ||
+        coupon.description?.toLowerCase().includes(searchQuery.toLowerCase()) // Adicione mais campos conforme necessário
+      : true;
 
     return statusMatch && searchMatch;
   });
@@ -256,7 +286,6 @@ const CouponsPage = () => {
             </Button>
           </DialogActions>
         </Dialog>
-        ;
         <Box
           sx={{
             width: '95%',
@@ -445,6 +474,11 @@ const CouponsPage = () => {
                     placeholder="Buscar cupons..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    InputProps={{
+                      endAdornment: searchQuery && (
+                        <InputAdornment position="end"></InputAdornment>
+                      ),
+                    }}
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 3,
