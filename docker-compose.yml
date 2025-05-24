@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: CLIENT
+    build:
+      context: ./CLIENT
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./CLIENT:/app
+      - /app/node_modules
+    restart: always
+
+  backend:
+    container_name: SERVER
+    build:
+      context: ./SERVER
+      dockerfile: Dockerfile
+    ports:
+      - "8443:8443"
+    working_dir: /app
+    volumes:
+      - ./SERVER:/app
+      - /app/node_modules
+    restart: always
