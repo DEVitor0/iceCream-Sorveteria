@@ -1,11 +1,11 @@
 {
+  "homepage": ".",
   "name": "client",
   "version": "1.0.0",
   "author": "DEVitor0",
   "license": "ISC",
   "description": "ReactJS application",
   "main": "index.js",
-  "proxy": "http://localhost:8443",
   "repository": {
     "type": "git"
   },

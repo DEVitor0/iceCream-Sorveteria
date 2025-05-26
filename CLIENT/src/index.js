@@ -48,7 +48,7 @@ root.render(
         <IconProvider>
           <ImageProvider>
             <ApiProvider>
-              <BrowserRouter>
+              <BrowserRouter basename="/">
                 <Routes>
                   <Route
                     path="/"

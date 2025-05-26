@@ -1,6 +1,18 @@
-version: '3.8'
-
 services:
+  nginx:
+    container_name: PROXY
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+    restart: always
+
   frontend:
     container_name: CLIENT
     build:
@@ -8,10 +20,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    networks:
+      - app-network
     working_dir: /app
     volumes:
       - ./CLIENT:/app
       - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - BROWSER=none
+      - FAST_REFRESH=true
+      - WDS_SOCKET_PORT=3000
     restart: always
 
   backend:
@@ -21,8 +40,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8443:8443"
+    networks:
+      - app-network
     working_dir: /app
     volumes:
       - ./SERVER:/app
       - /app/node_modules
     restart: always
+
+networks:
+  app-network:
+    driver: bridge
