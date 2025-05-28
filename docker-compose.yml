@@ -1,17 +1,17 @@
 services:
   nginx:
     container_name: PROXY
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: nginx:alpine
     ports:
       - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - frontend
       - backend
     networks:
       - app-network
-    restart: always
+    restart: unless-stopped
 
   frontend:
     container_name: CLIENT
@@ -27,11 +27,15 @@ services:
       - ./CLIENT:/app
       - /app/node_modules
     environment:
+      - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
-      - BROWSER=none
+      - WATCHPACK_POLLING=true
       - FAST_REFRESH=true
       - WDS_SOCKET_PORT=3000
-    restart: always
+      - BROWSER=none
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
 
   backend:
     container_name: SERVER

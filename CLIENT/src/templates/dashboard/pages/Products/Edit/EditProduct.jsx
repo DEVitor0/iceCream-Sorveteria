@@ -46,7 +46,7 @@ const styles = `
 
 const fetchProducts = debounce(async () => {
   try {
-    const response = await axios.get('/Dashboard/editar-produtos', {
+    const response = await axios.get('/api/Dashboard/editar-produtos', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -81,7 +81,7 @@ export default function EditProduct() {
     const fetchData = async () => {
       try {
         const [productsResponse, csrfResponse] = await Promise.all([
-          axios.get('/Dashboard/editar-produtos', {
+          axios.get('/api/Dashboard/editar-produtos', {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -119,12 +119,15 @@ export default function EditProduct() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`/Dashboard/editar-produtos/${productToDelete._id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'X-CSRF-Token': csrfToken,
+      await axios.delete(
+        `/api/Dashboard/editar-produtos${productToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-Token': csrfToken,
+          },
         },
-      });
+      );
       setProducts(
         products.filter((product) => product._id !== productToDelete._id),
       );
@@ -190,11 +193,8 @@ export default function EditProduct() {
               <AnimatePresence initial={false}>
                 {filteredProducts.map((product, index) => (
                   <Grid
-                    item
                     key={product._id}
-                    xs={12}
-                    sm={6}
-                    md={4}
+                    columns={{ xs: 12, sm: 6, md: 4 }}
                     component={motion.div}
                     layout
                     initial={{ opacity: 0, scale: 0.5 }}

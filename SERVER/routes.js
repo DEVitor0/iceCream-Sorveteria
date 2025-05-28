@@ -25,6 +25,7 @@ router.get("/csrf-token", (req, res) => {
 router.use('/coupons', authenticateJWT, couponRoutes);
 
 router.use('/api', loadProducts);
+router.use('/api/Dashboard', authenticateJWT, productRoutes);
 router.use('/api', require('./routes/productRoutes.js'));
 router.use('/api', geoRoutes);
 
