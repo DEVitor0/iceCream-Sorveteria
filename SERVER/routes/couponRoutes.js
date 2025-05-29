@@ -1,4 +1,3 @@
-// routes/couponRoutes.js
 const express = require('express');
 const router = express.Router();
 const couponController = require('../controllers/couponController');
@@ -6,12 +5,10 @@ const { body } = require('express-validator');
 const validateCouponInput = require('../middlewares/validateCouponInput');
 const csrfProtection = require('../configs/csrfProtectionConfigs');
 
-// Middlewares
 const authenticateJWT = require('../middlewares/authMiddleware');
 const checkAdminOrModer = require('../middlewares/isAdministratorMiddleware');
 const geoRestrictionMiddleware = require('../middlewares/geoRestrictionMiddleware');
 
-// Validações
 const couponValidations = [
     body('code').trim().notEmpty().withMessage('Código é obrigatório'),
     body('discountType').isIn(['percentage', 'fixed']).withMessage('Tipo de desconto inválido'),
@@ -24,7 +21,6 @@ const couponValidations = [
     body('isActive').optional().isBoolean()
 ];
 
-// Rotas
 router.route('/')
     .get(
         authenticateJWT,
@@ -67,6 +63,18 @@ router.route('/:id')
 router.get('/validate/:code',
     authenticateJWT,
     couponController.validateCoupon
+);
+
+router.post('/validate-with-cart/:code',
+  authenticateJWT,
+  csrfProtection,
+  [
+    body('cartItems').isArray().withMessage('Itens do carrinho devem ser um array'),
+    body('cartItems.*.productId').isMongoId().withMessage('ID do produto inválido'),
+    body('cartItems.*.quantity').isInt({ min: 1 }).withMessage('Quantidade deve ser pelo menos 1')
+  ],
+  validateCouponInput,
+  couponController.validateAndApplyCoupon
 );
 
 module.exports = router;

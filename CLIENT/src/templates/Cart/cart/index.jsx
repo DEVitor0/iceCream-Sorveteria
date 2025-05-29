@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -36,7 +37,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AuthPopup from 'examples/Cards/AuthPopup/AuthPopup';
 import { useNavigate } from 'react-router-dom';
 
-// Conector personalizado para o stepper
 const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
     top: 20,
@@ -49,7 +49,7 @@ const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
     border: 0,
     backgroundColor: theme.palette.grey[300],
     borderRadius: 1,
-    zIndex: 0, // Garante que fique atrás
+    zIndex: 0,
   },
   [`&.${stepConnectorClasses.active}`]: {
     [`& .${stepConnectorClasses.line}`]: {
@@ -62,7 +62,7 @@ const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
     },
   },
 }));
-// Componente estilizado para o botão principal
+
 const PrimaryButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#52478C',
   color: '#fff',
@@ -76,7 +76,6 @@ const PrimaryButton = styled(Button)(({ theme }) => ({
   transition: 'all 0.3s ease',
 }));
 
-// Componente estilizado para os cards de produto
 const ProductCard = styled(Card)(({ theme }) => ({
   borderRadius: '16px',
   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
@@ -87,6 +86,56 @@ const ProductCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+const TemporaryFeedback = ({ message, severity, onClose }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      style={{
+        position: 'fixed',
+        bottom: 20,
+        right: 20,
+        zIndex: 9999,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          backgroundColor:
+            severity === 'error'
+              ? '#ffebee'
+              : severity === 'success'
+              ? '#e8f5e9'
+              : severity === 'warning'
+              ? '#fff8e1'
+              : '#e3f2fd',
+          borderLeft: `4px solid ${
+            severity === 'error'
+              ? '#f44336'
+              : severity === 'success'
+              ? '#4caf50'
+              : severity === 'warning'
+              ? '#ff9800'
+              : '#2196f3'
+          }`,
+          minWidth: 300,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="body2">{message}</Typography>
+        <IconButton size="small" onClick={onClose}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </Paper>
+    </motion.div>
+  );
+};
+
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [products, setProducts] = useState([]);
@@ -95,20 +144,25 @@ const Cart = () => {
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+  const [couponError, setCouponError] = useState(null);
+  const [couponData, setCouponData] = useState(null);
+  const [couponFeedback, setCouponFeedback] = useState({
+    message: '',
+    severity: 'success',
+    show: false,
+  });
   const [authPopup, setAuthPopup] = useState({
     open: false,
     message: '',
   });
   const navigate = useNavigate();
 
-  // Etapas na ordem correta: Carrinho → Pagamento → Confirmação
   const steps = [
     { label: 'Carrinho', icon: <CartIcon /> },
     { label: 'Pagamento', icon: <PaymentIcon /> },
     { label: 'Confirmação', icon: <ConfirmIcon /> },
   ];
 
-  // Fetch cart items from localStorage
   useEffect(() => {
     const cartData = localStorage.getItem('cart');
     if (cartData) {
@@ -120,7 +174,6 @@ const Cart = () => {
     }
   }, []);
 
-  // Fetch product details from API
   const fetchProducts = async (items) => {
     try {
       const productIds = items.map((item) => item.productId);
@@ -137,7 +190,7 @@ const Cart = () => {
           id: p._id,
           name: p.name,
           hasImage: !!p.imageUrl,
-          imageUrl: p.imageUrl, // Mostra a URL da imagem
+          imageUrl: p.imageUrl,
         })),
       );
       setProducts(data);
@@ -148,7 +201,6 @@ const Cart = () => {
     }
   };
 
-  // Calculate subtotal
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
       const product = products.find((p) => p._id === item.productId);
@@ -156,19 +208,125 @@ const Cart = () => {
     }, 0);
   };
 
-  // Apply coupon
-  const applyCoupon = () => {
-    if (coupon === 'PRIME10') {
-      setDiscount(calculateSubtotal() * 0.1); // 10% discount
-      setCouponApplied(true);
-    } else {
-      setDiscount(0);
+  const applyCoupon = async () => {
+    try {
+      setCouponError(null);
       setCouponApplied(false);
-      alert('Cupom inválido ou expirado');
+      setDiscount(0);
+      setCouponData(null);
+
+      if (!coupon) {
+        showFeedback('Digite um código de cupom', 'error');
+        return;
+      }
+
+      if (cartItems.length === 0) {
+        showFeedback(
+          'Adicione produtos ao carrinho para aplicar cupom',
+          'error',
+        );
+        return;
+      }
+
+      const csrfResponse = await fetch('/csrf-token', {
+        credentials: 'include',
+      });
+      const { csrfToken } = await csrfResponse.json();
+
+      // Validar cupom
+      const response = await fetch(`/coupons/validate-with-cart/${coupon}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        body: JSON.stringify({
+          cartItems: cartItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(
+          text.includes('Código de cupom inválido')
+            ? 'Código de cupom inválido ou não encontrado'
+            : text.includes('Este cupom expirou')
+            ? text.match(/Este cupom expirou em (.+)/)[0]
+            : 'Erro ao validar cupom',
+        );
+      }
+
+      const data = await response.json();
+      console.log('Dados completos da resposta:', data);
+
+      const couponDataFromResponse = data.data?.coupon || data.coupon;
+      if (!couponDataFromResponse) {
+        console.error('Formato inesperado da resposta:', data);
+        throw new Error('Formato de resposta do servidor inválido');
+      }
+
+      const responseData = data.data || data;
+      console.log(responseData);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erro ao validar cupom');
+      }
+
+      const discountAmount = responseData.discountAmount;
+
+      couponDataFromResponse.applicableProducts =
+        couponDataFromResponse.applicableProducts || [];
+      couponDataFromResponse.applicableCategories =
+        couponDataFromResponse.applicableCategories || [];
+
+      setCouponData(couponDataFromResponse);
+      setDiscount(discountAmount);
+      setCouponApplied(true);
+
+      showFeedback(
+        couponDataFromResponse.discountType === 'percentage'
+          ? `Cupom aplicado: ${couponDataFromResponse.discountValue}% de desconto`
+          : `Cupom aplicado: R$${couponDataFromResponse.discountValue.toFixed(
+              2,
+            )} de desconto`,
+        'success',
+      );
+    } catch (error) {
+      console.error('Erro ao aplicar cupom:', error);
+
+      const extractCleanErrorMessage = (errorMsg) => {
+        if (errorMsg.includes('Este cupom expirou')) {
+          return errorMsg.split('\n')[0].trim();
+        }
+        return errorMsg.split('<br>')[0].split('\n')[0].trim();
+      };
+
+      let errorMessage = extractCleanErrorMessage(error.message);
+
+      if (
+        errorMessage.includes('Código de cupom inválido') ||
+        errorMessage.includes('404')
+      ) {
+        errorMessage = 'Código de cupom inválido ou não encontrado';
+      }
+
+      setCouponError(errorMessage);
+      showFeedback(errorMessage, 'error');
     }
   };
 
-  // Remove item from cart
+  const showFeedback = (message, severity) => {
+    setCouponFeedback({ message, severity, show: true });
+    setTimeout(() => {
+      setCouponFeedback((prev) => ({ ...prev, show: false }));
+    }, 5000); // Some após 5 segundos
+  };
+
   const removeItem = (productId) => {
     const updatedItems = cartItems.filter(
       (item) => item.productId !== productId,
@@ -181,7 +339,6 @@ const Cart = () => {
     setIsCheckingAuth(true);
 
     try {
-      // 1. Verificar autenticação
       const authResponse = await fetch('/auth/verify', {
         credentials: 'include',
       });
@@ -194,7 +351,6 @@ const Cart = () => {
         return;
       }
 
-      // 2. Preparar dados para verificação
       const checkoutItems = cartItems.map((item) => {
         const product = products.find((p) => p._id === item.productId);
         return {
@@ -204,7 +360,6 @@ const Cart = () => {
         };
       });
 
-      // 3. Verificar estoque e preços
       const verifyResponse = await fetch('/Dashboard/verify-checkout', {
         method: 'POST',
         headers: {
@@ -220,7 +375,6 @@ const Cart = () => {
 
       if (!verifyResponse.ok) {
         if (verifyResponse.status === 409) {
-          // Mostrar erros específicos ao usuário
           let errorMessage = 'Problemas encontrados:\n';
 
           if (verifyData.outOfStock?.length > 0) {
@@ -245,7 +399,6 @@ const Cart = () => {
 
           alert(errorMessage);
 
-          // Atualizar o carrinho com os novos preços se necessário
           if (verifyData.priceChanged?.length > 0) {
             const updatedCartItems = cartItems.map((item) => {
               const changedItem = verifyData.priceChanged.find(
@@ -265,7 +418,6 @@ const Cart = () => {
         return;
       }
 
-      // 4. Se tudo estiver OK, prosseguir para o pagamento
       navigate('/pagamento');
     } catch (error) {
       console.error('Erro no checkout:', error);
@@ -275,7 +427,6 @@ const Cart = () => {
     }
   };
 
-  // Update item quantity
   const updateQuantity = (productId, newQuantity) => {
     if (newQuantity < 1) return;
 
@@ -287,7 +438,7 @@ const Cart = () => {
   };
 
   const subtotal = calculateSubtotal();
-  const deliveryFee = 0; // Free delivery for now
+  const deliveryFee = 0;
   const total = subtotal + deliveryFee - discount;
 
   if (loading) {
@@ -302,7 +453,6 @@ const Cart = () => {
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         >
-          {/* Ícone de carregamento maior */}
           <CartIcon sx={{ fontSize: 80, color: '#52478C' }} />
         </motion.div>
       </Box>
@@ -323,11 +473,11 @@ const Cart = () => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            minHeight: '100vh', // Alterado para 100vh
+            minHeight: '100vh',
             textAlign: 'center',
             p: 3,
             background:
-              'linear-gradient(135deg,rgb(242, 242, 247) 0%, #e8e8f0 100%)', // Cinza mais visível
+              'linear-gradient(135deg,rgb(242, 242, 247) 0%, #e8e8f0 100%)',
             position: 'relative',
             overflow: 'hidden',
             '&::before': {
@@ -338,7 +488,7 @@ const Cart = () => {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'rgba(82, 71, 140, 0.1)', // Opacidade aumentada
+              background: 'rgba(82, 71, 140, 0.1)',
             },
             '&::after': {
               content: '""',
@@ -348,7 +498,7 @@ const Cart = () => {
               width: 400,
               height: 400,
               borderRadius: '50%',
-              background: 'rgba(82, 71, 140, 0.1)', // Opacidade aumentada
+              background: 'rgba(82, 71, 140, 0.1)',
             },
           }}
         >
@@ -384,7 +534,7 @@ const Cart = () => {
                   width: 180,
                   height: 180,
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(82, 71, 140, 0.15)', // Mais visível
+                  backgroundColor: 'rgba(82, 71, 140, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -394,7 +544,7 @@ const Cart = () => {
                   sx={{
                     fontSize: 100,
                     color: '#52478C',
-                    opacity: 0.4, // Aumentei a opacidade
+                    opacity: 0.4,
                   }}
                 />
               </Box>
@@ -403,7 +553,7 @@ const Cart = () => {
                 size={4}
                 color="#52478C"
                 style={{
-                  filter: 'drop-shadow(0 4px 8px rgba(82, 71, 140, 0.3))', // Sombra mais forte
+                  filter: 'drop-shadow(0 4px 8px rgba(82, 71, 140, 0.3))',
                 }}
               />
             </Box>
@@ -427,7 +577,7 @@ const Cart = () => {
             <Typography
               variant="h6"
               sx={{
-                color: '#555566', // Texto mais escuro
+                color: '#555566',
                 maxWidth: 500,
                 mb: 3,
                 fontWeight: 400,
@@ -506,7 +656,6 @@ const Cart = () => {
           position: 'relative',
         }}
       >
-        {/* Header with close button */}
         <Box
           display="flex"
           justifyContent="space-between"
@@ -537,7 +686,6 @@ const Cart = () => {
           </IconButton>
         </Box>
 
-        {/* Stepper corrigido */}
         <Box
           sx={{
             width: '100%',
@@ -552,7 +700,7 @@ const Cart = () => {
             sx={{
               '& .MuiStep-root': {
                 position: 'relative',
-                zIndex: 1, // Elementos acima da linha
+                zIndex: 1,
               },
             }}
           >
@@ -566,7 +714,7 @@ const Cart = () => {
                           index === 0 ? '#52478C' : 'action.disabledBackground',
                         color: index === 0 ? '#fff' : 'action.disabled',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        zIndex: 2, // Garante que fique acima de tudo
+                        zIndex: 2,
                       }}
                     >
                       {step.icon}
@@ -597,7 +745,6 @@ const Cart = () => {
         </Box>
 
         <Grid container spacing={4}>
-          {/* Product list */}
           <Grid size={{ xs: 12, md: 8 }}>
             <AnimatePresence>
               {cartItems.map((item) => {
@@ -661,12 +808,12 @@ const Cart = () => {
                                 color="error"
                                 sx={{
                                   '&:hover': {
-                                    backgroundColor: 'rgba(244, 67, 54, 0.2)', // Fundo vermelho apenas no hover
+                                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
                                   },
-                                  borderRadius: '50%', // Garante que seja redondo
-                                  width: '40px', // Tamanho fixo
-                                  height: '40px', // Tamanho fixo
-                                  transition: 'background-color 0.3s ease', // Transição suave
+                                  borderRadius: '50%',
+                                  width: '40px',
+                                  height: '40px',
+                                  transition: 'background-color 0.3s ease',
                                 }}
                               >
                                 <DeleteIcon
@@ -735,7 +882,6 @@ const Cart = () => {
             </AnimatePresence>
           </Grid>
 
-          {/* Order summary */}
           <Grid size={{ xs: 12, md: 4 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -755,14 +901,13 @@ const Cart = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                {/* Header */}
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    mb: 2, // Margin bottom para o espaço abaixo da linha
+                    mb: 2,
                     pb: 2,
-                    position: 'relative', // Adicionado para posicionamento da linha
+                    position: 'relative',
                   }}
                 >
                   <CartIcon
@@ -783,7 +928,6 @@ const Cart = () => {
                     Resumo do Pedido
                   </Typography>
 
-                  {/* Linha abaixo do título */}
                   <Box
                     sx={{
                       position: 'absolute',
@@ -796,7 +940,6 @@ const Cart = () => {
                   />
                 </Box>
 
-                {/* Cupom */}
                 <Box sx={{ mb: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
                     <DiscountIcon
@@ -818,7 +961,7 @@ const Cart = () => {
                       onChange={(e) => setCoupon(e.target.value)}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          height: '40px', // Mesma altura do botão
+                          height: '40px',
                           borderRadius: '12px',
                           backgroundColor: '#FAFAFC',
                           '& fieldset': {
@@ -827,14 +970,12 @@ const Cart = () => {
                           '&:hover fieldset': {
                             borderColor: '#52478C',
                           },
-                          // Ajustes adicionais para alinhamento perfeito:
                           padding: '4 !important',
                           alignItems: 'center',
                         },
                         '& .MuiInputBase-input': {
                           height: '100%',
-                          padding: '0 14px !important', // Padding horizontal mantido
-                          // Centraliza o texto verticalmente:
+                          padding: '0 14px !important',
                           display: 'flex',
                           alignItems: 'center',
                         },
@@ -845,15 +986,15 @@ const Cart = () => {
                       onClick={applyCoupon}
                       disabled={!coupon || couponApplied}
                       sx={{
-                        height: '32px', // Altura reduzida (era 40px)
+                        height: '32px',
                         minWidth: 'auto',
                         borderRadius: '12px',
                         backgroundColor: '#52478C',
                         color: '#FFFFFF',
-                        px: 2, // Padding horizontal reduzido (era 3)
-                        py: 0, // Remove padding vertical padrão
-                        fontSize: '0.8125rem', // Tamanho da fonte reduzido
-                        lineHeight: 1.5, // Ajuste do line-height
+                        px: 2,
+                        py: 0,
+                        fontSize: '0.8125rem',
+                        lineHeight: 1.5,
                         textTransform: 'none',
                         fontWeight: 600,
                         '&:hover': {
@@ -863,9 +1004,8 @@ const Cart = () => {
                           backgroundColor: '#E0E0E5',
                           color: '#A0A0B0',
                         },
-                        // Garante que os estilos tenham precedência
                         '&.MuiButton-root': {
-                          minHeight: '32px', // Sobrescreve o min-height padrão
+                          minHeight: '32px',
                         },
                         '& .MuiButton-label': {
                           height: '100%',
@@ -874,27 +1014,21 @@ const Cart = () => {
                         },
                       }}
                     >
-                      {couponApplied ? '✓ Aplicado' : 'Aplicar'}
+                      {couponApplied ? 'Aplicado' : 'Aplicar'}
                     </Button>
                   </Box>
-                  {couponApplied && (
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        mt: 1,
-                        color: '#4CAF50',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                      }}
-                    >
-                      <DiscountIcon fontSize="small" />
-                      Cupom aplicado com sucesso!
-                    </Typography>
-                  )}
                 </Box>
 
-                {/* Resumo de valores */}
+                {couponFeedback.show && (
+                  <TemporaryFeedback
+                    message={couponFeedback.message}
+                    severity={couponFeedback.severity}
+                    onClose={() =>
+                      setCouponFeedback((prev) => ({ ...prev, show: false }))
+                    }
+                  />
+                )}
+
                 <Box sx={{ mb: 2 }}>
                   <Box display="flex" justifyContent="space-between" mb={2.5}>
                     <Typography variant="body1" sx={{ color: '#666680' }}>
@@ -932,7 +1066,7 @@ const Cart = () => {
                       <Typography
                         variant="body1"
                         sx={{
-                          color: '#4CAF50',
+                          color: '#52478C',
                           display: 'flex',
                           alignItems: 'center',
                           gap: 1,
@@ -943,7 +1077,7 @@ const Cart = () => {
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ color: '#4CAF50', fontWeight: 500 }}
+                        sx={{ color: '#52478C', fontWeight: 500 }}
                       >
                         - R$ {discount.toFixed(2)}
                       </Typography>
@@ -951,7 +1085,6 @@ const Cart = () => {
                   )}
                 </Box>
 
-                {/* Total */}
                 <Box
                   sx={{
                     py: 2,
@@ -980,7 +1113,6 @@ const Cart = () => {
                   </Box>
                 </Box>
 
-                {/* Botão */}
                 <PrimaryButton
                   fullWidth
                   onClick={handleCheckout}

@@ -2,7 +2,6 @@ import colors from '../../base/colors';
 import typography from '../../base/typography';
 import boxShadows from '../../base/boxShadows';
 
-// Soft UI Dashboard React Helper Functions
 import pxToRem from '../../functions/pxToRem';
 
 const { white, text, info, secondary } = colors;

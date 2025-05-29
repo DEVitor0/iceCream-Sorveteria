@@ -1,19 +1,103 @@
-// controllers/couponController.js
 const Coupon = require('../model/couponModel');
+const Product = require('../model/productModel');
 const mongoose = require('mongoose');
-const { validationResult } = require('express-validator');
 const ApiError = require('../utils/ApiError');
 
-// Validações podem ser movidas para um arquivo separado se necessário
-const validateCouponInput = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+
+exports.validateAndApplyCoupon = async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const { cartItems } = req.body;
+
+    if (!cartItems || !Array.isArray(cartItems)) {
+      throw new ApiError(400, 'Lista de itens do carrinho inválida');
     }
-    next();
+
+    const coupon = await Coupon.findOne({ code })
+      .populate('applicableProducts', 'name price')
+      .populate('applicableCategories', 'name');
+
+    if (!coupon) {
+      throw new ApiError(404, 'Código de cupom inválido ou não encontrado');
+    }
+
+    if (coupon.currentUses >= coupon.maxUses) {
+      throw new ApiError(400, 'Este cupom já foi utilizado o máximo de vezes permitido');
+    }
+
+    if (new Date() > coupon.expirationDate) {
+      throw new ApiError(400, `Este cupom expirou em ${coupon.expirationDate.toLocaleDateString()}`);
+    }
+
+    if (!coupon.isActive) {
+      throw new ApiError(400, 'Este cupom está desativado');
+    }
+
+    if (req.user) {
+      const userUsageCount = await coupon.getUserUsageCount(req.user.id);
+      if (userUsageCount >= coupon.userMaxUses) {
+        throw new ApiError(400, `Você já utilizou este cupom o máximo de ${coupon.userMaxUses} vezes permitidas`);
+      }
+    }
+
+    const productIds = cartItems.map(item => item.productId);
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    const applicableItems = cartItems.filter(item => {
+      const product = products.find(p => p._id.toString() === item.productId);
+      if (!product) return false;
+
+      const isProductApplicable = coupon.applicableProducts.length === 0 ||
+        coupon.applicableProducts.some(p => p._id.toString() === product._id.toString());
+
+      const isCategoryApplicable = coupon.applicableCategories.length === 0 ||
+        coupon.applicableCategories.some(cat => cat._id.toString() === product.tag);
+
+      return isProductApplicable || isCategoryApplicable;
+    });
+
+    if (applicableItems.length === 0) {
+      throw new ApiError(400, 'Este cupom não se aplica aos produtos no seu carrinho');
+    }
+
+    const subtotal = applicableItems.reduce((total, item) => {
+      const product = products.find(p => p._id.toString() === item.productId);
+      return total + (product.price * item.quantity);
+    }, 0);
+
+    let discountValue;
+    if (coupon.discountType === 'percentage') {
+      discountValue = subtotal * (coupon.discountValue / 100);
+    } else {
+      discountValue = Math.min(coupon.discountValue, subtotal);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        coupon: {
+          id: coupon._id,
+          code: coupon.code,
+          discountType: coupon.discountType,
+          discountValue: coupon.discountValue,
+          description: coupon.description || '',
+          expirationDate: coupon.expirationDate,
+          applicableProducts: coupon.applicableProducts,
+          applicableCategories: coupon.applicableCategories
+        },
+        discountAmount: discountValue,
+        applicableItems: applicableItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity
+        }))
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Criar novo cupom
 exports.createCoupon = async (req, res, next) => {
   try {
     const {
@@ -28,13 +112,11 @@ exports.createCoupon = async (req, res, next) => {
       isActive
     } = req.body;
 
-    // Verificar se o código já existe
     const existingCoupon = await Coupon.findOne({ code });
     if (existingCoupon) {
       throw new ApiError(400, 'Já existe um cupom com este código');
     }
 
-    // Converter strings para ObjectIds
     const validProductIds = applicableProducts
       .filter(id => mongoose.Types.ObjectId.isValid(id))
       .map(id => new mongoose.Types.ObjectId(id));
@@ -65,13 +147,11 @@ exports.createCoupon = async (req, res, next) => {
   }
 };
 
-// Listar todos os cupons
 exports.getAllCoupons = async (req, res, next) => {
   try {
       const coupons = await Coupon.find({})
           .sort({ createdAt: -1 });
 
-      // Formatar os dados conforme necessário para o frontend
       const formattedCoupons = coupons.map(coupon => ({
           id: coupon._id,
           code: coupon.code,
@@ -84,7 +164,7 @@ exports.getAllCoupons = async (req, res, next) => {
           expirationDate: coupon.expirationDate,
           maxUses: coupon.maxUses,
           isActive: coupon.isActive,
-          status: coupon.status // usando o virtual field do schema
+          status: coupon.status
       }));
 
       res.status(200).json({
@@ -96,7 +176,6 @@ exports.getAllCoupons = async (req, res, next) => {
   }
 };
 
-// Obter detalhes de um cupom
 exports.getCoupon = async (req, res, next) => {
     try {
         const coupon = await Coupon.findById(req.params.id)
@@ -117,8 +196,6 @@ exports.getCoupon = async (req, res, next) => {
     }
 };
 
-// Atualizar cupom
-// Atualizar cupom
 exports.updateCoupon = async (req, res, next) => {
   try {
     console.log('Dados recebidos no backend:', req.body);
@@ -130,24 +207,21 @@ exports.updateCoupon = async (req, res, next) => {
       expirationDate,
       maxUses,
       userMaxUses,
-      applicableProducts = [], // Valor padrão para evitar undefined
+      applicableProducts = [],
       applicableCategories = [],
       isActive
     } = req.body;
 
-    // 1. Validar e filtrar produtos
     const validProductIds = applicableProducts
       .filter(id => mongoose.Types.ObjectId.isValid(id))
       .map(id => new mongoose.Types.ObjectId(id));
 
     console.log('IDs de produtos válidos no backend:', validProductIds);
 
-    // 2. Validar e filtrar categorias (mesma lógica)
     const validCategoryIds = applicableCategories
       .filter(id => mongoose.Types.ObjectId.isValid(id))
       .map(id => new mongoose.Types.ObjectId(id));
 
-    // 3. Atualizar o cupom
     const coupon = await Coupon.findByIdAndUpdate(
       req.params.id,
       {
@@ -182,7 +256,6 @@ exports.updateCoupon = async (req, res, next) => {
   }
 };
 
-// Deletar cupom
 exports.deleteCoupon = async (req, res, next) => {
   try {
       const coupon = await Coupon.findById(req.params.id);
@@ -191,12 +264,10 @@ exports.deleteCoupon = async (req, res, next) => {
           throw new ApiError(404, 'Cupom não encontrado');
       }
 
-      // Verificar se o cupom já foi usado
       if (coupon.currentUses > 0) {
           throw new ApiError(400, 'Não é possível excluir um cupom que já foi utilizado');
       }
 
-      // Verificar se o usuário tem permissão para excluir
       if (coupon.createdBy.toString() !== req.user.id && !req.user.isAdmin) {
           throw new ApiError(403, 'Você não tem permissão para excluir este cupom');
       }
@@ -213,7 +284,6 @@ exports.deleteCoupon = async (req, res, next) => {
   }
 };
 
-// Validar cupom (para uso no checkout)
 exports.validateCoupon = async (req, res, next) => {
     try {
         const { code } = req.params;

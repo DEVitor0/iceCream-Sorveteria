@@ -1,6 +1,5 @@
 import colors from './colors';
 
-// Soft UI Dashboard React Helper Functions
 import boxShadow from '../functions/boxShadow';
 
 const { black, white, info, inputColors, tabs } = colors;

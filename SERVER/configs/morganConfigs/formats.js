@@ -1,7 +1,6 @@
 const morgan = require('morgan');
 const colors = require('colors');
 
-// Configuração de cores
 colors.setTheme({
   info: 'cyan',
   success: 'green',
@@ -13,7 +12,6 @@ colors.setTheme({
   section: ['underline', 'bold']
 });
 
-// Tokens personalizados com formatação melhorada
 morgan.token('custom-date', () => {
   return colors.timestamp(new Date().toISOString());
 });
@@ -92,15 +90,12 @@ const formats = {
     '[0] :divider'
   ].join('\n'),
 
-  // Adicione outros formatos conforme necessário
 };
 
-// Tokens adicionais
 morgan.token('env', () => process.env.NODE_ENV || 'development');
 morgan.token('ip', (req) => colors.info(req.ip || req.connection.remoteAddress));
 morgan.token('user-agent', (req) => colors.debug(req.headers['user-agent']));
 
-// Configuração para objetos (headers, query, etc.)
 const formatObject = (obj) => {
   if (!obj || Object.keys(obj).length === 0) return colors.gray('{}');
   return colors.white(JSON.stringify(obj, null, 2)
@@ -116,7 +111,6 @@ morgan.token('body', (req) => {
   if (!req.body || Object.keys(req.body).length === 0) return colors.gray('{}');
 
   const body = {...req.body};
-  // Esconde informações sensíveis
   if (body.password) body.password = '******';
   if (body.token) body.token = '******';
   if (body.jwt) body.jwt = '******';
@@ -128,7 +122,6 @@ morgan.token('cookies', (req) => {
   if (!req.cookies || Object.keys(req.cookies).length === 0) return colors.gray('{}');
 
   const cookies = {...req.cookies};
-  // Esconde informações sensíveis
   if (cookies.jwt) cookies.jwt = '******';
   if (cookies.token) cookies.token = '******';
 

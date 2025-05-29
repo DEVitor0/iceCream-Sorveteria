@@ -13,10 +13,9 @@ const TwoFACodeSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 600 // Expira após 10 minutos (600 segundos)
+        expires: 600
     }
 });
 
-// Certifique-se que está exportando corretamente
 const TwoFACodeModel = mongoose.model('TwoFACode', TwoFACodeSchema);
 module.exports = TwoFACodeModel;

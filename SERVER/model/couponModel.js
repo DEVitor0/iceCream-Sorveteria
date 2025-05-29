@@ -1,6 +1,21 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const couponUsageSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  usedAt: {
+    type: Date,
+    default: Date.now
+  },
+  orderId: {
+    type: Schema.Types.ObjectId
+  }
+});
+
 const couponSchema = new Schema({
     code: {
         type: String,
@@ -79,10 +94,12 @@ const couponSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    usages: [couponUsageSchema]
 }, {
     toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    toObject: { virtuals: true },
+    timestamps: true,
 });
 
 couponSchema.index({ code: 1 });
@@ -114,6 +131,39 @@ couponSchema.statics.validateCoupon = async function(code, userId) {
     }
 
     return coupon;
+};
+
+couponSchema.methods.getUserUsageCount = async function(userId) {
+  return this.usages.filter(usage =>
+    usage.userId.toString() === userId.toString()
+  ).length;
+};
+
+couponSchema.methods.recordUsage = async function(userId) {
+  this.usages.push({ userId });
+  this.currentUses += 1;
+  await this.save();
+};
+
+couponSchema.methods.isProductApplicable = function(productId, productCategory) {
+  if (this.applicableProducts.length === 0 && this.applicableCategories.length === 0) {
+    return true;
+  }
+
+  const productMatch = this.applicableProducts.some(id =>
+    id.toString() === productId.toString()
+  );
+
+  const categoryMatch = this.applicableCategories.some(catId =>
+    catId.toString() === productCategory.toString()
+  );
+
+  return productMatch || categoryMatch;
+};
+
+couponSchema.methods.recordUsage = async function(userId) {
+  this.currentUses += 1;
+  await this.save();
 };
 
 module.exports = mongoose.model('Coupon', couponSchema);

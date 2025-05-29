@@ -14,7 +14,6 @@ const verifyGeo = async (req, res, next) => {
                    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
                    req.ip;
 
-    // Permite IPs locais mesmo em produção
     if (clientIp === '127.0.0.1' || clientIp === '::1') {
       return res.json({
         allowed: true,

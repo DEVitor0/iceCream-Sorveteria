@@ -7,7 +7,6 @@ const authenticateJWT = require('../middlewares/authMiddleware');
 const upload = require('../configs/multerConfig');
 const csrfProtection = require('../configs/csrfProtectionConfigs');
 
-// Rotas protegidas por autenticação
 router.get(
   '/editar-produtos',
   csrfProtection,
@@ -47,15 +46,12 @@ router.delete(
   productController.deleteProduct
 );
 
-// Rotas para o frontend (sem autenticação para simplificar)
 router.get('/products-for-coupons', productController.getAllProductsForCoupons);
 router.get('/unique-categories-from-tags', productController.getUniqueCategoriesFromTags);
 
-// Adicione estas novas rotas para compatibilidade
 router.get('/products/coupons', productController.getAllProductsForCoupons);
 router.get('/categories/unique-tags', productController.getUniqueCategoriesFromTags);
 
-// Nova rota para verificar estoque e preços
 router.post(
   '/verify-checkout',
   csrfProtection,
@@ -68,11 +64,9 @@ router.post(
         return res.status(400).json({ message: 'Lista de itens inválida' });
       }
 
-      // Buscar todos os produtos de uma vez
       const productIds = items.map(item => item.productId);
       const products = await Product.find({ _id: { $in: productIds } });
 
-      // Verificar se todos os produtos existem
       if (products.length !== items.length) {
         const missingProducts = items.filter(item =>
           !products.some(p => p._id.toString() === item.productId)
@@ -83,7 +77,6 @@ router.post(
         });
       }
 
-      // Verificar estoque e preços
       const outOfStock = [];
       const priceChanged = [];
       let total = 0;
@@ -91,7 +84,6 @@ router.post(
       items.forEach(item => {
         const product = products.find(p => p._id.toString() === item.productId);
 
-        // Verificar estoque
         if (product.quantity < item.quantity) {
           outOfStock.push({
             productId: product._id,
@@ -101,7 +93,6 @@ router.post(
           });
         }
 
-        // Verificar se o preço mudou (com margem de 0.01 para evitar problemas de arredondamento)
         if (Math.abs(product.price - item.price) > 0.01) {
           priceChanged.push({
             productId: product._id,
@@ -123,7 +114,6 @@ router.post(
         });
       }
 
-      // Tudo ok
       res.status(200).json({
         message: 'Produtos verificados com sucesso',
         total

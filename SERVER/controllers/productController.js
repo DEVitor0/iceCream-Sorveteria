@@ -100,7 +100,6 @@ exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Verifica se o produto existe
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: 'Produto não encontrado.' });
@@ -115,22 +114,22 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getAllProductsForCoupons = async (req, res) => {
-  console.log('Acessando getAllProductsForCoupons'); // Log de depuração
+  console.log('Acessando getAllProductsForCoupons');
   try {
     const products = await Product.find({}, 'id name');
-    console.log('Produtos encontrados:', products.length); // Log de depuração
+    console.log('Produtos encontrados:', products.length);
     res.status(200).json(products.map(p => ({
       id: p._id,
       name: p.name
     })));
   } catch (error) {
-    console.error('Erro em getAllProductsForCoupons:', error); // Log de erro
+    console.error('Erro em getAllProductsForCoupons:', error);
     res.status(500).json({ message: 'Erro ao buscar produtos', error });
   }
 };
 
 exports.getUniqueCategoriesFromTags = async (req, res) => {
-  console.log('Acessando getUniqueCategoriesFromTags'); // Log de depuração
+  console.log('Acessando getUniqueCategoriesFromTags');
   try {
     const uniqueTags = await Product.aggregate([
       { $match: { tag: { $exists: true, $ne: "" } } },
@@ -139,7 +138,7 @@ exports.getUniqueCategoriesFromTags = async (req, res) => {
       { $sort: { name: 1 } }
     ]);
 
-    console.log('Categorias únicas encontradas:', uniqueTags.length); // Log de depuração
+    console.log('Categorias únicas encontradas:', uniqueTags.length);
 
     const categories = uniqueTags.map((tag, index) => ({
       id: index + 1,
@@ -148,7 +147,7 @@ exports.getUniqueCategoriesFromTags = async (req, res) => {
 
     res.status(200).json(categories);
   } catch (error) {
-    console.error('Erro em getUniqueCategoriesFromTags:', error); // Log de erro
+    console.error('Erro em getUniqueCategoriesFromTags:', error);
     res.status(500).json({
       message: 'Erro ao buscar categorias',
       error: error.message

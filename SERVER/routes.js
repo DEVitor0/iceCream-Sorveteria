@@ -8,7 +8,8 @@ const geoRestrictionMiddleware = require('./middlewares/geoRestrictionMiddleware
 const { twoFALogin, validateTwoFACode } = require('./controllers/twoFAController');
 const { getAllTags } = require('./controllers/tagController');
 const geoRoutes = require('./routes/geoRoutes');
-const couponRoutes = require('./routes/couponRoutes'); // Adicione esta linha
+const couponRoutes = require('./routes/couponRoutes');
+const ApiError = require('./utils/ApiError.js');
 
 const authenticationRoutes = require('./routes/authenticationRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -21,7 +22,6 @@ router.get("/csrf-token", (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
-// Adicione esta linha para registrar as rotas de cupons
 router.use('/coupons', authenticateJWT, couponRoutes);
 
 router.use('/api', loadProducts);
@@ -46,5 +46,25 @@ router.use('/Dashboard', authenticateJWT, productRoutes);
 router.use('/Dashboard', authenticateJWT, dashboardRoutes);
 
 router.get('/tags', getAllTags);
+
+router.use((err, req, res, next) => {
+  console.error('Erro:', {
+      message: err.message,
+      stack: err.stack,
+      status: err.statusCode
+  });
+
+  if (err instanceof ApiError) {
+      return res.status(err.statusCode).json({
+          success: false,
+          message: err.message.split('\n')[0].trim()
+      });
+  }
+
+  res.status(500).json({
+      success: false,
+      message: 'Ocorreu um erro inesperado'
+  });
+});
 
 module.exports = router;

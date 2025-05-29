@@ -5,7 +5,6 @@ const geoRestrictionMiddleware = async (req, res, next) => {
   console.log('=== INÍCIO DA VERIFICAÇÃO GEOGRÁFICA ===');
   console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
 
-  // Permite acesso em desenvolvimento ou para IPs locais
   if (process.env.NODE_ENV !== 'production') {
     console.log('Ambiente não-produção - acesso permitido sem verificação geográfica');
     return next();
@@ -20,7 +19,6 @@ const geoRestrictionMiddleware = async (req, res, next) => {
 
     console.log('IP detectado:', clientIp);
 
-    // Ignora IPs locais mesmo em produção (opcional)
     if (clientIp === '127.0.0.1' || clientIp === '::1') {
       console.log('IP local detectado - acesso permitido');
       return next();
