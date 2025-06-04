@@ -65,77 +65,93 @@ async function twoFALogin(req, res) {
     });
   }
 }
+
 async function validateTwoFACode(req, res) {
-    const { email, code } = req.body;
+  console.log('Recebendo requisição de validação 2FA:', req.body);
 
-    if (!email || !code) {
-        return res.status(400).json({
-            success: false,
-            message: 'E-mail e código são obrigatórios'
-        });
-    }
+  const { email, code } = req.body;
 
-    try {
-        const [savedCode, user] = await Promise.all([
-            TwoFACode.findOne({ email }),
-            User.findOne({ email })
-        ]);
+  if (!email || !code) {
+      console.log('Dados incompletos recebidos:', { email, code });
+      return res.status(400).json({
+          success: false,
+          message: 'E-mail e código são obrigatórios'
+      });
+  }
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuário não encontrado'
-            });
-        }
+  try {
+      console.log(`Validando código para ${email}`);
+      const [savedCode, user] = await Promise.all([
+          TwoFACode.findOne({ email }),
+          User.findOne({ email })
+      ]);
 
-        if (!savedCode || savedCode.code !== code) {
-            return res.status(400).json({
-                success: false,
-                message: 'Código 2FA inválido ou expirado'
-            });
-        }
+      if (!user) {
+          console.log(`Usuário não encontrado: ${email}`);
+          return res.status(404).json({
+              success: false,
+              message: 'Usuário não encontrado'
+          });
+      }
 
-        // Verifica se o código expirou (10 minutos)
-        const now = new Date();
-        const codeAge = (now - savedCode.createdAt) / 1000 / 60; // em minutos
-        if (codeAge > 10) {
-            return res.status(400).json({
-                success: false,
-                message: 'Código 2FA expirado'
-            });
-        }
+      if (!savedCode) {
+          console.log(`Nenhum código encontrado para: ${email}`);
+          return res.status(400).json({
+              success: false,
+              message: 'Código 2FA não encontrado'
+          });
+      }
 
-        const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '168h' }
-        );
+      if (savedCode.code !== code) {
+          console.log(`Código inválido para ${email}. Esperado: ${savedCode.code}, Recebido: ${code}`);
+          return res.status(400).json({
+              success: false,
+              message: 'Código 2FA inválido'
+          });
+      }
 
-        await TwoFACode.deleteOne({ email });
+      const now = new Date();
+      const codeAge = (now - savedCode.createdAt) / 1000 / 60;
+      if (codeAge > 10) {
+          console.log(`Código expirado para ${email}. Idade: ${codeAge} minutos`);
+          return res.status(400).json({
+              success: false,
+              message: 'Código 2FA expirado'
+          });
+      }
 
-        res.cookie('jwt', token, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 604800000, // 7 dias
-            path: '/',
-        }).status(200).json({
-            success: true,
-            user: {
-                id: user._id,
-                email: user.email,
-                role: user.role
-            }
-        });
+      const token = jwt.sign(
+          { id: user._id, email: user.email, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: '168h' }
+      );
 
-    } catch (error) {
-        console.error('Erro na validação 2FA:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro ao validar o código 2FA',
-            error: error.message
-        });
-    }
+      await TwoFACode.deleteOne({ email });
+      console.log(`Código validado com sucesso para ${email}`);
+
+      res.cookie('jwt', token, {
+          httpOnly: false,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 604800000,
+          path: '/',
+      }).status(200).json({
+          success: true,
+          user: {
+              id: user._id,
+              email: user.email,
+              role: user.role
+          }
+      });
+
+  } catch (error) {
+      console.error('Erro na validação 2FA:', error);
+      res.status(500).json({
+          success: false,
+          message: 'Erro ao validar o código 2FA',
+          error: error.message
+      });
+  }
 }
 
 module.exports = { twoFALogin, validateTwoFACode };

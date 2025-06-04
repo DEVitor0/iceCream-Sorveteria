@@ -263,8 +263,8 @@ function RegisterProducts() {
 
       try {
         const url = productId
-          ? `http://localhost:8443/Dashboard/editar-produtos/${productId}`
-          : 'http://localhost:8443/Dashboard/cadastrar';
+          ? `https://allowing-llama-seemingly.ngrok-free.app/Dashboard/editar-produtos/${productId}`
+          : 'https://allowing-llama-seemingly.ngrok-free.app/Dashboard/cadastrar';
         const method = productId ? 'PUT' : 'POST';
 
         const response = await fetch(url, {

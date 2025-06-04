@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Box,
@@ -92,6 +93,7 @@ const estadosBrasileiros = [
 ];
 
 const RegisterDatas = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     cep: '',
     logradouro: '',
@@ -194,9 +196,12 @@ const RegisterDatas = () => {
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('http://localhost:8443/csrf-token', {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          'https://allowing-llama-seemingly.ngrok-free.app/csrf-token',
+          {
+            credentials: 'include',
+          },
+        );
         const { csrfToken } = await response.json();
         setCsrfToken(csrfToken);
       } catch (error) {
@@ -249,16 +254,19 @@ const RegisterDatas = () => {
           'X-CSRF-Token': csrfToken,
         },
       });
-      const response = await fetch('http://localhost:8443/address', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'X-CSRF-Token': csrfToken,
+      const response = await fetch(
+        'https://allowing-llama-seemingly.ngrok-free.app/address',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            'X-CSRF-Token': csrfToken,
+          },
+          credentials: 'include', // Isso é essencial para enviar cookies
+          body: JSON.stringify(formData),
         },
-        credentials: 'include', // Isso é essencial para enviar cookies
-        body: JSON.stringify(formData),
-      });
+      );
 
       const data = await response.json();
       console.log('[FRONT] Resposta bem-sucedida:', data);
@@ -285,6 +293,21 @@ const RegisterDatas = () => {
         estado: '',
       });
       setCepValid(null);
+
+      const cart = localStorage.getItem('cart');
+      if (cart) {
+        try {
+          const cartItems = JSON.parse(cart);
+          if (cartItems && cartItems.length > 0) {
+            navigate('/carrinho');
+            return;
+          }
+        } catch (error) {
+          console.error('Erro ao parsear carrinho:', error);
+        }
+      }
+
+      navigate('/');
     } catch (error) {
       console.error('[FRONT] Erro na requisição:', {
         message: error.message,
@@ -297,9 +320,12 @@ const RegisterDatas = () => {
 
       // Se o erro for de CSRF, atualize o token
       if (error.message.includes('CSRF')) {
-        const newResponse = await fetch('http://localhost:8443/csrf-token', {
-          credentials: 'include',
-        });
+        const newResponse = await fetch(
+          'https://allowing-llama-seemingly.ngrok-free.app/csrf-token',
+          {
+            credentials: 'include',
+          },
+        );
         const { csrfToken: newToken } = await newResponse.json();
         setCsrfToken(newToken);
       }

@@ -267,7 +267,7 @@ function Dashboard() {
       <SoftBox py={3}>
         <SoftBox mb={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} xl={3}>
+            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: "today's money" }}
                 count="$53,000"
@@ -275,7 +275,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'paid' }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} xl={3}>
+            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: "today's users" }}
                 count="2,300"
@@ -283,7 +283,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'public' }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} xl={3}>
+            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: 'new clients' }}
                 count="+3,462"
@@ -291,7 +291,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'emoji_events' }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} xl={3}>
+            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: 'sales' }}
                 count="$103,430"
@@ -306,7 +306,7 @@ function Dashboard() {
         </SoftBox>
         <SoftBox mb={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={5}>
+            <Grid item size={{ xs: 12, lg: 5 }}>
               <ReportsBarChart
                 color="info"
                 title="Active Users"
@@ -342,7 +342,7 @@ function Dashboard() {
                 ]}
               />
             </Grid>
-            <Grid item xs={12} lg={7}>
+            <Grid item size={{ xs: 12, lg: 7 }}>
               <GradientLineChart
                 title="Sales Overview"
                 description={
@@ -403,10 +403,10 @@ function Dashboard() {
           </Grid>
         </SoftBox>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={8}>
+          <Grid item size={{ xs: 12, md: 6, lg: 8 }}>
             <Projects data={projectsData} />
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item size={{ xs: 12, md: 6, lg: 4 }}>
             <OrderOverview />
           </Grid>
         </Grid>

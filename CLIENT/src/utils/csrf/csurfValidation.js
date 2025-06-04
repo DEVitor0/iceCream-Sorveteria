@@ -1,8 +1,11 @@
 export const fetchCsrfToken = async () => {
   try {
-    const response = await fetch('http://localhost:8443/csrf-token', {
-      credentials: 'include',
-    });
+    const response = await fetch(
+      'https://allowing-llama-seemingly.ngrok-free.app/csrf-token',
+      {
+        credentials: 'include',
+      },
+    );
     const data = await response.json();
     return data.csrfToken;
   } catch (error) {

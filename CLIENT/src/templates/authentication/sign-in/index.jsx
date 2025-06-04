@@ -117,15 +117,26 @@ function SignIn() {
     }
 
     try {
-      const response = await fetch('http://localhost:8443/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
+      if (!csrfToken) {
+        const newToken = await fetchCsrfToken();
+        if (!newToken) {
+          throw new Error('Failed to get CSRF token');
+        }
+        setCsrfToken(newToken);
+      }
+
+      const response = await fetch(
+        'https://allowing-llama-seemingly.ngrok-free.app/login',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+          },
+          body: JSON.stringify({ email, password }),
         },
-        body: JSON.stringify({ email, password }),
-      });
+      );
 
       if (response.ok) {
         localStorage.setItem('email', email);
@@ -137,6 +148,7 @@ function SignIn() {
         );
       }
     } catch (error) {
+      console.error('Login error:', error);
       setError('Erro na conexão com o servidor. Tente novamente mais tarde.');
     } finally {
       setIsSubmitting(false);

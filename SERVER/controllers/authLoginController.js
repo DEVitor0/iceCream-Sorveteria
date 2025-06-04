@@ -30,7 +30,7 @@ const login = async (req, res) => {
         sameSite: 'Lax',
         maxAge: 24 * 60 * 60 * 1000,
         path: '/',
-        domain: process.env.NODE_ENV === 'production' ? 'meusite.com' : 'localhost'
+        domain: process.env.NODE_ENV === 'production' ? 'allowing-llama-seemingly.ngrok-free.app' : 'localhost'
       })
       .json({
         success: true,

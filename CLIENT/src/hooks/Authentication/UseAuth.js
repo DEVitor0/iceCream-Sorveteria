@@ -13,9 +13,12 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:8443/auth/verify', {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          'https://allowing-llama-seemingly.ngrok-free.app/auth/verify',
+          {
+            credentials: 'include',
+          },
+        );
 
         if (response.ok) {
           const userData = await response.json();

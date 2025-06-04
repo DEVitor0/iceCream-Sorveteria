@@ -9,7 +9,7 @@ export const getCookieDetails = (name) => {
   const value = cookie.split('=')[1];
   const attributes = {
     path: '/',
-    domain: 'localhost',
+    domain: '.ngrok-free.app',
     secure: false,
     httpOnly: false, // apenas informação, não pode ser acessado via JS
   };

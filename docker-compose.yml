@@ -1,4 +1,14 @@
 services:
+  ngrok:
+    container_name: NGROK
+    image: ngrok/ngrok
+    command: http PROXY:80 --domain=allowing-llama-seemingly.ngrok-free.app
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    networks:
+      - app-network
+    restart: unless-stopped
+
   nginx:
     container_name: PROXY
     image: nginx:alpine

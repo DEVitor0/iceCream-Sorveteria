@@ -1,9 +1,14 @@
 const { verifyToken } = require('../utils/auth');
 
 const authenticateJWT = (req, res, next) => {
+  console.log('Iniciando autenticação JWT...');
+
   const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
 
+  console.log('Token recebido:', token ? 'Presente' : 'Ausente');
+
   if (!token) {
+    console.log('Erro: Token não fornecido');
     return res.status(401).json({
       error: 'Acesso não autorizado',
       message: 'Token não fornecido'
@@ -11,13 +16,16 @@ const authenticateJWT = (req, res, next) => {
   }
 
   try {
+    console.log('Verificando token...');
     const decoded = verifyToken(token);
     req.user = {
-      id: decoded.id,
+      _id: decoded.id,
       role: decoded.role
     };
+    console.log('Token válido para usuário:', req.user);
     next();
   } catch (error) {
+    console.error('Erro na verificação do token:', error.message);
     res.clearCookie('jwt');
     return res.status(401).json({
       error: 'Autenticação falhou',

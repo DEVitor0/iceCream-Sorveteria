@@ -67,30 +67,45 @@ function TwoFAScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fullCode = code.join('');
+    const userEmail = localStorage.getItem('email');
+
+    console.log('Enviando código 2FA:', {
+      email: userEmail,
+      code: fullCode,
+    });
 
     try {
-      const response = await fetch('http://localhost:8443/validate-2fa', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
+      const response = await fetch(
+        'https://allowing-llama-seemingly.ngrok-free.app/validate-2fa',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            code: fullCode,
+          }),
         },
-        body: JSON.stringify({
-          email: localStorage.getItem('email'),
-          code: fullCode,
-        }),
-      });
+      );
 
-      if (response.ok) {
-        setTimeout(() => {
-          navigate('/Dashboard');
-        }, 100);
-      } else {
+      console.log('Resposta do servidor:', response.status);
+
+      if (!response.ok) {
         const errorData = await response.json();
+        console.error('Erro na resposta:', errorData);
         setError(errorData.message || 'Código inválido. Tente novamente.');
+        return;
       }
+
+      const data = await response.json();
+      console.log('Sucesso na validação:', data);
+
+      navigate('/Dashboard');
     } catch (error) {
+      console.error('Erro na requisição:', error);
       setError('Erro na conexão com o servidor. Tente novamente mais tarde.');
     }
   };

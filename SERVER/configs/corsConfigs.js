@@ -1,13 +1,20 @@
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8080',
+  'https://allowing-llama-seemingly.ngrok-free.app',
+  'https://allowing-llama-seemingly.ngrok-free.app:3000',
+  'https://allowing-llama-seemingly.ngrok-free.app:8080'
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.endsWith('.ngrok-free.app') ||
+      origin.endsWith('.ngrok.io')
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

@@ -23,7 +23,7 @@
     "@mdi/react": "^1.6.1",
     "@mui/icons-material": "^7.0.2",
     "@mui/lab": "^7.0.0-beta.11",
-    "@mui/material": "^7.0.2",
+    "@mui/material": "^7.1.1",
     "@mui/styled-engine": "5.12.3",
     "@mui/system": "^7.0.2",
     "@mui/x-date-pickers": "^8.2.0",

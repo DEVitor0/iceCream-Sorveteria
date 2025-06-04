@@ -17,9 +17,12 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const loadProducts = require('./routes/loadProducts');
 const googleAuthRoutes = require('./routes/googleAuthRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 router.get("/csrf-token", (req, res) => {
-    res.json({ csrfToken: req.csrfToken() });
+  console.log('Cookies recebidos:', req.cookies);
+  console.log('CSRF Token gerado:', req.csrfToken());
+  res.json({ csrfToken: req.csrfToken() });
 });
 
 router.use('/coupons', authenticateJWT, couponRoutes);
@@ -36,7 +39,7 @@ router.get('/auth/verify', geoRestrictionMiddleware, authenticateJWT, (req, res)
 
 router.post('/login', sanitizeMiddleware, csrfProtection, validateLoginMiddleware, twoFALogin);
 
-router.use('/address', authenticateJWT, addressRoutes);
+router.use('/address/', authenticateJWT, addressRoutes);
 
 router.post('/validate-2fa', sanitizeMiddleware, csrfProtection, validateTwoFACode);
 
@@ -46,6 +49,8 @@ router.use('/Dashboard', authenticateJWT, productRoutes);
 router.use('/Dashboard', authenticateJWT, dashboardRoutes);
 
 router.get('/tags', getAllTags);
+
+router.use('/payment', paymentRoutes);
 
 router.use((err, req, res, next) => {
   console.error('Erro:', {

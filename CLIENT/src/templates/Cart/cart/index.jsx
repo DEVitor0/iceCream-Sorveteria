@@ -339,6 +339,7 @@ const Cart = () => {
     setIsCheckingAuth(true);
 
     try {
+      // 1. Verificar autenticação
       const authResponse = await fetch('/auth/verify', {
         credentials: 'include',
       });
@@ -351,6 +352,7 @@ const Cart = () => {
         return;
       }
 
+      // 2. Preparar itens para checkout
       const checkoutItems = cartItems.map((item) => {
         const product = products.find((p) => p._id === item.productId);
         return {
@@ -360,68 +362,35 @@ const Cart = () => {
         };
       });
 
-      const verifyResponse = await fetch('/Dashboard/verify-checkout', {
+      // 3. Criar preferência de pagamento no backend
+      const response = await fetch('/payment/create-preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')
-            .content,
         },
         credentials: 'include',
-        body: JSON.stringify({ items: checkoutItems }),
+        body: JSON.stringify({
+          items: checkoutItems,
+          couponCode: couponApplied ? coupon : null,
+        }),
       });
 
-      const verifyData = await verifyResponse.json();
-
-      if (!verifyResponse.ok) {
-        if (verifyResponse.status === 409) {
-          let errorMessage = 'Problemas encontrados:\n';
-
-          if (verifyData.outOfStock?.length > 0) {
-            errorMessage += '\n- Estoque insuficiente para:\n';
-            verifyData.outOfStock.forEach((item) => {
-              errorMessage += `  ${item.name} (Disponível: ${item.available}, Solicitado: ${item.requested})\n`;
-            });
-          }
-
-          if (verifyData.priceChanged?.length > 0) {
-            errorMessage += '\n- Preços alterados para:\n';
-            verifyData.priceChanged.forEach((item) => {
-              errorMessage += `  ${item.name} (De: R$${item.oldPrice.toFixed(
-                2,
-              )}, Para: R$${item.newPrice.toFixed(2)})\n`;
-            });
-          }
-
-          errorMessage += `\nTotal atualizado: R$${verifyData.total.toFixed(
-            2,
-          )}`;
-
-          alert(errorMessage);
-
-          if (verifyData.priceChanged?.length > 0) {
-            const updatedCartItems = cartItems.map((item) => {
-              const changedItem = verifyData.priceChanged.find(
-                (pc) => pc.productId === item.productId,
-              );
-              if (changedItem) {
-                return { ...item, price: changedItem.newPrice };
-              }
-              return item;
-            });
-            setCartItems(updatedCartItems);
-            localStorage.setItem('cart', JSON.stringify(updatedCartItems));
-          }
-        } else {
-          alert(`Erro na verificação: ${verifyData.message}`);
-        }
-        return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao criar pagamento');
       }
 
-      navigate('/pagamento');
+      // 4. Obter URL de redirecionamento
+      const { initPoint, preferenceId, orderId } = await response.json();
+
+      window.location.href = initPoint;
+      window.open(initPoint, '_blank');
     } catch (error) {
       console.error('Erro no checkout:', error);
-      alert('Erro ao processar checkout. Tente novamente.');
+      showFeedback(
+        error.message || 'Erro ao processar checkout. Tente novamente.',
+        'error',
+      );
     } finally {
       setIsCheckingAuth(false);
     }
@@ -648,6 +617,31 @@ const Cart = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {isCheckingAuth && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            zIndex: 9999,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress size={60} sx={{ color: '#52478C', mb: 2 }} />
+          <Typography variant="h6" sx={{ color: '#52478C' }}>
+            Preparando seu pagamento...
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1, color: '#666680' }}>
+            Você será redirecionado para o Mercado Pago
+          </Typography>
+        </Box>
+      )}
       <Box
         sx={{
           maxWidth: 1280,
