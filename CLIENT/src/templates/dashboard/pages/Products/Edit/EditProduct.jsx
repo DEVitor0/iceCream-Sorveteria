@@ -194,7 +194,7 @@ export default function EditProduct() {
                 {filteredProducts.map((product, index) => (
                   <Grid
                     key={product._id}
-                    columns={{ xs: 12, sm: 6, md: 4 }}
+                    size={{ xs: 12, sm: 6, md: 4 }}
                     component={motion.div}
                     layout
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -215,7 +215,7 @@ export default function EditProduct() {
                         alignItems: 'flex-start',
                         gap: 2,
                         padding: 3,
-                        boxShadow: 3,
+                        boxShadow: 1,
                         height: 200,
                         width: '100%',
                         overflow: 'hidden',
