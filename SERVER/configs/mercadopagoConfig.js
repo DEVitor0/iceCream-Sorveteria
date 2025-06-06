@@ -1,10 +1,15 @@
-const { MercadoPagoConfig } = require('mercadopago');
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 
-const mercadopago = new MercadoPagoConfig({
+// Configuração simplificada para produção
+const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
   options: {
-    integratorId: process.env.MERCADOPAGO_INTEGRATOR_ID,
+    timeout: 10000 // Aumente o timeout para 10 segundos
   }
 });
 
-module.exports = mercadopago;
+module.exports = {
+  client,
+  preference: new Preference(client),
+  payment: new Payment(client)
+};

@@ -352,7 +352,13 @@ const Cart = () => {
         return;
       }
 
-      // 2. Preparar itens para checkout
+      // 2. Obter token CSRF
+      const csrfResponse = await fetch('/csrf-token', {
+        credentials: 'include',
+      });
+      const { csrfToken } = await csrfResponse.json();
+
+      // 3. Preparar itens para checkout
       const checkoutItems = cartItems.map((item) => {
         const product = products.find((p) => p._id === item.productId);
         return {
@@ -362,11 +368,12 @@ const Cart = () => {
         };
       });
 
-      // 3. Criar preferência de pagamento no backend
+      // 4. Criar preferência de pagamento no backend
       const response = await fetch('/payment/create-preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -380,11 +387,11 @@ const Cart = () => {
         throw new Error(errorData.message || 'Erro ao criar pagamento');
       }
 
-      // 4. Obter URL de redirecionamento
+      // 5. Obter URL de redirecionamento
       const { initPoint, preferenceId, orderId } = await response.json();
 
       window.location.href = initPoint;
-      window.open(initPoint, '_blank');
+      // window.open(initPoint, '_blank'); // Remova esta linha se estiver usando location.href
     } catch (error) {
       console.error('Erro no checkout:', error);
       showFeedback(
