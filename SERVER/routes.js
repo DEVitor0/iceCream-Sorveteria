@@ -52,6 +52,8 @@ router.get('/tags', getAllTags);
 
 router.use('/payment', paymentRoutes);
 
+router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
+
 router.use((err, req, res, next) => {
   console.error('Erro:', {
       message: err.message,

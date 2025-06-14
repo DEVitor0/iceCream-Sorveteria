@@ -16,6 +16,7 @@ import RegisterDatas from './templates/authentication/registerData/index';
 import Dashboard from './templates/dashboard/index';
 import RegisterProducts from './templates/dashboard/pages/Products/Register/index';
 import EditProduct from './templates/dashboard/pages/Products/Edit/EditProduct';
+import OrdersPage from './templates/dashboard/pages/Sales/Lançamento';
 import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 
 import GeoBlocked from './components/Authentication/GeoVerification/GeoBloqued';
@@ -198,6 +199,18 @@ root.render(
                         geoRestricted={true}
                       >
                         <EditCouponPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/Dashboard/Vendas/Lançamento"
+                    element={
+                      <ProtectedRoute
+                        authType="login"
+                        requiredRoles={['admin', 'moder']}
+                        geoRestricted={true}
+                      >
+                        <OrdersPage />
                       </ProtectedRoute>
                     }
                   />

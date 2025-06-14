@@ -16,8 +16,9 @@ const dataLeftBarMenuItem = {
       text: 'Vendas',
       icon: 'basketShopping',
       actions: {
-        History: { text: 'Histórico' },
         launch: { text: 'Lançamento' },
+        History: { text: 'Histórico' },
+        Cupon: { text: 'Cupom' },
       },
     },
     Customers: {
