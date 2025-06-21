@@ -204,70 +204,13 @@ function Dashboard() {
     return null;
   }
 
-  const projectsData = {
-    columns: [
-      { name: 'companies', align: 'left' },
-      { name: 'members', align: 'left' },
-      { name: 'budget', align: 'center' },
-      { name: 'completion', align: 'center' },
-    ],
-    rows: [
-      {
-        companies: ['Soft UI XD Version'],
-        members: [
-          'Ryan Tompson',
-          'Romina Hadid',
-          'Alexander Smith',
-          'Jessica Doe',
-        ],
-        budget: '$14,000',
-        completion: 60,
-      },
-      {
-        companies: ['Add Progress Track'],
-        members: ['Romina Hadid', 'Jessica Doe'],
-        budget: '$3,000',
-        completion: 10,
-      },
-      {
-        companies: ['Fix Platform Errors'],
-        members: ['Ryan Tompson', 'Alexander Smith'],
-        budget: 'Not set',
-        completion: 100,
-      },
-      {
-        companies: ['Launch our Mobile App'],
-        members: [
-          'Jessica Doe',
-          'Alexander Smith',
-          'Romina Hadid',
-          'Ryan Tompson',
-        ],
-        budget: '$20,500',
-        completion: 100,
-      },
-      {
-        companies: ['Add the New Pricing Page'],
-        members: ['Jessica Doe'],
-        budget: '$500',
-        completion: 25,
-      },
-      {
-        companies: ['Redesign New Online Shop'],
-        members: ['Ryan Tompson', 'Jessica Doe'],
-        budget: '$2,000',
-        completion: 40,
-      },
-    ],
-  };
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <SoftBox py={3}>
         <SoftBox mb={3}>
           <Grid container spacing={3}>
-            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: "today's money" }}
                 count="$53,000"
@@ -275,7 +218,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'paid' }}
               />
             </Grid>
-            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: "today's users" }}
                 count="2,300"
@@ -283,7 +226,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'public' }}
               />
             </Grid>
-            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: 'new clients' }}
                 count="+3,462"
@@ -291,7 +234,7 @@ function Dashboard() {
                 icon={{ color: 'info', component: 'emoji_events' }}
               />
             </Grid>
-            <Grid item size={{ xs: 12, sm: 6, xl: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
               <MiniStatisticsCard
                 title={{ text: 'sales' }}
                 count="$103,430"
@@ -306,7 +249,7 @@ function Dashboard() {
         </SoftBox>
         <SoftBox mb={3}>
           <Grid container spacing={3}>
-            <Grid item size={{ xs: 12, lg: 5 }}>
+            <Grid size={{ xs: 12, lg: 5 }}>
               <ReportsBarChart
                 color="info"
                 title="Active Users"
@@ -342,7 +285,7 @@ function Dashboard() {
                 ]}
               />
             </Grid>
-            <Grid item size={{ xs: 12, lg: 7 }}>
+            <Grid size={{ xs: 12, lg: 7 }}>
               <GradientLineChart
                 title="Sales Overview"
                 description={
@@ -403,10 +346,10 @@ function Dashboard() {
           </Grid>
         </SoftBox>
         <Grid container spacing={3}>
-          <Grid item size={{ xs: 12, md: 6, lg: 8 }}>
-            <Projects data={projectsData} />
+          <Grid size={{ xs: 12, md: 6, lg: 8 }}>
+            <Projects />
           </Grid>
-          <Grid item size={{ xs: 12, md: 6, lg: 4 }}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }}>
             <OrderOverview />
           </Grid>
         </Grid>

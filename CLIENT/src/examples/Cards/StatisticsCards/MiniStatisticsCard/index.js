@@ -18,8 +18,18 @@ function MiniStatisticsCard({
   direction = 'right',
 }) {
   return (
-    <Card>
-      <SoftBox bgColor={bgColor} variant="gradient">
+    <Card
+      sx={{
+        position: 'relative',
+        overflow: 'visible',
+        borderRadius: '12px !important',
+      }}
+    >
+      <SoftBox
+        bgColor={bgColor}
+        variant="gradient"
+        sx={{ borderRadius: '12px' }}
+      >
         <SoftBox p={2}>
           <Grid container alignItems="center">
             {direction === 'left' ? (
@@ -42,7 +52,7 @@ function MiniStatisticsCard({
                 </SoftBox>
               </Grid>
             ) : null}
-            <Grid item xs={8}>
+            <Grid item xs={direction === 'right' ? 8 : 12}>
               <SoftBox ml={direction === 'left' ? 2 : 0} lineHeight={1}>
                 <SoftTypography
                   variant="button"
@@ -69,28 +79,32 @@ function MiniStatisticsCard({
                 </SoftTypography>
               </SoftBox>
             </Grid>
-            {direction === 'right' ? (
-              <Grid item xs={4}>
-                <SoftBox
-                  variant="gradient"
-                  bgColor={bgColor === 'white' ? icon.color : 'white'}
-                  color={bgColor === 'white' ? 'white' : 'dark'}
-                  width="3rem"
-                  height="3rem"
-                  marginLeft="auto"
-                  borderRadius="md"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  shadow="md"
-                >
-                  <Icon fontSize="small" color="inherit">
-                    {icon.component}
-                  </Icon>
-                </SoftBox>
-              </Grid>
-            ) : null}
           </Grid>
+
+          {/* Ícone posicionado absolutamente */}
+          {direction === 'right' && (
+            <SoftBox
+              variant="gradient"
+              bgColor={bgColor === 'white' ? icon.color : 'white'}
+              color={bgColor === 'white' ? 'white' : 'dark'}
+              width="3rem"
+              height="3rem"
+              borderRadius="md"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              shadow="md"
+              sx={{
+                position: 'absolute',
+                right: '16px',
+                bottom: '16px',
+              }}
+            >
+              <Icon fontSize="small" color="inherit">
+                {icon.component}
+              </Icon>
+            </SoftBox>
+          )}
         </SoftBox>
       </SoftBox>
     </Card>

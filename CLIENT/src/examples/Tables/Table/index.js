@@ -1,9 +1,5 @@
 import { useMemo } from 'react';
-
-// prop-types is a library for typechecking of props
 import PropTypes from 'prop-types';
-
-// uuid is a library for generating unique id
 import { v4 as uuidv4 } from 'uuid';
 
 // @mui material components
@@ -11,6 +7,7 @@ import { Table as MuiTable } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
+import Icon from '@mui/material/Icon';
 
 // Soft UI Dashboard React components
 import SoftBox from '../../../components/Dashboard/SoftBox';
@@ -21,131 +18,282 @@ import SoftTypography from '../../../components/Dashboard/SoftTypography';
 import colors from '../../../media/theme/base/colors';
 import typography from '../../../media/theme/base/typography';
 import borders from '../../../media/theme/base/borders';
+import { styled } from '@mui/material/styles';
 
-function Table({ columns = [], rows = [{}] }) {
-  const { light } = colors;
-  const { size, fontWeightBold } = typography;
-  const { borderWidth } = borders;
+// Componente estilizado para células
+const StyledTableCell = styled(SoftBox)(
+  ({ theme, align, isheader, isfirst, islast }) => ({
+    component: isheader ? 'th' : 'td',
+    padding: isheader ? '16px 24px' : '14px 24px',
+    textAlign: align,
+    borderBottom: isheader
+      ? 'none'
+      : `1px solid ${
+          theme.palette.mode === 'light'
+            ? 'rgba(0, 0, 0, 0.05)'
+            : 'rgba(255, 255, 255, 0.05)'
+        }`,
+    transition: 'all 0.3s ease',
+    pl: align === 'left' ? (isfirst ? '24px' : '16px') : '16px',
+    pr: align === 'right' ? (islast ? '24px' : '16px') : '16px',
+    ...(isheader && {
+      backgroundColor:
+        theme.palette.mode === 'light'
+          ? 'rgba(93, 80, 158, 0.03)'
+          : 'rgba(255, 255, 255, 0.03)',
+      backdropFilter: 'blur(4px)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 2,
+    }),
+  }),
+);
 
-  const renderColumns = columns.map(({ name, align, width }, key) => {
-    let pl;
-    let pr;
+// Componente estilizado para linhas
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(even)': {
+    backgroundColor:
+      theme.palette.mode === 'light'
+        ? 'rgba(93, 80, 158, 0.02)'
+        : 'rgba(255, 255, 255, 0.02)',
+  },
+  '&:hover': {
+    backgroundColor:
+      theme.palette.mode === 'light'
+        ? 'rgba(93, 80, 158, 0.05)'
+        : 'rgba(255, 255, 255, 0.05)',
+    transform: 'translateY(-1px)',
+    boxShadow: theme.shadows[1],
+    '& td': {
+      fontWeight: '600 !important',
+      color: `${theme.palette.secondary.main} !important`,
+    },
+  },
+  transition: 'all 0.3s ease',
+}));
 
-    if (key === 0) {
-      pl = 3;
-      pr = 3;
-    } else if (key === columns.length - 1) {
-      pl = 3;
-      pr = 3;
-    } else {
-      pl = 1;
-      pr = 1;
-    }
+// Ícones para tipos de dados
+const DataTypeIcon = ({ type, value }) => {
+  const icons = {
+    string: (
+      <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.7 }}>short_text</Icon>
+    ),
+    number: <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.7 }}>numbers</Icon>,
+    date: <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.7 }}>event</Icon>,
+    boolean: (
+      <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.7 }}>
+        {value ? 'check' : 'close'}
+      </Icon>
+    ),
+    default: (
+      <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.7 }}>data_object</Icon>
+    ),
+  };
 
-    return (
-      <SoftBox
-        key={name}
-        component="th"
-        width={width || 'auto'}
-        pt={1.5}
-        pb={1.25}
-        pl={align === 'left' ? pl : 3}
-        pr={align === 'right' ? pr : 3}
-        textAlign={align}
-        fontSize={size.xxs}
-        fontWeight={fontWeightBold}
-        color="secondary"
-        opacity={0.7}
-        borderBottom={`${borderWidth[1]} solid ${light.main}`}
-      >
-        {name.toUpperCase()}
-      </SoftBox>
-    );
-  });
+  return icons[type] || icons.default;
+};
 
-  const renderRows = rows.map((row, key) => {
-    const rowKey = `row-${key}`;
+function Table({ columns = [], rows = [] }) {
+  const { size, fontWeightBold, fontWeightRegular } = typography;
 
-    const tableRow = columns.map(({ name, align }) => {
-      let template;
+  const detectDataType = (value) => {
+    if (value === null || value === undefined) return 'default';
+    if (Array.isArray(value)) return 'array';
+    if (typeof value === 'object') return 'object';
+    if (!isNaN(value) && value !== '') return 'number';
+    if (typeof value === 'boolean') return 'boolean';
+    if (Date.parse(value)) return 'date';
+    return 'string';
+  };
 
-      if (Array.isArray(row[name])) {
-        template = (
-          <SoftBox
-            key={uuidv4()}
-            component="td"
-            p={1}
-            borderBottom={
-              row.hasBorder ? `${borderWidth[1]} solid ${light.main}` : null
-            }
+  const renderColumns = useMemo(
+    () =>
+      columns.map(({ name, align, width, icon }, key) => {
+        const isFirst = key === 0;
+        const isLast = key === columns.length - 1;
+
+        return (
+          <StyledTableCell
+            key={`col-${name}-${key}`}
+            align={align}
+            width={width || 'auto'}
+            isheader="true"
+            isfirst={isFirst}
+            islast={isLast}
           >
-            <SoftBox display="flex" alignItems="center" py={0.5} px={1}>
-              <SoftBox mr={2}>
-                <SoftAvatar
-                  src={row[name][0]}
-                  name={row[name][1]}
-                  variant="rounded"
-                  size="sm"
-                />
-              </SoftBox>
+            <SoftBox display="flex" alignItems="center">
+              {icon && (
+                <Icon sx={{ fontSize: '1rem', mr: 1, opacity: 0.8 }}>
+                  {icon}
+                </Icon>
+              )}
               <SoftTypography
-                variant="button"
-                fontWeight="medium"
-                sx={{ width: 'max-content' }}
+                variant="caption"
+                fontWeight={fontWeightBold}
+                color="secondary"
+                sx={{
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                  fontSize: size.xxs,
+                }}
               >
-                {row[name][1]}
+                {name}
               </SoftTypography>
             </SoftBox>
-          </SoftBox>
+          </StyledTableCell>
         );
-      } else {
-        template = (
-          <SoftBox
-            key={uuidv4()}
-            component="td"
-            p={1}
-            textAlign={align}
-            borderBottom={
-              row.hasBorder ? `${borderWidth[1]} solid ${light.main}` : null
-            }
-          >
-            <SoftTypography
-              variant="button"
-              fontWeight="regular"
-              color="secondary"
-              sx={{ display: 'inline-block', width: 'max-content' }}
-            >
-              {row[name]}
-            </SoftTypography>
-          </SoftBox>
+      }),
+    [columns, size.xxs, fontWeightBold],
+  );
+
+  const renderRows = useMemo(
+    () =>
+      rows.map((row, rowIndex) => {
+        const rowKey = row.id || `row-${rowIndex}`;
+
+        return (
+          <StyledTableRow key={rowKey}>
+            {columns.map(({ name, align }) => {
+              const cellValue = row[name];
+              const cellKey = `${rowKey}-${name}`;
+              const dataType = detectDataType(cellValue);
+
+              if (Array.isArray(cellValue)) {
+                return (
+                  <StyledTableCell key={cellKey} align={align} component="td">
+                    <SoftBox display="flex" alignItems="center">
+                      {cellValue[0] && (
+                        <SoftBox mr={2}>
+                          <SoftAvatar
+                            src={cellValue[0]}
+                            name={cellValue[1] || ''}
+                            variant="rounded"
+                            size="sm"
+                            sx={{
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                              border: '1px solid rgba(0,0,0,0.05)',
+                            }}
+                          />
+                        </SoftBox>
+                      )}
+                      <SoftTypography
+                        variant="button"
+                        fontWeight="medium"
+                        sx={{ width: 'max-content' }}
+                      >
+                        {cellValue[1] || ''}
+                      </SoftTypography>
+                    </SoftBox>
+                  </StyledTableCell>
+                );
+              }
+
+              if (typeof cellValue === 'object' && cellValue !== null) {
+                return (
+                  <StyledTableCell key={cellKey} align={align} component="td">
+                    <SoftBox display="flex" alignItems="center">
+                      {cellValue.icon && (
+                        <Icon
+                          sx={{
+                            fontSize: '1rem',
+                            mr: 1,
+                            color: cellValue.color || 'inherit',
+                            opacity: 0.8,
+                          }}
+                        >
+                          {cellValue.icon}
+                        </Icon>
+                      )}
+                      <SoftTypography
+                        variant="button"
+                        fontWeight={cellValue.fontWeight || 'regular'}
+                        color={cellValue.color || 'secondary'}
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          width: 'max-content',
+                          ...cellValue.sx,
+                        }}
+                      >
+                        {cellValue.value || ''}
+                      </SoftTypography>
+                    </SoftBox>
+                  </StyledTableCell>
+                );
+              }
+
+              return (
+                <StyledTableCell key={cellKey} align={align} component="td">
+                  <SoftBox display="flex" alignItems="center">
+                    <DataTypeIcon type={dataType} value={cellValue} />
+                    <SoftTypography
+                      variant="button"
+                      fontWeight={fontWeightRegular}
+                      color="secondary"
+                      sx={{
+                        display: 'inline-block',
+                        width: 'max-content',
+                        fontFamily:
+                          dataType === 'number'
+                            ? '"Roboto Mono", monospace'
+                            : 'inherit',
+                      }}
+                    >
+                      {cellValue != null ? String(cellValue) : '-'}
+                    </SoftTypography>
+                  </SoftBox>
+                </StyledTableCell>
+              );
+            })}
+          </StyledTableRow>
         );
-      }
+      }),
+    [rows, columns, fontWeightRegular],
+  );
 
-      return template;
-    });
-
-    return <TableRow key={rowKey}>{tableRow}</TableRow>;
-  });
-
-  return useMemo(
-    () => (
-      <TableContainer>
-        <MuiTable>
-          <SoftBox component="thead">
-            <TableRow>{renderColumns}</TableRow>
-          </SoftBox>
-          <TableBody>{renderRows}</TableBody>
-        </MuiTable>
-      </TableContainer>
-    ),
-    [renderColumns, renderRows],
+  return (
+    <TableContainer
+      sx={{
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '1px solid rgba(0, 0, 0, 0.05)',
+        boxShadow: '0 8px 32px rgba(93, 80, 158, 0.05)',
+        maxHeight: 'calc(100vh - 200px)',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+          height: '6px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(93, 80, 158, 0.2)',
+          borderRadius: '3px',
+        },
+      }}
+    >
+      <MuiTable stickyHeader sx={{ minWidth: '100%' }}>
+        <SoftBox component="thead" sx={{ display: 'table-header-group' }}>
+          <TableRow>{renderColumns}</TableRow>
+        </SoftBox>
+        <TableBody>{renderRows}</TableBody>
+      </MuiTable>
+    </TableContainer>
   );
 }
 
-// Typechecking props for the Table
 Table.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.object),
-  rows: PropTypes.arrayOf(PropTypes.object),
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      align: PropTypes.oneOf(['left', 'center', 'right']),
+      width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      icon: PropTypes.string,
+    }),
+  ).isRequired,
+  rows: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      hasBorder: PropTypes.bool,
+    }),
+  ).isRequired,
 };
 
 export default Table;

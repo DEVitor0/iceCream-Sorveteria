@@ -18,6 +18,7 @@ import RegisterProducts from './templates/dashboard/pages/Products/Register/inde
 import EditProduct from './templates/dashboard/pages/Products/Edit/EditProduct';
 import OrdersPage from './templates/dashboard/pages/Sales/Lançamento';
 import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
+import OrderHistoryPage from 'templates/dashboard/pages/Sales/History';
 
 import GeoBlocked from './components/Authentication/GeoVerification/GeoBloqued';
 import GeoProtectedRoute from 'components/Authentication/GeoVerification/GeoProtectedRoute';
@@ -93,9 +94,7 @@ root.render(
                       </SoftUIControllerProvider>
                     }
                   />
-
                   <Route path="/geo-blocked" element={<GeoBlocked />} />
-
                   <Route
                     path="/authentication/registrar/dados"
                     element={
@@ -108,110 +107,133 @@ root.render(
                       </ProtectedRoute>
                     }
                   />
-
                   <Route
                     path="/Dashboard"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                      >
-                        <GeoProtectedRoute adminOnly>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                        >
                           <SoftUIControllerProvider>
                             <Dashboard />
                           </SoftUIControllerProvider>
-                        </GeoProtectedRoute>
-                      </ProtectedRoute>
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
                   <Route
                     path="/Dashboard/cadastrar"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <ApiProvider>
-                          <SoftUIControllerProvider>
-                            <RegisterProducts />
-                          </SoftUIControllerProvider>
-                        </ApiProvider>
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <ApiProvider>
+                            <SoftUIControllerProvider>
+                              <RegisterProducts />
+                            </SoftUIControllerProvider>
+                          </ApiProvider>
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
                   <Route
                     path="/Dashboard/editar-produtos"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <ApiProvider>
-                          <SoftUIControllerProvider>
-                            <EditProduct />
-                          </SoftUIControllerProvider>
-                        </ApiProvider>
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <ApiProvider>
+                            <SoftUIControllerProvider>
+                              <EditProduct />
+                            </SoftUIControllerProvider>
+                          </ApiProvider>
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
-
                   <Route
                     path="/Dashboard/Vendas/Cupom"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <SoftUIControllerProvider>
-                          <AnimatePresence mode="wait">
-                            <CouponsPage key="coupons-page" />
-                          </AnimatePresence>
-                        </SoftUIControllerProvider>
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <SoftUIControllerProvider>
+                            <AnimatePresence mode="wait">
+                              <CouponsPage key="coupons-page" />
+                            </AnimatePresence>
+                          </SoftUIControllerProvider>
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
-
                   <Route
                     path="/Dashboard/Vendas/Cupom/Criar"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <AnimatePresence mode="wait">
-                          <SoftUIControllerProvider>
-                            <CreateCouponPage />
-                          </SoftUIControllerProvider>
-                        </AnimatePresence>
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <AnimatePresence mode="wait">
+                            <SoftUIControllerProvider>
+                              <CreateCouponPage />
+                            </SoftUIControllerProvider>
+                          </AnimatePresence>
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
                   <Route
                     path="/Dashboard/Vendas/Cupom/Editar/:couponId"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <EditCouponPage />
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <EditCouponPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
                   <Route
                     path="/Dashboard/Vendas/Lançamento"
                     element={
-                      <ProtectedRoute
-                        authType="login"
-                        requiredRoles={['admin', 'moder']}
-                        geoRestricted={true}
-                      >
-                        <OrdersPage />
-                      </ProtectedRoute>
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <OrdersPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/Dashboard/Vendas/Histórico"
+                    element={
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <OrderHistoryPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
                     }
                   />
                 </Routes>
