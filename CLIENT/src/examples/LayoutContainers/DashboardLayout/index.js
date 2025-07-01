@@ -8,6 +8,7 @@ import {
 } from '../../../contexts/Reducer/index';
 import VerticalMenu from '../../../templates/dashboard/components/DashboardBar/VerticalMenu/index';
 import IconProvider from '../../../contexts/IconsContext/IconProvider/index';
+import { bgcolor } from '@mui/system';
 
 function DashboardLayout({ children }) {
   const [controller, dispatch] = useSoftUIController();

@@ -98,16 +98,28 @@ function Projects() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        // Calcula a data de 24 horas atrás
+        const twentyFourHoursAgo = new Date(
+          Date.now() - 24 * 60 * 60 * 1000,
+        ).toISOString();
+
         const response = await axios.get('/api/orders', {
           params: {
             status: 'completed',
             sort: 'createdAt:desc',
-            limit: 10,
+            limit: 5, // Limita a 5 pedidos
+            createdAt_gte: twentyFourHoursAgo, // Filtra pedidos das últimas 24 horas
           },
         });
 
         if (response.data && response.data.success && response.data.data) {
-          setOrders(response.data.data);
+          // Filtra novamente no cliente para garantir (caso a API não respeite o filtro)
+          const filteredOrders = response.data.data.filter((order) => {
+            const orderDate = new Date(order.createdAt);
+            return orderDate >= new Date(twentyFourHoursAgo);
+          });
+
+          setOrders(filteredOrders.slice(0, 5)); // Garante no máximo 5 pedidos
         } else {
           setError('Formato de dados inesperado da API');
         }
@@ -293,7 +305,7 @@ function Projects() {
       >
         <SoftBox>
           <SoftTypography variant="h6" gutterBottom color="white">
-            Últimos Pedidos
+            Últimos Pedidos (24h)
           </SoftTypography>
           <SoftBox display="flex" alignItems="center" lineHeight={0}>
             <Icon
@@ -306,7 +318,7 @@ function Projects() {
               receipt
             </Icon>
             <SoftTypography variant="button" fontWeight="regular" color="white">
-              &nbsp;<strong>{orders.length} pedidos</strong> recentes
+              &nbsp;<strong>{orders.length} pedidos</strong>
             </SoftTypography>
           </SoftBox>
         </SoftBox>
@@ -395,7 +407,7 @@ function Projects() {
               assignment
             </Icon>
             <SoftTypography variant="body2" color="text">
-              Nenhum pedido encontrado
+              Nenhum pedido encontrado nas últimas 24 horas
             </SoftTypography>
           </SoftBox>
         )}

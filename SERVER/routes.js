@@ -1,15 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const sanitizeMiddleware = require('./middlewares/sanitizeMiddleware');
+
 const csrfProtection = require('./configs/csrfProtectionConfigs');
-const authenticateJWT = require('./middlewares/authMiddleware');
-const validateLoginMiddleware = require('./middlewares/joiValidatorMiddleware');
-const geoRestrictionMiddleware = require('./middlewares/geoRestrictionMiddleware.js');
+const ApiError = require('./utils/ApiError.js');
+
 const { twoFALogin, validateTwoFACode } = require('./controllers/twoFAController');
 const { getAllTags } = require('./controllers/tagController');
-const geoRoutes = require('./routes/geoRoutes');
-const couponRoutes = require('./routes/couponRoutes');
-const ApiError = require('./utils/ApiError.js');
+const { forceUpdateDailyStats } = require('./controllers/dailyStatsController')
+
+const sanitizeMiddleware = require('./middlewares/sanitizeMiddleware');
+const validateLoginMiddleware = require('./middlewares/joiValidatorMiddleware');
+const geoRestrictionMiddleware = require('./middlewares/geoRestrictionMiddleware.js');
+const dailyStatsMiddleware = require('./middlewares/dailyStatsMiddleware');
+const authenticateJWT = require('./middlewares/authMiddleware');
+const weeklyStatsMiddleware = require('./middlewares/weeklyStatsMiddleware');
 
 const authenticationRoutes = require('./routes/authenticationRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -18,6 +22,9 @@ const loadProducts = require('./routes/loadProducts');
 const googleAuthRoutes = require('./routes/googleAuthRoutes');
 const addressRoutes = require('./routes/addressRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const geoRoutes = require('./routes/geoRoutes');
+const couponRoutes = require('./routes/couponRoutes');
+const dailyStatsRoutes = require('./routes/dailyStatsRoutes');
 
 router.get("/csrf-token", (req, res) => {
   console.log('Cookies recebidos:', req.cookies);
@@ -25,34 +32,68 @@ router.get("/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-router.use('/coupons', authenticateJWT, couponRoutes);
+router.use(dailyStatsMiddleware);
 
-router.use('/api', loadProducts);
 router.use('/api/Dashboard', authenticateJWT, productRoutes);
+router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
+router.use('/api', loadProducts);
 router.use('/api', require('./routes/productRoutes.js'));
 router.use('/api', geoRoutes);
+router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
+router.get('/api/stats/weekly-summary',
+  authenticateJWT,
+  weeklyStatsMiddleware,
+  (req, res) => {
+    res.json({
+      success: true,
+      data: res.locals.weeklyStats
+    });
+  }
+);
+router.get('/api/stats/weekly-orders', authenticateJWT, async (req, res, next) => {
+  try {
+    const { getWeeklyOrderStats } = require('./utils/dailyStatsService');
+    const stats = await getWeeklyOrderStats();
+    res.json(stats);
+  } catch (error) {
+    next(error);
+  }
+});
+router.get('/api/stats/top-categories-yearly',
+  authenticateJWT,
+  async (req, res, next) => {
+    try {
+      const { getTopCategoriesYearly } = require('./utils/dailyStatsService');
+      const data = await getTopCategoriesYearly();
+      res.json({
+        success: true,
+        data
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.use('/auth', googleAuthRoutes);
 router.get('/auth/verify', geoRestrictionMiddleware, authenticateJWT, (req, res) => {
   res.status(200).json({ valid: true });
 });
 
-router.post('/login', sanitizeMiddleware, csrfProtection, validateLoginMiddleware, twoFALogin);
-
+router.get('/force-update', authenticateJWT, forceUpdateDailyStats);
 router.use('/address/', authenticateJWT, addressRoutes);
 
+router.post('/login', sanitizeMiddleware, csrfProtection, validateLoginMiddleware, twoFALogin);
 router.post('/validate-2fa', sanitizeMiddleware, csrfProtection, validateTwoFACode);
-
 router.use('/authentication', sanitizeMiddleware, csrfProtection, authenticationRoutes);
 
 router.use('/Dashboard', authenticateJWT, productRoutes);
 router.use('/Dashboard', authenticateJWT, dashboardRoutes);
 
 router.get('/tags', getAllTags);
+router.use('/coupons', authenticateJWT, couponRoutes);
 
 router.use('/payment', paymentRoutes);
-
-router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
 
 router.use((err, req, res, next) => {
   console.error('Erro:', {

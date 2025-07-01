@@ -109,6 +109,46 @@ orderSchema.index({ 'payment.paymentId': 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ createdAt: -1 });
 
+// Adicione este hook para capturar atualizações via findOneAndUpdate
+orderSchema.post('findOneAndUpdate', async function(doc) {
+  if (doc && doc.status === 'completed') {
+    try {
+      const { updateDailyStats } = require('../utils/dailyStatsService');
+      await updateDailyStats();
+    } catch (error) {
+      console.error('Error updating stats after order update:', error);
+    }
+  }
+});
+
+// Modifique o método updateInventory para disparar a atualização
+orderSchema.methods.updateInventory = async function() {
+  const Order = this.constructor;
+  try {
+    for (const item of this.items) {
+      await mongoose.model('Product').updateOne(
+        { _id: item.productId },
+        { $inc: { quantity: -item.quantity } }
+      );
+    }
+
+    const updatedOrder = await Order.findOneAndUpdate(
+      { _id: this._id },
+      { $set: { status: 'completed' } },
+      { new: true }
+    );
+
+    // Dispara a atualização das estatísticas
+    const { updateDailyStats } = require('../utils/dailyStatsService');
+    await updateDailyStats();
+
+    return updatedOrder;
+  } catch (error) {
+    console.error('Erro ao atualizar estoque:', error);
+    return false;
+  }
+};
+
 // Middleware para atualizar o updatedAt
 orderSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
