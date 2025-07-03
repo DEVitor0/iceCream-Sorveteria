@@ -14,9 +14,7 @@ import MiniStatisticsCard from '../../examples/Cards/StatisticsCards/MiniStatist
 import ReportsBarChart from '../../examples/Charts/BarCharts/ReportsBarChart';
 
 // Soft UI Dashboard React base styles
-import colors from '../../media/theme/base/colors';
 import typography from '../../media/theme/base/typography';
-import gradientChartLine from '../../media/theme/functions/gradientChartLine';
 
 // Dashboard layout components
 import Projects from './components/Projects';
@@ -36,7 +34,6 @@ import {
 
 import useAuth from '../../hooks/Authentication/UseAuth';
 import axios from 'axios';
-import { Line } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
