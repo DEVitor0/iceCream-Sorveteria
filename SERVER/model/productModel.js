@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const stockEmitter = require('../utils/eventEmitter');
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -12,6 +13,10 @@ const productSchema = new mongoose.Schema({
     webImageUrl: { type: String },
     description: { type: String, maxlength: 500 },
     imageFile: { type: String }
+});
+
+productSchema.post('save', function(doc) {
+  stockEmitter.emit('productSaved', doc);
 });
 
 module.exports = mongoose.model('Product', productSchema);

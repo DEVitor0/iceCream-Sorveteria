@@ -1,52 +1,69 @@
 require("dotenv").config();
 const express = require("express");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
 const path = require("path");
+
 const corsOptions = require("./configs/corsConfigs");
 const connectDB = require("./configs/databaseConfigs");
-const createAdminUser = require("./utils/initializeAdmin");
 const csrfProtection = require("./configs/csrfProtectionConfigs");
-const { applySecurityHeaders } = require("./utils/helmetSecurity");
 const { limiter } = require("./configs/rateLimiterConfig");
-const routes = require("./routes");
-const csrfCookieMiddleware = require("./middlewares/csrfCookieMiddleware");
 const configureMorgan = require("./configs/morganConfigs");
+
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
+const { applySecurityHeaders } = require("./utils/helmetSecurity");
+const csrfCookieMiddleware = require("./middlewares/csrfCookieMiddleware");
+const createAdminUser = require("./utils/initializeAdmin");
+const { initialStockCheck } = require('./utils/stockMonitor');
+
+const routes = require("./routes");
 
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
-app.set("trust proxy", 1);
+function configureServer() {
+    app.set("trust proxy", 1);
 
-app.use(cors(corsOptions));
-app.use(cookieParser());
-app.use(csrfProtection);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+    app.use(cors(corsOptions));
+    app.use(cookieParser());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
 
-const { logsPath } = configureMorgan(app, __dirname);
+    app.use(csrfProtection);
+    app.use(applySecurityHeaders);
+    app.use(limiter);
+    app.use(csrfCookieMiddleware);
 
-app.use(applySecurityHeaders);
-app.use(limiter);
+    const { logsPath } = configureMorgan(app, __dirname);
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(csrfCookieMiddleware);
+    return { logsPath };
+}
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+async function startServer() {
+    try {
+        const { logsPath } = configureServer();
 
-connectDB(CONNECTION_STRING)
-    .then(async () => {
+        await connectDB(CONNECTION_STRING);
         console.log("Database connected!");
+
         await createAdminUser();
 
         app.use(routes);
-
-        app.listen(SERVER_PORT, () => {
+        const server = app.listen(SERVER_PORT, () => {
             console.log(`Server running on: http://localhost:${SERVER_PORT}`);
             console.log(`Detailed logs available at: ${logsPath}`);
         });
-    })
-    .catch((err) => {
-        console.error("Failed to start server:", err);
+
+        await initialStockCheck();
+        console.log('Initial stock check completed');
+
+        return server;
+    } catch (error) {
+        console.error("Failed to start server:", error);
         process.exit(1);
-    });
+    }
+}
+
+startServer();

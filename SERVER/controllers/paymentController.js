@@ -258,52 +258,43 @@ exports.handleWebhook = async (req, res, next) => {
       return res.status(200).send('Notificação não relacionada a pagamento');
     }
 
-    // Usando a função utilitária para obter o pagamento
     const payment = await getPayment(id);
     const paymentData = payment;
 
-    // Extrair informações do pedido
-    const [, orderId, userId] = paymentData.external_reference.split('-');
+    const [orderId ] = paymentData.external_reference.split('-');
 
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
       throw new ApiError(400, 'ID do pedido inválido');
     }
 
-    // Buscar pedido
     let order = await Order.findOne({ _id: orderId }).session(session);
     if (!order) {
-      order = await Order.create([{
-        userId,
-        items: [],
-        totalAmount: paymentData.transaction_amount,
-        status: this.mapPaymentStatus(paymentData.status),
-        payment: {
-          paymentId: paymentData.id.toString(),
-          status: paymentData.status,
-          paymentMethod: paymentData.payment_method_id,
-          paymentType: paymentData.payment_type_id,
-          installments: paymentData.installments,
-          totalPaid: paymentData.transaction_amount,
-          transactionDetails: paymentData.transaction_details,
-          mercadoPagoResponse: paymentData,
-          gateway: 'mercadopago'
-        }
-      }], { session });
-      order = order[0];
+      throw new ApiError(404, 'Pedido não encontrado');
     }
 
-    // Atualizar status
     order.payment.status = paymentData.status;
     order.status = this.mapPaymentStatus(paymentData.status);
 
-    // Processar pagamento aprovado
-    if (paymentData.status === 'approved') {
+    if (paymentData.status === 'approved' || paymentData.status === 'completed') {
+      for (const item of order.items) {
+        const product = await Product.findById(item.productId).session(session);
+        if (!product) {
+          throw new ApiError(404, `Produto ${item.productId} não encontrado`);
+        }
+
+        if (product.quantity < item.quantity) {
+          throw new ApiError(409, `Estoque insuficiente para o produto ${product.name}`);
+        }
+      }
+
       for (const item of order.items) {
         await Product.updateOne(
           { _id: item.productId },
           { $inc: { quantity: -item.quantity } },
           { session }
         );
+
+        console.log(`Subtraído ${item.quantity} unidades do produto ${item.productId}`);
       }
 
       if (order.couponCode) {
@@ -315,6 +306,7 @@ exports.handleWebhook = async (req, res, next) => {
       }
 
       order.payment.approvedAt = new Date();
+      order.status = 'completed';
     }
 
     await order.save({ session });
@@ -323,7 +315,12 @@ exports.handleWebhook = async (req, res, next) => {
     res.status(200).send('OK');
   } catch (error) {
     await session.abortTransaction();
-    console.error('Erro no webhook:', error);
+    console.error('Erro no webhook:', {
+      error: error.message,
+      stack: error.stack,
+      paymentId: req.query.id,
+      timestamp: new Date().toISOString()
+    });
     next(error);
   } finally {
     session.endSession();

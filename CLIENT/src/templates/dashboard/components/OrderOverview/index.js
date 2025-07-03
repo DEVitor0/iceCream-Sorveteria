@@ -1,82 +1,123 @@
+import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
-import Icon from '@mui/material/Icon';
-
-// Soft UI Dashboard React components
-import SoftBox from '../../../../components/Dashboard/SoftBox';
-import SoftTypography from '../../../../components/Dashboard/SoftTypography';
-
-// Soft UI Dashboard React examples
-import TimelineItem from '../../../../examples/Timeline/TimelineItem';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import WarningIcon from '@mui/icons-material/Warning';
 
 function OrdersOverview() {
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
+
+  useEffect(() => {
+    const fetchLowStockProducts = async () => {
+      try {
+        const response = await fetch('/api/low-stock');
+        const data = await response.json();
+        setLowStockProducts(data.products);
+        setHasMore(data.hasMore);
+      } catch (error) {
+        console.error('Erro ao buscar produtos com estoque baixo:', error);
+      }
+    };
+
+    fetchLowStockProducts();
+  }, []);
+
+  // Cor personalizada
+  const customColor = '#6C5EAB';
+
   return (
-    <Card className="h-100">
-      <SoftBox pt={3} px={3}>
-        <SoftTypography variant="h6" fontWeight="medium">
-          Orders overview
-        </SoftTypography>
-        <SoftBox mt={1} mb={2}>
-          <SoftTypography variant="button" color="text" fontWeight="regular">
-            <SoftTypography
-              display="inline"
-              variant="body2"
-              verticalAlign="middle"
-            >
-              <Icon
+    <Card className="h-100" sx={{ borderRadius: 3 }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: customColor }}>
+            Estoque Baixo
+          </Typography>
+          <WarningIcon sx={{ color: customColor, ml: 1 }} />
+        </Box>
+
+        {lowStockProducts.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            Nenhum produto com estoque baixo
+          </Typography>
+        ) : (
+          <Box sx={{ overflow: 'auto', maxHeight: 300 }}>
+            {lowStockProducts.map((product) => (
+              <Box
+                key={product._id}
                 sx={{
-                  fontWeight: 'bold',
-                  color: ({ palette: { success } }) => success.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  mb: 2,
+                  p: 1.5,
+                  borderRadius: 2,
+                  backgroundColor: 'background.paper',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    transform: 'translateY(-1px)',
+                    transition: 'all 0.2s ease',
+                  },
                 }}
               >
-                arrow_upward
-              </Icon>
-            </SoftTypography>
-            &nbsp;
-            <SoftTypography variant="button" color="text" fontWeight="medium">
-              24%
-            </SoftTypography>{' '}
-            this month
-          </SoftTypography>
-        </SoftBox>
-      </SoftBox>
-      <SoftBox p={2}>
-        <TimelineItem
-          color="success"
-          icon="notifications"
-          title="$2400, Design changes"
-          dateTime="22 DEC 7:20 PM"
-        />
-        <TimelineItem
-          color="error"
-          icon="inventory_2"
-          title="New order #1832412"
-          dateTime="21 DEC 11 PM"
-        />
-        <TimelineItem
-          color="info"
-          icon="shopping_cart"
-          title="Server payments for April"
-          dateTime="21 DEC 9:34 PM"
-        />
-        <TimelineItem
-          color="warning"
-          icon="payment"
-          title="New card added for order #4395133"
-          dateTime="20 DEC 2:20 AM"
-        />
-        <TimelineItem
-          color="primary"
-          icon="vpn_key"
-          title="New card added for order #4395133"
-          dateTime="18 DEC 4:54 AM"
-        />
-        <TimelineItem
-          color="dark"
-          icon="paid"
-          title="New order #9583120"
-          dateTime="17 DEC"
-        />
-      </SoftBox>
+                <Box
+                  component="img"
+                  src={product.imageUrl}
+                  alt={product.name}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    mr: 2,
+                    borderRadius: 2,
+                    objectFit: 'cover',
+                    border: `1px solid #eee`,
+                  }}
+                />
+                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="subtitle2"
+                    noWrap
+                    sx={{ fontWeight: 500, color: 'text.primary' }}
+                  >
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    Quantidade: {product.quantity}
+                  </Typography>
+                </Box>
+                <Chip
+                  label="Baixo"
+                  size="small"
+                  sx={{
+                    ml: 1,
+                    backgroundColor: customColor,
+                    color: 'white !important',
+                    fontWeight: 500,
+                    borderRadius: 1,
+                  }}
+                />
+              </Box>
+            ))}
+
+            {hasMore && (
+              <Typography
+                variant="caption"
+                sx={{
+                  display: 'block',
+                  textAlign: 'center',
+                  mt: 1,
+                  color: customColor,
+                  fontWeight: 500,
+                }}
+              >
+                + Mais produtos com estoque baixo
+              </Typography>
+            )}
+          </Box>
+        )}
+      </CardContent>
     </Card>
   );
 }

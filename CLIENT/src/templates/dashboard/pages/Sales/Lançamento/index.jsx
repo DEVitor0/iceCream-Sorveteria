@@ -369,8 +369,8 @@ const OrdersPage = () => {
       setUpdating((prev) => ({ ...prev, [orderId]: true }));
 
       const response = await axios.put(
-        `/api/orders/${orderId}/status`,
-        { status },
+        `/api/orders/${orderId}/delivery-status`,
+        { status }, // Corrigido para enviar como objeto
         {
           headers: {
             'X-CSRF-Token': csrfToken,
@@ -380,58 +380,20 @@ const OrdersPage = () => {
         },
       );
 
-      // Remove o pedido da lista apenas se for enviado (ready_for_pickup)
-      if (status === 'ready_for_pickup') {
-        setOrders(orders.filter((order) => order._id !== orderId));
+      if (response.data.success) {
+        // Remove o pedido da lista apenas se for enviado (ready_for_pickup)
+        if (status === 'ready_for_pickup') {
+          setOrders(orders.filter((order) => order._id !== orderId));
+          setPopupMessage('Pedido enviado para retirada e estoque atualizado!');
+          setShowSuccessPopup(true);
+        }
+        return true;
       }
-
-      return true; // Indica sucesso
+      return false;
     } catch (err) {
       console.error('Erro ao atualizar status:', err);
-
-      // Se o erro for de CSRF inválido, tentamos novamente com um novo token
-      if (
-        err.response?.status === 403 &&
-        err.response?.data?.code === 'EBADCSRFTOKEN'
-      ) {
-        try {
-          const response = await axios.get('/csrf-token', {
-            withCredentials: true,
-          });
-          setCsrfToken(response.data.csrfToken);
-
-          // Tenta novamente com o novo token
-          await axios.put(
-            `/api/orders/${orderId}/status`,
-            { status },
-            {
-              headers: {
-                'X-CSRF-Token': response.data.csrfToken,
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-              withCredentials: true,
-            },
-          );
-
-          setOrders(
-            orders.map((order) =>
-              order._id === orderId
-                ? { ...order, deliveryStatus: status }
-                : order,
-            ),
-          );
-
-          const statusText = getStatusText(status);
-          setSuccessMessage(`Status atualizado para: ${statusText}`);
-          setTimeout(() => setSuccessMessage(''), 3000);
-        } catch (retryError) {
-          setError(
-            retryError.response?.data?.message || 'Erro ao atualizar status',
-          );
-        }
-      } else {
-        setError(err.response?.data?.message || 'Erro ao atualizar status');
-      }
+      setError(err.response?.data?.message || 'Erro ao atualizar status');
+      return false;
     } finally {
       setUpdating((prev) => ({ ...prev, [orderId]: false }));
     }

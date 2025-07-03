@@ -25,6 +25,9 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const geoRoutes = require('./routes/geoRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const dailyStatsRoutes = require('./routes/dailyStatsRoutes');
+const stockAlertRoutes = require('./routes/stockAlertRoutes');
+
+router.use('/api', stockAlertRoutes);
 
 router.get("/csrf-token", (req, res) => {
   console.log('Cookies recebidos:', req.cookies);

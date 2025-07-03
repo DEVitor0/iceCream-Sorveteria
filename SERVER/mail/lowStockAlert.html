@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .alert { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="alert">Alerta de Estoque Baixo</h2>
+        <p>O produto <strong>{{productName}}</strong> está com estoque baixo.</p>
+        <p>Quantidade restante: <strong>{{remainingQuantity}}</strong> (limite: {{threshold}})</p>
+        <p>Data do alerta: {{date}}</p>
+        <p>Por favor, reabasteça o estoque o mais breve possível.</p>
+    </div>
+</body>
+</html>
