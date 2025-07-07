@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #e74c3c;
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+            color: #555555;
+        }
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+        }
+        .unsubscribe {
+            color: #999999;
+            text-decoration: none;
+        }
+        .divider {
+            border-top: 1px solid #eeeeee;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{subject}}</h1>
+        </div>
+        <div class="content">
+            <!-- Conteúdo dinâmico inserido pelo admin -->
+            {{content}}
+
+            <div class="divider"></div>
+
+            <p>Atenciosamente,<br>Equipe {{companyName}}</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{year}} {{companyName}}. Todos os direitos reservados.</p>
+            <p>
+                <a href="{{unsubscribeLink}}" class="unsubscribe">
+                    Não deseja mais receber nossos e-mails? Cancelar inscrição
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

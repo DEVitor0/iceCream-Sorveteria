@@ -26,6 +26,7 @@ const geoRoutes = require('./routes/geoRoutes');
 const couponRoutes = require('./routes/couponRoutes');
 const dailyStatsRoutes = require('./routes/dailyStatsRoutes');
 const stockAlertRoutes = require('./routes/stockAlertRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 
 router.use('/api', stockAlertRoutes);
 
@@ -37,11 +38,12 @@ router.get("/csrf-token", (req, res) => {
 
 router.use(dailyStatsMiddleware);
 
-router.use('/api/Dashboard', authenticateJWT, productRoutes);
-router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
 router.use('/api', loadProducts);
 router.use('/api', require('./routes/productRoutes.js'));
 router.use('/api', geoRoutes);
+router.use('/api/emails', emailRoutes);
+router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
+router.use('/api/Dashboard', authenticateJWT, productRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
 router.get('/api/stats/weekly-summary',
   authenticateJWT,

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #444444;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        .content {
+            padding: 30px;
+            color: #666666;
+        }
+        .footer {
+            background-color: #2c3e50;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #ecf0f1;
+        }
+        .unsubscribe {
+            color: #bdc3c7;
+            text-decoration: none;
+        }
+        .highlight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #a777e3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{subject}}</h1>
+        </div>
+        <div class="content">
+            <!-- Conteúdo dinâmico inserido pelo admin -->
+            {{content}}
+
+            <div class="highlight-box">
+                <p>Atenciosamente,<br>Equipe {{companyName}}</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; {{year}} {{companyName}}. Todos os direitos reservados.</p>
+            <p>
+                <a href="{{unsubscribeLink}}" class="unsubscribe">
+                    Cancelar inscrição
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

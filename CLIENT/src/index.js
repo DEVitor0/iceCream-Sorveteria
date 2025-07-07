@@ -19,6 +19,7 @@ import EditProduct from './templates/dashboard/pages/Products/Edit/EditProduct';
 import OrdersPage from './templates/dashboard/pages/Sales/Lançamento';
 import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 import OrderHistoryPage from 'templates/dashboard/pages/Sales/History';
+import EmailSenderPage from './templates/dashboard/pages/User/SendMailsToClient/EmailSenderPage';
 
 import GeoBlocked from './components/Authentication/GeoVerification/GeoBloqued';
 import GeoProtectedRoute from 'components/Authentication/GeoVerification/GeoProtectedRoute';
@@ -232,6 +233,20 @@ root.render(
                           geoRestricted={true}
                         >
                           <OrderHistoryPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/Dashboard/Clientes/Email"
+                    element={
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <EmailSenderPage />
                         </ProtectedRoute>
                       </GeoProtectedRoute>
                     }
