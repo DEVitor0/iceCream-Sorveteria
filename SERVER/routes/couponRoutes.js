@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const couponController = require('../controllers/couponController');
+const couponController = require('../controllers/validation/couponController');
 const { body } = require('express-validator');
-const validateCouponInput = require('../middlewares/validateCouponInput');
-const csrfProtection = require('../configs/csrfProtectionConfigs');
+const validateCouponInput = require('../middlewares/validation/validateCouponInput');
+const csrfProtection = require('../configs/security/csrfProtectionConfigs');
 
-const authenticateJWT = require('../middlewares/authMiddleware');
-const checkAdminOrModer = require('../middlewares/isAdministratorMiddleware');
-const geoRestrictionMiddleware = require('../middlewares/geoRestrictionMiddleware');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
+const checkAdminOrModer = require('../middlewares/validation/isAdministratorMiddleware');
+const geoRestrictionMiddleware = require('../middlewares/security/geoRestrictionMiddleware');
 
 const couponValidations = [
     body('code').trim().notEmpty().withMessage('Código é obrigatório'),

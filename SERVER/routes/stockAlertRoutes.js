@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../model/productModel');
-const { lowStockThreshold } = require('../configs/stockAlert');
+const { lowStockThreshold } = require('../configs/others/mailers/stockAlert');
 
 router.get('/low-stock', async (req, res) => {
   try {

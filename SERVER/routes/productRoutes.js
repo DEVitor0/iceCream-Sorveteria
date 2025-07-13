@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController');
+const productController = require('../controllers/others/products/productController');
 const Product = require('../model/productModel');
-const { validateProduct } = require('../middlewares/productValidationMiddleware');
-const authenticateJWT = require('../middlewares/authMiddleware');
-const upload = require('../configs/multerConfig');
-const csrfProtection = require('../configs/csrfProtectionConfigs');
+const { validateProduct } = require('../middlewares/validation/productValidationMiddleware');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
+const upload = require('../configs/others/products/multerConfig');
+const csrfProtection = require('../configs/security/csrfProtectionConfigs');
 
 router.get(
   '/editar-produtos',

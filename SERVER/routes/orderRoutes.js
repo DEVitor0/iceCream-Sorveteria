@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const authenticateJWT = require('../middlewares/authMiddleware');
-const csrfProtection = require('../configs/csrfProtectionConfigs');
-const sanitizeMiddleware = require('../middlewares/sanitizeMiddleware');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
+const csrfProtection = require('../configs/security/csrfProtectionConfigs');
+const sanitizeMiddleware = require('../middlewares/security/sanitizeMiddleware');
 const {
   getCompletedOrders,
   updateDeliveryStatus,
   getAllOrders,
   getOrderDetails,
   updateOrderStatus
-} = require('../controllers/orderController');
+} = require('../controllers/others/products/orderController');
 
 router.get('/completed', authenticateJWT, getCompletedOrders);
 router.put('/:orderId/delivery-status', authenticateJWT, csrfProtection, updateDeliveryStatus);

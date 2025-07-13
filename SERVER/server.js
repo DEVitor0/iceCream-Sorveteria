@@ -2,19 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 
-const corsOptions = require("./configs/corsConfigs");
-const connectDB = require("./configs/databaseConfigs");
-const csrfProtection = require("./configs/csrfProtectionConfigs");
-const { limiter } = require("./configs/rateLimiterConfig");
-const configureMorgan = require("./configs/morganConfigs");
+const corsOptions = require("./configs/security/corsConfigs");
+const connectDB = require("./configs/others/database/databaseConfigs");
+const csrfProtection = require("./configs/security/csrfProtectionConfigs");
+const { limiter } = require("./configs/security/rateLimiterConfig");
+const configureMorgan = require("./configs/others/morganConfigs/index");
 
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const { applySecurityHeaders } = require("./utils/helmetSecurity");
-const csrfCookieMiddleware = require("./middlewares/csrfCookieMiddleware");
-const createAdminUser = require("./utils/initializeAdmin");
-const { initialStockCheck } = require('./utils/stockMonitor');
+const { applySecurityHeaders } = require("./utils/security/helmetSecurity");
+const csrfCookieMiddleware = require("./middlewares/security/csrfCookieMiddleware");
+const { initialStockCheck } = require('./utils/others/products/stockMonitor');
 
 const routes = require("./routes");
 
@@ -47,8 +46,6 @@ async function startServer() {
 
         await connectDB(CONNECTION_STRING);
         console.log("Database connected!");
-
-        await createAdminUser();
 
         app.use(routes);
         const server = app.listen(SERVER_PORT, () => {

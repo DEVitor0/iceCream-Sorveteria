@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const stockEmitter = require('../utils/eventEmitter');
+const stockEmitter = require('../utils/others/products/eventEmitter');
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },

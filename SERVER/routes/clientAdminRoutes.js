@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const clientAdminController = require('../controllers/clientAdminController');
-const authenticateJWT = require('../middlewares/authMiddleware');
+const clientAdminController = require('../controllers/others/mailers/clientAdminController');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
 
 router.use(authenticateJWT);
 

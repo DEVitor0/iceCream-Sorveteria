@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authenticateJWT = require('../middlewares/authMiddleware');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
 
 router.get("/", authenticateJWT, (req, res) => {
   res.json({

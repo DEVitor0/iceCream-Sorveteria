@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { getDailyStatistics } = require('../controllers/dailyStatsController');
-const authenticateJWT = require('../middlewares/authMiddleware');
+const { getDailyStatistics } = require('../controllers/others/statistics/dailyStatsController');
+const authenticateJWT = require('../middlewares/security/authMiddleware');
 
 /**
  * @swagger

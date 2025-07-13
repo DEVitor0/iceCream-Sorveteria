@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const csrfProtection = require('./configs/csrfProtectionConfigs');
+const csrfProtection = require('./configs/security/csrfProtectionConfigs.js');
 const ApiError = require('./utils/ApiError.js');
 
-const { twoFALogin, validateTwoFACode } = require('./controllers/twoFAController');
-const { getAllTags } = require('./controllers/tagController');
-const { forceUpdateDailyStats } = require('./controllers/dailyStatsController')
+const { twoFALogin, validateTwoFACode } = require('./controllers/validation/twoFAController.js');
+const { getAllTags } = require('./controllers/others/products/tagController.js');
+const { forceUpdateDailyStats } = require('./controllers/others/statistics/dailyStatsController.js')
 
-const sanitizeMiddleware = require('./middlewares/sanitizeMiddleware');
-const validateLoginMiddleware = require('./middlewares/joiValidatorMiddleware');
-const geoRestrictionMiddleware = require('./middlewares/geoRestrictionMiddleware.js');
-const dailyStatsMiddleware = require('./middlewares/dailyStatsMiddleware');
-const authenticateJWT = require('./middlewares/authMiddleware');
-const weeklyStatsMiddleware = require('./middlewares/weeklyStatsMiddleware');
+const sanitizeMiddleware = require('./middlewares/security/sanitizeMiddleware.js');
+const validateLoginMiddleware = require('./middlewares/security/joiValidatorMiddleware');
+const geoRestrictionMiddleware = require('./middlewares/security/geoRestrictionMiddleware.js');
+const dailyStatsMiddleware = require('./middlewares/others/statistics/dailyStatsMiddleware.js');
+const authenticateJWT = require('./middlewares/security/authMiddleware.js');
+const weeklyStatsMiddleware = require('./middlewares/others/statistics/weeklyStatsMiddleware.js');
 
 const authenticationRoutes = require('./routes/authenticationRoutes');
 const productRoutes = require('./routes/productRoutes');
