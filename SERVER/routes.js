@@ -27,6 +27,7 @@ const couponRoutes = require('./routes/couponRoutes');
 const dailyStatsRoutes = require('./routes/dailyStatsRoutes');
 const stockAlertRoutes = require('./routes/stockAlertRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const clientAdminRoutes = require('./routes/clientAdminRoutes');
 
 router.use('/api', stockAlertRoutes);
 
@@ -45,6 +46,7 @@ router.use('/api/emails', emailRoutes);
 router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
 router.use('/api/Dashboard', authenticateJWT, productRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
+router.use('/api/admin', clientAdminRoutes);
 router.get('/api/stats/weekly-summary',
   authenticateJWT,
   weeklyStatsMiddleware,

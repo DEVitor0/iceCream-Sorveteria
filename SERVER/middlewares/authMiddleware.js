@@ -1,4 +1,5 @@
 const { verifyToken } = require('../utils/auth');
+const User = require('../model/userModel');
 
 const authenticateJWT = (req, res, next) => {
   console.log('Iniciando autenticação JWT...');
@@ -22,6 +23,11 @@ const authenticateJWT = (req, res, next) => {
       _id: decoded.id,
       role: decoded.role
     };
+
+    User.findByIdAndUpdate(decoded.id, { lastLogin: new Date() }, { new: true })
+      .then(() => console.log('Último login atualizado'))
+      .catch(err => console.error('Erro ao atualizar último login:', err));
+
     console.log('Token válido para usuário:', req.user);
     next();
   } catch (error) {

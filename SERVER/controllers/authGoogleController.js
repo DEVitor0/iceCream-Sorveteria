@@ -58,6 +58,10 @@ const handleGoogleAuth = async (req, res) => {
           await user.save();
       }
 
+      // Atualiza o último login
+      user.lastLogin = new Date();
+      await user.save();
+
       const token = jwt.sign(
           { id: user._id, role: user.role },
           process.env.JWT_SECRET,
@@ -79,7 +83,8 @@ const handleGoogleAuth = async (req, res) => {
               fullName: user.fullName,
               email: user.email,
               photo: user.photo,
-              role: user.role
+              role: user.role,
+              lastLogin: user.lastLogin // Opcional: retornar na resposta
           }
       });
 

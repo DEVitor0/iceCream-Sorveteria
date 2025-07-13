@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema({
         enum: ['local', 'google'],
         default: 'local'
     },
+    lastLogin: {
+      type: Date,
+      default: null
+    },
     addresses: [addressSchema]
 }, { timestamps: true });
 

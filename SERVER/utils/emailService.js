@@ -4,6 +4,40 @@ const User = require('../model/userModel');
 const path = require('path');
 const fs = require('fs').promises;
 
+const DEFAULT_TEMPLATE = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{subject}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #f8f9fa; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { margin-top: 20px; padding: 20px; text-align: center; font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{subject}}</h1>
+        </div>
+        <div class="content">
+            <p>Olá {{name}},</p>
+            <p>{{message}}</p>
+            <p>Atenciosamente,</p>
+            <p>Equipe {{companyName}}</p>
+        </div>
+        <div class="footer">
+            <p>© {{year}} {{companyName}}. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+
+
 class EmailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -18,36 +52,69 @@ class EmailService {
 
   async loadTemplate(templateName, replacements = {}) {
     try {
-      // Corrigido o caminho para ../mail/
+      // Tenta carregar o template personalizado
       const templatePath = path.join(__dirname, '../mail', `${templateName}.html`);
-      console.log(`Tentando carregar template de: ${templatePath}`); // Log para debug
 
-      let html = await fs.readFile(templatePath, 'utf8');
-
-      // Substituir placeholders
-      Object.keys(replacements).forEach(key => {
-        html = html.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
-      });
-
-      return html;
+      try {
+        let html = await fs.readFile(templatePath, 'utf8');
+        return this.replacePlaceholders(html, replacements);
+      } catch (error) {
+        console.warn(`Template ${templateName} não encontrado, usando padrão`);
+        return this.replacePlaceholders(DEFAULT_TEMPLATE, replacements);
+      }
     } catch (error) {
-      console.error(`Erro ao carregar template ${templateName}:`, error);
-      throw new Error(`Falha ao carregar template de email: ${templateName}. Verifique se o arquivo existe.`);
+      console.error('Erro ao carregar template:', error);
+      return this.replacePlaceholders(DEFAULT_TEMPLATE, replacements);
     }
   }
 
-  async sendEmail(to, subject, html) {
+  replacePlaceholders(html, replacements) {
+    const defaultReplacements = {
+      companyName: "Ice Cream Sorveteria",
+      year: new Date().getFullYear(),
+      ...replacements
+    };
+
+    let result = html;
+    Object.keys(defaultReplacements).forEach(key => {
+      result = result.replace(new RegExp(`{{${key}}}`, 'g'), defaultReplacements[key]);
+    });
+
+    return result;
+  }
+
+
+  async sendEmail(options) {
     try {
-      await this.transporter.sendMail({
-        from: emailConfig.defaultFrom,
-        to,
+      const { email, subject, message, template = 'default', context = {} } = options;
+
+      const html = await this.loadTemplate(template, {
+        ...context,
+        message,
         subject,
-        html
+        name: context.name || 'Cliente'
       });
+
+      const mailOptions = {
+        from: emailConfig.defaultFrom,
+        to: email,
+        subject,
+        html,
+        headers: {
+          'X-Mailer': 'IceCream-Sorveteria-API',
+          'X-Priority': '1'
+        }
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log(`Email enviado para ${email} - Message-ID: ${info.messageId}`);
       return true;
     } catch (error) {
-      console.error(`Erro ao enviar email para ${to}:`, error);
-      return false;
+      console.error('Erro ao enviar email:', {
+        error: error.message,
+        stack: error.stack
+      });
+      throw new Error('Falha no envio de email');
     }
   }
 
@@ -96,5 +163,22 @@ class EmailService {
     }
   }
 }
+
+const emailService = new EmailService();
+
+const sendEmail = async (options) => {
+  const { email, subject, message, template, context } = options;
+
+  const html = await emailService.loadTemplate(template || 'default', {
+    ...context,
+    message,
+    subject,
+    companyName: "Ice Cream Sorveteria",
+    year: new Date().getFullYear()
+  });
+
+  return emailService.sendEmail(email, subject, html);
+};
+
 
 module.exports = new EmailService();

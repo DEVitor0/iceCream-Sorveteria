@@ -21,6 +21,10 @@ const login = async (req, res) => {
       });
     }
 
+    // Atualiza o último login
+    user.lastLogin = new Date();
+    await user.save();
+
     const token = generateToken(user);
 
     res.status(200)
@@ -37,7 +41,8 @@ const login = async (req, res) => {
         user: {
           id: user._id,
           email: user.email,
-          role: user.role
+          role: user.role,
+          lastLogin: user.lastLogin // Opcional: retornar na resposta
         }
       });
 
@@ -49,7 +54,6 @@ const login = async (req, res) => {
     });
   }
 };
-
 const register = async (req, res) => {
   try {
     const { email, password } = req.body;

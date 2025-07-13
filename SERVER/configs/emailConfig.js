@@ -8,5 +8,5 @@ module.exports = {
     maxEmailsPerMinute: 100,
     delayBetweenBatches: 60000
   },
-  defaultFrom: 'no-reply@seusite.com'
+  defaultFrom: 'no-reply@IceCreamSorveteria.com'
 };
