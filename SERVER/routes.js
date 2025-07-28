@@ -28,6 +28,9 @@ const dailyStatsRoutes = require('./routes/dailyStatsRoutes');
 const stockAlertRoutes = require('./routes/stockAlertRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 const clientAdminRoutes = require('./routes/clientAdminRoutes');
+const financialAnalyticsRoutes = require('./routes/financialAnalyticsRoutes');
+const salesAnalyticsRoutes = require('./routes/salesAnalyticsRoutes');
+const couponAnalyticsRoutes = require('./routes/couponAnalyticsRoutes');
 
 router.use('/api', stockAlertRoutes);
 
@@ -45,42 +48,11 @@ router.use('/api', geoRoutes);
 router.use('/api/emails', emailRoutes);
 router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
 router.use('/api/Dashboard', authenticateJWT, productRoutes);
+router.use('/api/analytics/financial', financialAnalyticsRoutes);
+router.use('/api/analytics/sales', salesAnalyticsRoutes);
+router.use('/api/analytics/coupons', couponAnalyticsRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
 router.use('/api/admin', clientAdminRoutes);
-router.get('/api/stats/weekly-summary',
-  authenticateJWT,
-  weeklyStatsMiddleware,
-  (req, res) => {
-    res.json({
-      success: true,
-      data: res.locals.weeklyStats
-    });
-  }
-);
-router.get('/api/stats/weekly-orders', authenticateJWT, async (req, res, next) => {
-  try {
-    const { getWeeklyOrderStats } = require('./utils/dailyStatsService');
-    const stats = await getWeeklyOrderStats();
-    res.json(stats);
-  } catch (error) {
-    next(error);
-  }
-});
-router.get('/api/stats/top-categories-yearly',
-  authenticateJWT,
-  async (req, res, next) => {
-    try {
-      const { getTopCategoriesYearly } = require('./utils/dailyStatsService');
-      const data = await getTopCategoriesYearly();
-      res.json({
-        success: true,
-        data
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
 
 router.use('/auth', googleAuthRoutes);
 router.get('/auth/verify', geoRestrictionMiddleware, authenticateJWT, (req, res) => {
@@ -101,6 +73,43 @@ router.get('/tags', getAllTags);
 router.use('/coupons', authenticateJWT, couponRoutes);
 
 router.use('/payment', paymentRoutes);
+
+router.get('/api/stats/weekly-summary',
+  authenticateJWT,
+  weeklyStatsMiddleware,
+  (req, res) => {
+    res.json({
+      success: true,
+      data: res.locals.weeklyStats
+    });
+  }
+);
+
+router.get('/api/stats/weekly-orders', authenticateJWT, async (req, res, next) => {
+  try {
+    const { getWeeklyOrderStats } = require('./utils/others/statistics/dailyStatsService.js');
+    const stats = await getWeeklyOrderStats();
+    res.json(stats);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/stats/top-categories-yearly',
+  authenticateJWT,
+  async (req, res, next) => {
+    try {
+      const { getTopCategoriesYearly } = require('./utils/others/statistics/dailyStatsService.js');
+      const data = await getTopCategoriesYearly();
+      res.json({
+        success: true,
+        data
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.use((err, req, res, next) => {
   console.error('Erro:', {

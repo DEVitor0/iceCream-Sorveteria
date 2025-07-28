@@ -113,7 +113,7 @@ orderSchema.index({ createdAt: -1 });
 orderSchema.post('findOneAndUpdate', async function(doc) {
   if (doc && doc.status === 'completed') {
     try {
-      const { updateDailyStats } = require('../utils/dailyStatsService');
+      const { updateDailyStats } = require('../utils/others/statistics/dailyStatsService');
       await updateDailyStats();
     } catch (error) {
       console.error('Error updating stats after order update:', error);
@@ -139,7 +139,7 @@ orderSchema.methods.updateInventory = async function() {
     );
 
     // Dispara a atualização das estatísticas
-    const { updateDailyStats } = require('../utils/dailyStatsService');
+    const { updateDailyStats } = require('../utils/others/statistics/dailyStatsService');
     await updateDailyStats();
 
     return updatedOrder;

@@ -17,44 +17,68 @@ const { initialStockCheck } = require('./utils/others/products/stockMonitor');
 
 const routes = require("./routes");
 
+require('events').EventEmitter.defaultMaxListeners = 20;
+
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT;
 const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
 function configureServer() {
-    app.set("trust proxy", 1);
+  app.set("trust proxy", 1);
 
-    app.use(cors(corsOptions));
-    app.use(cookieParser());
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+  app.use(cors(corsOptions));
+  app.use(cookieParser());
+  app.use(express.json({ limit: '10kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-    app.use(csrfProtection);
-    app.use(applySecurityHeaders);
-    app.use(limiter);
-    app.use(csrfCookieMiddleware);
+  app.use(csrfProtection);
+  app.use(csrfCookieMiddleware);
+  app.use(limiter);
+  app.use(applySecurityHeaders);
 
-    const { logsPath } = configureMorgan(app, __dirname);
-    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+  const { logsPath } = configureMorgan(app, __dirname);
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-    return { logsPath };
+  return { logsPath };
 }
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err);
+});
 
 async function startServer() {
     try {
         const { logsPath } = configureServer();
 
         await connectDB(CONNECTION_STRING);
-        console.log("Database connected!");
+        console.log("Database connected successfully!");
 
         app.use(routes);
+
+        app.use((err, req, res, next) => {
+            console.error(err.stack);
+            res.status(500).send('Something broke!');
+        });
+
         const server = app.listen(SERVER_PORT, () => {
             console.log(`Server running on: http://localhost:${SERVER_PORT}`);
             console.log(`Detailed logs available at: ${logsPath}`);
         });
 
         await initialStockCheck();
-        console.log('Initial stock check completed');
+        console.log('Initial stock check completed successfully');
+
+        process.on('SIGTERM', () => {
+            console.log('SIGTERM received. Shutting down gracefully');
+            server.close(() => {
+                console.log('Process terminated');
+            });
+        });
 
         return server;
     } catch (error) {
