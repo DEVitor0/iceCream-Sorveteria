@@ -22,6 +22,7 @@ import OrderHistoryPage from 'templates/dashboard/pages/Sales/History';
 import EmailSenderPage from './templates/dashboard/pages/User/SendMailsToClient/EmailSenderPage';
 import ClientsAdminPage from './templates/dashboard/pages/User/TableOfClients/ClientsAdminPage';
 import ExportDataPage from './templates/dashboard/pages/Financial/relatories';
+import UserManagement from './templates/dashboard/pages/configs/admins/administration';
 
 import GeoBlocked from './components/Authentication/GeoVerification/GeoBloqued';
 import GeoProtectedRoute from 'components/Authentication/GeoVerification/GeoProtectedRoute';
@@ -277,6 +278,20 @@ root.render(
                           geoRestricted={true}
                         >
                           <ExportDataPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/Dashboard/Configurações/Administradores"
+                    element={
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin']}
+                          geoRestricted={true}
+                        >
+                          <UserManagement />
                         </ProtectedRoute>
                       </GeoProtectedRoute>
                     }
