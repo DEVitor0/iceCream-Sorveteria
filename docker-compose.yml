@@ -1,4 +1,16 @@
 services:
+  redis:
+    container_name: REDIS
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+
   ngrok:
     container_name: NGROK
     image: ngrok/ngrok
@@ -43,6 +55,10 @@ services:
       - FAST_REFRESH=true
       - WDS_SOCKET_PORT=3000
       - BROWSER=none
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -60,8 +76,16 @@ services:
     volumes:
       - ./SERVER:/app
       - /app/node_modules
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
     restart: always
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  redis_data:
