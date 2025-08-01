@@ -32,6 +32,7 @@ const financialAnalyticsRoutes = require('./routes/financialAnalyticsRoutes');
 const salesAnalyticsRoutes = require('./routes/salesAnalyticsRoutes');
 const couponAnalyticsRoutes = require('./routes/couponAnalyticsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
+const userRoutes = require('./routes/changePermission.js');
 
 router.use('/api', stockAlertRoutes);
 
@@ -55,6 +56,7 @@ router.use('/api/analytics/coupons', couponAnalyticsRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
 router.use('/api/analytics/export', authenticateJWT, exportRoutes);
 router.use('/api/admin', clientAdminRoutes);
+router.use('/api/users', userRoutes);
 
 router.use('/auth', googleAuthRoutes);
 router.get('/auth/verify', geoRestrictionMiddleware, authenticateJWT, (req, res) => {
