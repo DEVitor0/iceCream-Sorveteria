@@ -31,6 +31,7 @@ const clientAdminRoutes = require('./routes/clientAdminRoutes');
 const financialAnalyticsRoutes = require('./routes/financialAnalyticsRoutes');
 const salesAnalyticsRoutes = require('./routes/salesAnalyticsRoutes');
 const couponAnalyticsRoutes = require('./routes/couponAnalyticsRoutes');
+const exportRoutes = require('./routes/exportRoutes');
 
 router.use('/api', stockAlertRoutes);
 
@@ -52,6 +53,7 @@ router.use('/api/analytics/financial', financialAnalyticsRoutes);
 router.use('/api/analytics/sales', salesAnalyticsRoutes);
 router.use('/api/analytics/coupons', couponAnalyticsRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
+router.use('/api/analytics/export', authenticateJWT, exportRoutes);
 router.use('/api/admin', clientAdminRoutes);
 
 router.use('/auth', googleAuthRoutes);
