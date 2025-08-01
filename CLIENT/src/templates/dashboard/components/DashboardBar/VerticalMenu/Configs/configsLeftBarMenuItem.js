@@ -33,7 +33,6 @@ const dataLeftBarMenuItem = {
       text: 'Financeiro',
       icon: 'sackDollar',
       actions: {
-        CashFlow: { text: 'Fluxo' },
         Reports: { text: 'Relatórios' },
       },
     },
@@ -41,9 +40,7 @@ const dataLeftBarMenuItem = {
       text: 'Configurações',
       icon: 'gear',
       actions: {
-        Profile: { text: 'Perfil' },
         Users: { text: 'Administradores' },
-        Data: { text: 'Dados' },
       },
     },
   },

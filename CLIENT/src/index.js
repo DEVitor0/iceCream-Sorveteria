@@ -21,6 +21,7 @@ import TwoFAScreen from './templates/authentication/TwoFAScreen/TwoFAScreen';
 import OrderHistoryPage from 'templates/dashboard/pages/Sales/History';
 import EmailSenderPage from './templates/dashboard/pages/User/SendMailsToClient/EmailSenderPage';
 import ClientsAdminPage from './templates/dashboard/pages/User/TableOfClients/ClientsAdminPage';
+import ExportDataPage from './templates/dashboard/pages/Financial/relatories';
 
 import GeoBlocked from './components/Authentication/GeoVerification/GeoBloqued';
 import GeoProtectedRoute from 'components/Authentication/GeoVerification/GeoProtectedRoute';
@@ -262,6 +263,20 @@ root.render(
                           geoRestricted={true}
                         >
                           <ClientsAdminPage />
+                        </ProtectedRoute>
+                      </GeoProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/Dashboard/Financeiro/relatorios"
+                    element={
+                      <GeoProtectedRoute adminOnly>
+                        <ProtectedRoute
+                          authType="login"
+                          requiredRoles={['admin', 'moder']}
+                          geoRestricted={true}
+                        >
+                          <ExportDataPage />
                         </ProtectedRoute>
                       </GeoProtectedRoute>
                     }
