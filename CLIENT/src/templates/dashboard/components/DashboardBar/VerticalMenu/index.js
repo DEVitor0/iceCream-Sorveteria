@@ -29,13 +29,13 @@ const VerticalMenu = () => {
         <div className={styles.menuItems}>
           {/* Dashboard */}
           <div className={styles.menuItem}>
-            <button className={styles.categoryButton}>
+            <a href={dashboard.path} className={styles.categoryButton}>
               <FontAwesomeIcon
                 icon={iconContext[dashboard.icon]}
                 data-testid="svg-inline--fa"
               />
               <span className={styles.categoryText}>{dashboard.text}</span>
-            </button>
+            </a>
           </div>
 
           {/* Categorias */}
@@ -52,19 +52,31 @@ const VerticalMenu = () => {
                 <button
                   className={styles.categoryButton}
                   onClick={() => handleCategoryClick(key)}
+                  style={{ textDecoration: 'none' }}
                 >
                   <FontAwesomeIcon
                     icon={iconContext[category.icon]}
                     data-testid="svg-inline--fa"
                   />
-                  <span className={styles.categoryText}>{category.text}</span>
+                  <a
+                    href={category.path || '#'}
+                    className={styles.categoryText}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    {category.text}
+                  </a>
                 </button>
 
                 <div className={styles.actionsContainer}>
                   {Object.entries(actions).map(([actionKey, action]) => (
-                    <button key={actionKey} className={styles.actionItem}>
+                    <a
+                      key={actionKey}
+                      href={action.path || '#'}
+                      className={styles.actionItem}
+                      style={{ textDecoration: 'none' }}
+                    >
                       {action.text}
-                    </button>
+                    </a>
                   ))}
                 </div>
               </div>

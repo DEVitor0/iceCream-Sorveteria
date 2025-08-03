@@ -1,63 +1,150 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Switch from '@mui/material/Switch';
-import SoftBox from '../../../components/Dashboard/SoftBox';
-import SoftTypography from '../../../components/Dashboard/SoftTypography';
-import SoftInput from '../../../components/Dashboard/SoftInput';
-import SoftButton from '../../../components/Dashboard/SoftButton';
-import CoverLayout from '../components/CoverLayout/index';
-import iceCreamImage from '../../../media/images/dashboard/icecreams/loginIceCream.jpg';
+import { useNavigate, Link } from 'react-router-dom';
+import styled from 'styled-components';
 import { fetchCsrfToken } from '../../../utils/csrf/csurfValidation';
-import ErrorPopup from '../../../examples/Cards/ErrorPopup/index';
+import ErrorPopup from '../../../examples/Cards/ErrorPopup';
 import PreventClosePopup from '../../../utils/PreventClosePopup/PreventClosePopup';
 import useRedirectIfAuthenticated from '../../../hooks/Authentication/useRedirectIfAuthenticated';
-import { CircularProgress } from '@mui/material';
 
-const validateFields = (
-  email,
-  password,
-  setError,
-  setEmailError,
-  setPasswordError,
-) => {
-  let isValid = true;
+// -------------------------------------------------------------------------------- //
+//                                  Estilos Aprimorados                             //
+// -------------------------------------------------------------------------------- //
 
-  if (!email) {
-    setEmailError(true);
-    setError('Preencha o campo de email!');
-    isValid = false;
-  } else {
-    setEmailError(false);
+const PageContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f2f5; // Cor de fundo mais neutra e moderna
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+`;
+
+const Card = styled.div`
+  background-color: #ffffff;
+  padding: 2.5rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); // Sombra mais sutil
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); // Sombra que cresce ao passar o mouse
   }
+`;
 
-  if (!password) {
-    setPasswordError(true);
-    setError('Preencha o campo de senha!');
-    isValid = false;
-  } else {
-    setPasswordError(false);
+const Title = styled.h2`
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+  text-align: center;
+`;
+
+const Subtitle = styled.p`
+  font-size: 1rem;
+  color: #6a6a6a;
+  margin-bottom: 2.5rem;
+  text-align: center;
+`;
+
+const Label = styled.label`
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  display: block; // Garante que a label ocupe toda a largura
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid ${(props) => (props.error ? '#ff4d4f' : '#e0e0e0')};
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus {
+    outline: none;
+    border-color: #007aff; // Cor de foco mais vibrante
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); // Sombra suave no foco
   }
+`;
 
-  if (password.length < 6) {
-    setPasswordError(true);
-    setError('A senha deve ter no mínimo 6 caracteres.');
-    isValid = false;
+const RememberContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #555;
+`;
+
+const Checkbox = styled.input`
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #007aff; // Altera a cor do checkbox
+`;
+
+const Button = styled.button`
+  width: 100%;
+  padding: 1rem;
+  background-color: #007aff; // Cor de botão primária
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  &:hover {
+    background-color: #0063cc;
+    transform: translateY(-2px);
   }
-
-  if (email.length > 35 || password.length > 25) {
-    setError('Campos excedem o tamanho máximo!');
-    isValid = false;
+  &:active {
+    transform: translateY(0);
   }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    setEmailError(true);
-    setError('Endereço de email inválido.');
-    isValid = false;
+  &:disabled {
+    background-color: #a3ccf1;
+    cursor: not-allowed;
+    transform: none;
   }
+`;
 
-  return isValid;
-};
+const Footer = styled.div`
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6a6a6a;
+`;
+
+const LinkStyled = styled(Link)`
+  color: #007aff;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff4d4f;
+  background-color: #fff1f0;
+  border: 1px solid #ffccc7;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`;
+
+// -------------------------------------------------------------------------------- //
+//                                 Componente SignIn                                //
+// -------------------------------------------------------------------------------- //
 
 function SignIn() {
   const [rememberMe, setRememberMe] = useState(true);
@@ -75,54 +162,80 @@ function SignIn() {
 
   useEffect(() => {
     const getCsrfToken = async () => {
-      const token = await fetchCsrfToken();
-      if (token) setCsrfToken(token);
+      try {
+        const token = await fetchCsrfToken();
+        if (token) setCsrfToken(token);
+        else throw new Error('Falha ao obter o token CSRF.');
+      } catch (err) {
+        console.error('Erro ao buscar token CSRF:', err);
+        setError('Não foi possível iniciar a sessão. Tente novamente.');
+      }
     };
     getCsrfToken();
   }, []);
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => setError(''), 3000);
+      const timer = setTimeout(() => setError(''), 5000);
       return () => clearTimeout(timer);
     }
   }, [error]);
 
-  const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
     setIsFormDirty(true);
+    // Limpar erro específico ao começar a digitar
+    if (setter === setEmail) setEmailError(false);
+    if (setter === setPassword) setPasswordError(false);
+  };
+
+  const validateFields = () => {
+    let isValid = true;
+    setEmailError(false);
+    setPasswordError(false);
+    setError('');
+
+    if (!email) {
+      setEmailError(true);
+      setError('O campo de email é obrigatório.');
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError(true);
+      setError('O email inserido não é válido.');
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError(true);
+      setError('O campo de senha é obrigatório.');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError(true);
+      setError('A senha deve ter no mínimo 6 caracteres.');
+      isValid = false;
+    }
+
+    if (email.length > 35 || password.length > 25) {
+      setError('Campos excedem o tamanho máximo permitido.');
+      isValid = false;
+    }
+
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (isSubmitting) return;
 
-    setIsSubmitting(true);
-    setError('');
-
-    if (
-      !validateFields(
-        email,
-        password,
-        setError,
-        setEmailError,
-        setPasswordError,
-      )
-    ) {
-      setIsSubmitting(false);
+    if (!validateFields()) {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       if (!csrfToken) {
-        const newToken = await fetchCsrfToken();
-        if (!newToken) {
-          throw new Error('Failed to get CSRF token');
-        }
-        setCsrfToken(newToken);
+        throw new Error('Token CSRF ausente. Tente recarregar a página.');
       }
 
       const response = await fetch(
@@ -142,97 +255,75 @@ function SignIn() {
         localStorage.setItem('email', email);
         navigate('/validate-2fa');
       } else {
-        const errorData = await response.json();
+        const data = await response.json();
         setError(
-          errorData.message || 'Credenciais inválidas. Tente novamente.',
+          data.message || 'Credenciais inválidas. Verifique seu email e senha.',
         );
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Erro na conexão com o servidor. Tente novamente mais tarde.');
+    } catch (err) {
+      console.error(err);
+      setError(
+        'Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.',
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <CoverLayout
-      title="Welcome back"
-      description="Enter your email and password to sign in"
-      image={iceCreamImage}
-    >
+    <PageContainer>
       <PreventClosePopup hasUnsavedChanges={() => isFormDirty} />
-      <SoftBox component="form" role="form" onSubmit={handleSubmit} noValidate>
-        {error && <ErrorPopup message={error} onClose={() => setError('')} />}
-        <SoftBox mb={2}>
-          <SoftTypography component="label" variant="caption" fontWeight="bold">
-            Email
-          </SoftTypography>
-          <SoftInput
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={handleInputChange(setEmail)}
-            required={false}
-            error={emailError}
-          />
-        </SoftBox>
-        <SoftBox mb={2}>
-          <SoftTypography component="label" variant="caption" fontWeight="bold">
-            Password
-          </SoftTypography>
-          <SoftInput
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={handleInputChange(setPassword)}
-            required={false}
-            error={passwordError}
-          />
-        </SoftBox>
-        <SoftBox display="flex" alignItems="center">
-          <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-          <SoftTypography
-            variant="button"
-            fontWeight="regular"
-            onClick={handleSetRememberMe}
-            sx={{ cursor: 'pointer', userSelect: 'none' }}
-          >
-            &nbsp;&nbsp;Remember me
-          </SoftTypography>
-        </SoftBox>
-        <SoftBox mt={4} mb={1}>
-          <SoftButton
-            variant="gradient"
-            color="info"
-            fullWidth
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Entrar'
-            )}
-          </SoftButton>
-        </SoftBox>
-        <SoftBox mt={3} textAlign="center">
-          <SoftTypography variant="button" color="text" fontWeight="regular">
-            Don&apos;t have an account?{' '}
-            <SoftTypography
-              component={Link}
-              to="/authentication/sign-up"
-              variant="button"
-              color="info"
-              fontWeight="medium"
-              textGradient
-            >
-              Sign up
-            </SoftTypography>
-          </SoftTypography>
-        </SoftBox>
-      </SoftBox>
-    </CoverLayout>
+      <Card>
+        <Title>Bem-vindo de volta</Title>
+        <Subtitle>Insira seu e-mail e senha para continuar</Subtitle>
+        <form onSubmit={handleSubmit} noValidate>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+
+          <div>
+            <Label htmlFor="email-input">Email</Label>
+            <Input
+              id="email-input"
+              type="email"
+              value={email}
+              onChange={handleInputChange(setEmail)}
+              error={emailError}
+              autoComplete="email"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password-input">Senha</Label>
+            <Input
+              id="password-input"
+              type="password"
+              value={password}
+              onChange={handleInputChange(setPassword)}
+              error={passwordError}
+              autoComplete="current-password"
+            />
+          </div>
+
+          <RememberContainer>
+            <Checkbox
+              id="remember-me"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
+            <Label htmlFor="remember-me">Lembrar-me</Label>
+          </RememberContainer>
+
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Entrando...' : 'Entrar'}
+          </Button>
+
+          <Footer>
+            Não possui uma conta?{' '}
+            <LinkStyled to="/authentication/registrar">Cadastre-se</LinkStyled>
+          </Footer>
+        </form>
+      </Card>
+    </PageContainer>
   );
 }
 

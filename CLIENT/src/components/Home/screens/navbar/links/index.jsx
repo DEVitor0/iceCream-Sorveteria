@@ -6,9 +6,6 @@ const Links = () => {
     <nav className="header-bar__inner__menu">
       <ul className="header-bar__inner__menu__list">
         <li className="header-bar__inner__menu__list__item">
-          <Anchor href={'#'} text={'Reservas'} />
-        </li>
-        <li className="header-bar__inner__menu__list__item">
           <Anchor href={'#'} text={'Serviços'} />
         </li>
         <li className="header-bar__inner__menu__list__item">
@@ -16,6 +13,9 @@ const Links = () => {
         </li>
         <li className="header-bar__inner__menu__list__item">
           <Anchor href={'#'} text={'Depoimentos'} />
+        </li>
+        <li className="header-bar__inner__menu__list__item">
+          <Anchor href={'/authentication/registrar'} text={'Login'} />
         </li>
       </ul>
     </nav>

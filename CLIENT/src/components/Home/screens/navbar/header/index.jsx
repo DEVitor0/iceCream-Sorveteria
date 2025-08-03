@@ -15,7 +15,10 @@ const HeaderBar = ({ id, classname = '' }) => {
       <div className="header-bar__inner">
         <Brand />
         <Links />
-        <ButtonIconText text="Meu carrinho" icon={icons.bagShopping} />
+        <ButtonIconText
+          text={<a href="/carrinho">Meu Carrinho</a>}
+          icon={icons.bagShopping}
+        />
       </div>
     </header>
   );

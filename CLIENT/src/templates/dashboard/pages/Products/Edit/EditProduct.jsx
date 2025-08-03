@@ -215,10 +215,10 @@ export default function EditProduct() {
                         alignItems: 'flex-start',
                         gap: 2,
                         padding: 3,
-                        boxShadow: 1,
                         height: 200,
                         width: '100%',
                         overflow: 'hidden',
+                        marginLeft: '10px',
                       }}
                       component={motion.div}
                       whileHover={{ scale: 1.02 }}
