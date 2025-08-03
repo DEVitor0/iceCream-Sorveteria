@@ -1,4 +1,13 @@
 const Product = require('../../../model/productModel');
+const redisClient = require('../../../configs/others/redis/redisConfigs');
+
+const cacheResponse = async (key, data, ttl = 3600) => {
+  try {
+    await redisClient.set(key, data, ttl);
+  } catch (err) {
+    console.error('Redis cache error:', err);
+  }
+};
 
 exports.createProduct = async (req, res) => {
   try {
@@ -38,6 +47,13 @@ exports.createProduct = async (req, res) => {
     });
 
     await newProduct.save();
+
+    await Promise.all([
+      redisClient.del('products:all'),
+      redisClient.del('products:for-coupons'),
+      redisClient.del('products:categories')
+    ]);
+
     res.status(201).json({ message: 'Produto cadastrado com sucesso!', newProduct });
   } catch (error) {
     console.error('Erro ao cadastrar o produto:', error);
@@ -45,10 +61,19 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-
 exports.getAllProducts = async (req, res) => {
   try {
+    const cacheKey = 'products:all';
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     const products = await Product.find({});
+
+    await cacheResponse(cacheKey, products);
+
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar produtos', error });
@@ -57,8 +82,18 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
   try {
+    const cacheKey = `products:${req.params.id}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Produto não encontrado' });
+
+    await cacheResponse(cacheKey, product, 1800);
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao buscar produto', error });
@@ -90,6 +125,14 @@ exports.updateProduct = async (req, res) => {
     }
 
     await product.save();
+
+    await Promise.all([
+      redisClient.del('products:all'),
+      redisClient.del(`products:${id}`),
+      redisClient.del('products:for-coupons'),
+      redisClient.del('products:categories')
+    ]);
+
     res.status(200).json({ message: 'Produto atualizado com sucesso!', product });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao atualizar o produto.', error });
@@ -107,6 +150,13 @@ exports.deleteProduct = async (req, res) => {
 
     await Product.findByIdAndDelete(id);
 
+    await Promise.all([
+      redisClient.del('products:all'),
+      redisClient.del(`products:${id}`),
+      redisClient.del('products:for-coupons'),
+      redisClient.del('products:categories')
+    ]);
+
     res.status(200).json({ message: 'Produto excluído com sucesso!' });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao excluir o produto.', error });
@@ -114,14 +164,23 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getAllProductsForCoupons = async (req, res) => {
-  console.log('Acessando getAllProductsForCoupons');
   try {
+    const cacheKey = 'products:for-coupons';
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     const products = await Product.find({}, 'id name');
-    console.log('Produtos encontrados:', products.length);
-    res.status(200).json(products.map(p => ({
+    const responseData = products.map(p => ({
       id: p._id,
       name: p.name
-    })));
+    }));
+
+    await cacheResponse(cacheKey, responseData, 7200);
+
+    res.status(200).json(responseData);
   } catch (error) {
     console.error('Erro em getAllProductsForCoupons:', error);
     res.status(500).json({ message: 'Erro ao buscar produtos', error });
@@ -129,8 +188,14 @@ exports.getAllProductsForCoupons = async (req, res) => {
 };
 
 exports.getUniqueCategoriesFromTags = async (req, res) => {
-  console.log('Acessando getUniqueCategoriesFromTags');
   try {
+    const cacheKey = 'products:categories';
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
     const uniqueTags = await Product.aggregate([
       { $match: { tag: { $exists: true, $ne: "" } } },
       { $group: { _id: "$tag" } },
@@ -138,12 +203,12 @@ exports.getUniqueCategoriesFromTags = async (req, res) => {
       { $sort: { name: 1 } }
     ]);
 
-    console.log('Categorias únicas encontradas:', uniqueTags.length);
-
     const categories = uniqueTags.map((tag, index) => ({
       id: index + 1,
       name: tag.name
     }));
+
+    await cacheResponse(cacheKey, categories, 86400);
 
     res.status(200).json(categories);
   } catch (error) {

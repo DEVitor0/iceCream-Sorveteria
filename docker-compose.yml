@@ -55,10 +55,11 @@ services:
       - FAST_REFRESH=true
       - WDS_SOCKET_PORT=3000
       - BROWSER=none
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REACT_APP_REDIS_HOST=redis
+      - REACT_APP_REDIS_PORT=6379
     depends_on:
       - redis
+      - backend
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -70,6 +71,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8443:8443"
+    expose:
+      - "8443"
     networks:
       - app-network
     working_dir: /app

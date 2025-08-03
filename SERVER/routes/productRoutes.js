@@ -6,7 +6,7 @@ const { validateProduct } = require('../middlewares/validation/productValidation
 const authenticateJWT = require('../middlewares/security/authMiddleware');
 const upload = require('../configs/others/products/multerConfig');
 const csrfProtection = require('../configs/security/csrfProtectionConfigs');
-const productCache = require('../middlewares/cache/productCache');
+const productCache = require('../cache/productCache');
 
 router.get(
   '/editar-produtos',

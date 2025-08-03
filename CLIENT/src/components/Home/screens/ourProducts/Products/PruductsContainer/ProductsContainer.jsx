@@ -123,6 +123,30 @@ const ActionsContainer = styled(Box)({
   boxSizing: 'border-box',
 });
 
+const CACHE_PREFIX = 'icecream_products_';
+
+const getCachedProducts = (tag) => {
+  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
+  const cachedData = localStorage.getItem(cacheKey);
+  if (!cachedData) return null;
+
+  const { data, timestamp } = JSON.parse(cachedData);
+  if (Date.now() - timestamp < 300000) {
+    return data;
+  }
+  localStorage.removeItem(cacheKey);
+  return null;
+};
+
+const setCachedProducts = (tag, data) => {
+  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
+  const cacheData = {
+    data,
+    timestamp: Date.now(),
+  };
+  localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+};
+
 const ProductsContainer = ({ selectedTag }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -139,8 +163,18 @@ const ProductsContainer = ({ selectedTag }) => {
         setLoading(true);
         setError(null);
 
+        const cachedProducts = getCachedProducts(selectedTag);
+        if (cachedProducts) {
+          setProducts(cachedProducts);
+          setLoading(false);
+          return;
+        }
+
         const response = await axios.get('/api/products', {
           signal: controller.signal,
+          headers: {
+            'Cache-Control': 'max-age=300',
+          },
         });
 
         let filteredProducts = response.data;
@@ -151,12 +185,21 @@ const ProductsContainer = ({ selectedTag }) => {
           );
         }
 
-        setProducts(filteredProducts.slice(0, 8));
+        const productsToShow = filteredProducts.slice(0, 8);
+        setProducts(productsToShow);
+        setCachedProducts(selectedTag, productsToShow);
         setLoading(false);
       } catch (err) {
         if (!axios.isCancel(err)) {
           console.error('Erro ao buscar produtos:', err);
-          setError('Erro ao carregar produtos');
+
+          const cachedProducts = getCachedProducts(selectedTag);
+          if (cachedProducts) {
+            setProducts(cachedProducts);
+            setError('Dados podem estar desatualizados (modo offline)');
+          } else {
+            setError('Erro ao carregar produtos');
+          }
           setLoading(false);
         }
       }

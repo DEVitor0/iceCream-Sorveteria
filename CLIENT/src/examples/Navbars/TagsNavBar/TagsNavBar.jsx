@@ -9,6 +9,9 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
   const failedImages = useRef(new Set());
   const apiCSRFToken = useApi();
 
+  const TAGS_CACHE_KEY = 'tags_cache';
+  const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
+
   const tagImages = {
     massa: '/image/mass.png',
     casquinha: '/image/ice-cream.png',
@@ -22,6 +25,37 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
   };
 
   const fallbackImage = '/image/fallback.png';
+
+  const getCachedTags = () => {
+    try {
+      const cachedData = localStorage.getItem(TAGS_CACHE_KEY);
+      if (!cachedData) return null;
+
+      const { data, timestamp } = JSON.parse(cachedData);
+
+      if (Date.now() - timestamp < CACHE_EXPIRATION) {
+        return data;
+      }
+
+      localStorage.removeItem(TAGS_CACHE_KEY);
+      return null;
+    } catch (error) {
+      console.error('Erro ao ler cache:', error);
+      return null;
+    }
+  };
+
+  const saveTagsToCache = (tagsData) => {
+    try {
+      const cacheData = {
+        data: tagsData,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(TAGS_CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Erro ao salvar no cache:', error);
+    }
+  };
 
   const handleImageError = (e, tag) => {
     const img = e.target;
@@ -41,6 +75,12 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
 
     const fetchTags = async () => {
       try {
+        const cachedTags = getCachedTags();
+        if (cachedTags) {
+          setTags(cachedTags);
+          return;
+        }
+
         setLoading(true);
         const response = await apiCSRFToken.get('/tags', {
           signal: controller.signal,
@@ -48,12 +88,20 @@ const TagsNavBar = ({ selectedTag, onTagSelect }) => {
         });
 
         if (isMounted) {
-          setTags(response.data.tags);
+          const tagsData = response.data.tags || [];
+          setTags(tagsData);
+          saveTagsToCache(tagsData);
           setLoading(false);
         }
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error('Erro ao buscar tags:', error);
+
+          const cachedTags = getCachedTags();
+          if (cachedTags) {
+            setTags(cachedTags);
+          }
+
           setLoading(false);
         }
       }

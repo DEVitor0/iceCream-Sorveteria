@@ -1,4 +1,4 @@
-const redisClient = require('../../configs/others/redis/redisConfigs');
+const redisClient = require('../configs/others/redis/redisConfigs');
 
 const productCache = {
     getAllProducts: async (req, res, next) => {
