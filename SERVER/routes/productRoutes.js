@@ -6,11 +6,13 @@ const { validateProduct } = require('../middlewares/validation/productValidation
 const authenticateJWT = require('../middlewares/security/authMiddleware');
 const upload = require('../configs/others/products/multerConfig');
 const csrfProtection = require('../configs/security/csrfProtectionConfigs');
+const productCache = require('../middlewares/cache/productCache');
 
 router.get(
   '/editar-produtos',
   csrfProtection,
   authenticateJWT,
+  productCache.getAllProducts,
   productController.getAllProducts
 );
 
@@ -18,6 +20,7 @@ router.get(
   '/produtos/:id',
   csrfProtection,
   authenticateJWT,
+  productCache.getProductById,
   productController.getProductById
 );
 
@@ -47,10 +50,24 @@ router.delete(
 );
 
 router.get('/products-for-coupons', productController.getAllProductsForCoupons);
-router.get('/unique-categories-from-tags', productController.getUniqueCategoriesFromTags);
 
-router.get('/products/coupons', productController.getAllProductsForCoupons);
-router.get('/categories/unique-tags', productController.getUniqueCategoriesFromTags);
+router.get(
+  '/unique-categories-from-tags',
+  productCache.getUniqueCategoriesFromTags,
+  productController.getUniqueCategoriesFromTags
+);
+
+router.get(
+  '/products/coupons',
+  productCache.getAllProductsForCoupons,
+  productController.getAllProductsForCoupons
+);
+
+router.get(
+  '/categories/unique-tags',
+  productCache.getUniqueCategoriesFromTags,
+  productController.getUniqueCategoriesFromTags
+);
 
 router.post(
   '/verify-checkout',

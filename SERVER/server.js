@@ -7,6 +7,7 @@ const connectDB = require("./configs/others/database/databaseConfigs");
 const csrfProtection = require("./configs/security/csrfProtectionConfigs");
 const { limiter } = require("./configs/security/rateLimiterConfig");
 const configureMorgan = require("./configs/others/morganConfigs/index");
+const redisClient = require("./configs/others/redis/redisConfigs");
 
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -58,6 +59,10 @@ async function startServer() {
         await connectDB(CONNECTION_STRING);
         console.log("Database connected successfully!");
 
+        await redisClient.set('server_start', new Date().toISOString(), 10);
+        const startTime = await redisClient.get('server_start');
+        console.log(`Redis test successful. Server start time cached: ${startTime}`);
+
         app.use(routes);
 
         app.use((err, req, res, next) => {
@@ -73,8 +78,9 @@ async function startServer() {
         await initialStockCheck();
         console.log('Initial stock check completed successfully');
 
-        process.on('SIGTERM', () => {
+        process.on('SIGTERM', async () => {
             console.log('SIGTERM received. Shutting down gracefully');
+            await redisClient.quit();
             server.close(() => {
                 console.log('Process terminated');
             });
