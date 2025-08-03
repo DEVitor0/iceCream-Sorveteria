@@ -40,6 +40,7 @@
     "chroma-js": "^3.1.2",
     "context": "^3.0.33",
     "cra-template": "1.2.0",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "debounce": "^2.2.0",

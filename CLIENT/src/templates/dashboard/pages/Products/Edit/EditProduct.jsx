@@ -218,7 +218,6 @@ export default function EditProduct() {
                         height: 200,
                         width: '100%',
                         overflow: 'hidden',
-                        marginLeft: '10px',
                       }}
                       component={motion.div}
                       whileHover={{ scale: 1.02 }}

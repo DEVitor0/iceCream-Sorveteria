@@ -2,13 +2,61 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, styled } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
+import CryptoJS from 'crypto-js';
 import FetchImageProducts from '../FetchImageProducts/FetchImageProducts';
 import TitleProducts from '../TitleProducts/TitleProducts';
 import ProductPrices from '../PriceProducts/PriceProducts';
 import AddMoreProducts from '../AddMoreProducts/AddMoreProducts';
 import ShoppingCartButton from '../ButtonIconSpecial/ButtonIconText';
 
-// Animations
+const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || 'fallback';
+
+const encryptData = (data) => {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+};
+
+const decryptData = (ciphertext) => {
+  try {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
+    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decryptedData);
+  } catch (err) {
+    console.error('Erro ao descriptografar cache:', err);
+    return null;
+  }
+};
+
+// 🔐 Cache com criptografia
+const CACHE_PREFIX = 'icecream_products_';
+
+const getCachedProducts = (tag) => {
+  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
+  const cachedData = localStorage.getItem(cacheKey);
+  if (!cachedData) return null;
+
+  try {
+    const { data: encryptedData, timestamp } = JSON.parse(cachedData);
+    if (Date.now() - timestamp < 300000) {
+      return decryptData(encryptedData);
+    }
+  } catch (err) {
+    console.error('Erro ao ler cache:', err);
+  }
+
+  localStorage.removeItem(cacheKey);
+  return null;
+};
+
+const setCachedProducts = (tag, data) => {
+  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
+  const cacheData = {
+    data: encryptData(data),
+    timestamp: Date.now(),
+  };
+  localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+};
+
+// Animações
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -49,6 +97,7 @@ const imageVariants = {
   },
 };
 
+// Estilos
 const ProductsContainerWrapper = styled(motion.div)(({ theme }) => ({
   width: '240px',
   minHeight: '360px',
@@ -60,7 +109,7 @@ const ProductsContainerWrapper = styled(motion.div)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'space-between', // Distribui o espaço verticalmente
+  justifyContent: 'space-between',
   gap: '8px',
   boxShadow: theme.shadows[3],
   backgroundColor: '#ffffff',
@@ -86,7 +135,7 @@ const TitleSession = styled(Box)({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  minHeight: '60px', // Altura fixa para o título
+  minHeight: '60px',
   fontFamily: 'Poppins, sans-serif',
   fontSize: '1.1rem',
   fontWeight: 600,
@@ -123,35 +172,11 @@ const ActionsContainer = styled(Box)({
   boxSizing: 'border-box',
 });
 
-const CACHE_PREFIX = 'icecream_products_';
-
-const getCachedProducts = (tag) => {
-  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
-  const cachedData = localStorage.getItem(cacheKey);
-  if (!cachedData) return null;
-
-  const { data, timestamp } = JSON.parse(cachedData);
-  if (Date.now() - timestamp < 300000) {
-    return data;
-  }
-  localStorage.removeItem(cacheKey);
-  return null;
-};
-
-const setCachedProducts = (tag, data) => {
-  const cacheKey = `${CACHE_PREFIX}${tag || 'all'}`;
-  const cacheData = {
-    data,
-    timestamp: Date.now(),
-  };
-  localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-};
-
+// Componente principal
 const ProductsContainer = ({ selectedTag }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [quantity, setQuantity] = useState(1);
   const [quantities, setQuantities] = useState({});
 
@@ -180,7 +205,7 @@ const ProductsContainer = ({ selectedTag }) => {
         let filteredProducts = response.data;
 
         if (selectedTag) {
-          filteredProducts = response.data.filter(
+          filteredProducts = filteredProducts.filter(
             (product) => product.tag === selectedTag,
           );
         }
@@ -192,10 +217,9 @@ const ProductsContainer = ({ selectedTag }) => {
       } catch (err) {
         if (!axios.isCancel(err)) {
           console.error('Erro ao buscar produtos:', err);
-
-          const cachedProducts = getCachedProducts(selectedTag);
-          if (cachedProducts) {
-            setProducts(cachedProducts);
+          const cached = getCachedProducts(selectedTag);
+          if (cached) {
+            setProducts(cached);
             setError('Dados podem estar desatualizados (modo offline)');
           } else {
             setError('Erro ao carregar produtos');
