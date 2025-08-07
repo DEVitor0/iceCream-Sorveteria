@@ -14,6 +14,7 @@ const cors = require("cors");
 
 const { applySecurityHeaders } = require("./utils/security/helmetSecurity");
 const csrfCookieMiddleware = require("./middlewares/security/csrfCookieMiddleware");
+const geoRestrictionMiddleware = require('./middlewares/security/geoRestrictionMiddleware');
 const { initialStockCheck } = require('./utils/others/products/stockMonitor');
 
 const routes = require("./routes");
@@ -36,6 +37,7 @@ function configureServer() {
   app.use(csrfCookieMiddleware);
   app.use(limiter);
   app.use(applySecurityHeaders);
+  app.use(geoRestrictionMiddleware);
 
   const { logsPath } = configureMorgan(app, __dirname);
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

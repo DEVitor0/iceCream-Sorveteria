@@ -2,34 +2,29 @@ const axios = require('axios');
 const createHttpError = require('http-errors');
 
 const verifyGeo = async (req, res, next) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return res.json({
-      allowed: true,
-      message: 'Ambiente de desenvolvimento - verificação geográfica desativada'
-    });
-  }
-
   try {
     const clientIp = req.headers['x-real-ip'] ||
-                   req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-                   req.ip;
-
-    if (clientIp === '127.0.0.1' || clientIp === '::1') {
-      return res.json({
-        allowed: true,
-        message: 'IP local - acesso permitido'
-      });
-    }
+                     req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+                     req.ip;
 
     let countryCode;
     try {
       const response = await axios.get(`https://ipapi.co/${clientIp}/country/`, {
-        timeout: 5000
+        timeout: 3000
       });
       countryCode = response.data;
-    } catch (error) {
-      console.error('Erro na API de geolocalização:', error);
-      throw createHttpError.InternalServerError('Não foi possível verificar sua localização');
+    } catch (primaryError) {
+      console.log('Falha com ipapi.co, tentando ipinfo.io...');
+      try {
+        const fallbackResponse = await axios.get(`https://ipinfo.io/${clientIp}/country`, {
+          timeout: 3000,
+          headers: { 'Authorization': `Bearer ${process.env.IPINFO_TOKEN}` }
+        });
+        countryCode = fallbackResponse.data.trim();
+      } catch (fallbackError) {
+        console.error('Ambas APIs falharam:', { primaryError, fallbackError });
+        throw createHttpError.Forbidden('Não foi possível verificar sua localização');
+      }
     }
 
     if (countryCode !== 'BR') {

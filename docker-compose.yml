@@ -55,6 +55,7 @@ services:
       - FAST_REFRESH=true
       - WDS_SOCKET_PORT=3000
       - BROWSER=none
+      - REACT_APP_API_URL=http://backend:8443
       - REACT_APP_REDIS_HOST=redis
       - REACT_APP_REDIS_PORT=6379
     depends_on:
