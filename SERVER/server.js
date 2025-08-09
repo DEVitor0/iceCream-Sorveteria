@@ -8,13 +8,13 @@ const csrfProtection = require("./configs/security/csrfProtectionConfigs");
 const { limiter } = require("./configs/security/rateLimiterConfig");
 const configureMorgan = require("./configs/others/morganConfigs/index");
 const redisClient = require("./configs/others/redis/redisConfigs");
+const testGeoRouter = require('./middlewares/security/avaliateGeo');
 
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const { applySecurityHeaders } = require("./utils/security/helmetSecurity");
 const csrfCookieMiddleware = require("./middlewares/security/csrfCookieMiddleware");
-const geoRestrictionMiddleware = require('./middlewares/security/geoRestrictionMiddleware');
 const { initialStockCheck } = require('./utils/others/products/stockMonitor');
 
 const routes = require("./routes");
@@ -37,10 +37,10 @@ function configureServer() {
   app.use(csrfCookieMiddleware);
   app.use(limiter);
   app.use(applySecurityHeaders);
-  app.use(geoRestrictionMiddleware);
 
   const { logsPath } = configureMorgan(app, __dirname);
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+  app.use(testGeoRouter);
 
   return { logsPath };
 }
