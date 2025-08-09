@@ -73,18 +73,18 @@ const GoogleSignIn = ({ onSuccess }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '48px',
-        width: '48px',
+        height: '60px', // Aumentado
+        width: '300px', // Aumentado significativamente
       }}
     >
       <div
         className="g_id_signin"
-        data-type="icon"
-        data-shape="square"
+        data-type="standard" // Mudado de 'icon' para 'standard'
+        data-shape="rectangular" // Mudado para retangular
         data-theme="outline"
         data-text="signin_with"
-        data-size="medium"
-        data-width="300"
+        data-size="large" // Tamanho grande
+        data-width="300" // Largura igual ao container
         style={{
           width: '100%',
           height: '100%',

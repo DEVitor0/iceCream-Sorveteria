@@ -36,7 +36,7 @@ const dataLeftBarMenuItem = {
       actions: {
         Reports: {
           text: 'Relatórios',
-          path: '/Dashboard/Financeiro/Relatórios',
+          path: '/Dashboard/Financeiro/relatorios',
         },
       },
     },

@@ -29,7 +29,11 @@ const VerticalMenu = () => {
         <div className={styles.menuItems}>
           {/* Dashboard */}
           <div className={styles.menuItem}>
-            <a href={dashboard.path} className={styles.categoryButton}>
+            <a
+              href={dashboard.path}
+              className={styles.categoryButton}
+              style={{ textDecoration: 'none' }}
+            >
               <FontAwesomeIcon
                 icon={iconContext[dashboard.icon]}
                 data-testid="svg-inline--fa"
