@@ -23,6 +23,10 @@ import DashboardNavbar from '../../../../../examples/Navbars/DashboardNavbar/ind
 import TagsNavBar from '../../../../../examples/Navbars/TagsNavBar/TagsNavBar';
 import { debounce } from 'lodash';
 import { useApi } from '../../../../../contexts/RequestCSRFToken/ApiContextCSRFToken';
+import CryptoJS from 'crypto-js';
+
+const CACHE_KEY = 'products_cache_v2';
+const CACHE_EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
 
 const styles = `
   .marquee-container {
@@ -44,17 +48,76 @@ const styles = `
   }
 `;
 
-const fetchProducts = debounce(async () => {
+const encryptData = (data) => {
+  const secretKey = process.env.REACT_APP_SECRET_KEY;
+  return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
+};
+
+const decryptData = (encryptedData) => {
   try {
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  } catch (error) {
+    console.error('Erro ao descriptografar dados do cache:', error);
+    return null;
+  }
+};
+
+const getCachedProducts = () => {
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  if (!cachedData) return null;
+
+  const parsedData = decryptData(cachedData);
+  if (!parsedData) return null;
+
+  if (new Date().getTime() > parsedData.expiration) {
+    localStorage.removeItem(CACHE_KEY);
+    return null;
+  }
+
+  return parsedData;
+};
+
+const setCachedProducts = (data, timestamp) => {
+  const cacheData = {
+    data: data,
+    expiration: new Date().getTime() + CACHE_EXPIRATION_TIME,
+    lastUpdated: timestamp || new Date().getTime(),
+  };
+  localStorage.setItem(CACHE_KEY, encryptData(cacheData));
+};
+
+const fetchProducts = debounce(async (forceUpdate = false) => {
+  try {
+    // Se não for forçado, verifica o cache primeiro
+    if (!forceUpdate) {
+      const cached = getCachedProducts();
+      if (cached) {
+        return { data: cached.data, fromCache: true };
+      }
+    }
+
+    // Faz a requisição e armazena no cache
     const response = await axios.get('/api/Dashboard/editar-produtos', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
-    return response.data || []; // Ensure an array is returned even if response.data is undefined
+
+    if (response.data) {
+      setCachedProducts(response.data);
+    }
+
+    return { data: response.data || [], fromCache: false };
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
-    return []; // Return an empty array in case of error
+    // Se houver erro, tenta retornar do cache se existir
+    const cached = getCachedProducts();
+    if (cached) {
+      return { data: cached.data, fromCache: true, error: true };
+    }
+    return { data: [], fromCache: false, error: true };
   }
 }, 1000);
 
@@ -67,6 +130,32 @@ export default function EditProduct() {
   const navigate = useNavigate();
   const descriptionRefs = useRef([]);
   const apiCSRFToken = useApi();
+  const [lastUpdate, setLastUpdate] = useState(0);
+
+  const checkForUpdates = async () => {
+    try {
+      // Verifica a última atualização no servidor
+      const response = await axios.head('/api/Dashboard/editar-produtos', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const serverLastModified = new Date(
+        response.headers['last-modified'],
+      ).getTime();
+      const cachedData = getCachedProducts();
+
+      // Se não tem cache ou o servidor tem dados mais recentes, força atualização
+      if (!cachedData || serverLastModified > cachedData.lastUpdated) {
+        const { data } = await fetchProducts(true);
+        setProducts(data);
+        setLastUpdate(serverLastModified);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar atualizações:', error);
+    }
+  };
 
   useEffect(() => {
     const getProducts = async () => {
@@ -76,6 +165,30 @@ export default function EditProduct() {
 
     getProducts();
   }, []);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      // Primeiro carrega do cache para exibição imediata
+      const cached = getCachedProducts();
+      if (cached) {
+        setProducts(cached.data);
+      }
+
+      // Depois verifica se precisa atualizar
+      await checkForUpdates();
+    };
+
+    loadInitialData();
+
+    // Configura verificação periódica (a cada 2 minutos)
+    const interval = setInterval(checkForUpdates, 2 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const refreshProducts = async () => {
+    const { data } = await fetchProducts(true);
+    setProducts(data);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,11 +201,16 @@ export default function EditProduct() {
           }),
           apiCSRFToken.get('/csrf-token'),
         ]);
-        setProducts(productsResponse.data || []); // Ensure products is always an array
+
+        if (productsResponse.data) {
+          setCachedProducts(productsResponse.data);
+        }
+
+        setProducts(productsResponse.data || []);
         setCsrfToken(csrfResponse.data.csrfToken || '');
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
-        setProducts([]); // Set products to an empty array in case of error
+        setProducts([]);
       }
     };
 
@@ -128,9 +246,11 @@ export default function EditProduct() {
           },
         },
       );
-      setProducts(
-        products.filter((product) => product._id !== productToDelete._id),
+      const updatedProducts = products.filter(
+        (product) => product._id !== productToDelete._id,
       );
+      setProducts(updatedProducts);
+      setCachedProducts(updatedProducts);
       setDeleteDialogOpen(false);
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
