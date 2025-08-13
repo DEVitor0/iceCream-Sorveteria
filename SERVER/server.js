@@ -5,7 +5,6 @@ const path = require("path");
 const corsOptions = require("./configs/security/corsConfigs");
 const connectDB = require("./configs/others/database/databaseConfigs");
 const csrfProtection = require("./configs/security/csrfProtectionConfigs");
-const { limiter } = require("./configs/security/rateLimiterConfig");
 const configureMorgan = require("./configs/others/morganConfigs/index");
 const redisClient = require("./configs/others/redis/redisConfigs");
 const testGeoRouter = require('./middlewares/security/avaliateGeo');
@@ -35,7 +34,6 @@ function configureServer() {
 
   app.use(csrfProtection);
   app.use(csrfCookieMiddleware);
-  app.use(limiter);
   app.use(applySecurityHeaders);
 
   const { logsPath } = configureMorgan(app, __dirname);

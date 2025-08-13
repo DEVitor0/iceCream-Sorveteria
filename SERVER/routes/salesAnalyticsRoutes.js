@@ -4,7 +4,6 @@ const SalesAnalyticsController = require('../controllers/others/statistics/sales
 const authenticateJWT = require('../middlewares/security/authMiddleware');
 const csrfProtection = require('../configs/security/csrfProtectionConfigs');
 const sanitizeMiddleware = require('../middlewares/security/sanitizeMiddleware');
-const { limiter } = require('../configs/security/rateLimiterConfig'); // Importação corrigida
 
 // Middlewares globais
 router.use(authenticateJWT);
@@ -15,7 +14,7 @@ router.use(csrfProtection);
 router.get('/top-products', (req, res, next) =>
   SalesAnalyticsController.getTopSellingProducts(req, res, next));
 
-router.get('/by-category', limiter, (req, res, next) =>
+router.get('/by-category', (req, res, next) =>
   SalesAnalyticsController.getSalesByCategory(req, res, next));
 
 router.get('/by-hour', (req, res, next) =>
@@ -27,7 +26,7 @@ router.get('/top-customers', (req, res, next) =>
 router.get('/customer-retention', (req, res, next) =>
   SalesAnalyticsController.getCustomerRetention(req, res, next));
 
-router.get('/seasonal', limiter, (req, res, next) =>
+router.get('/seasonal', (req, res, next) =>
   SalesAnalyticsController.getSeasonalSales(req, res, next));
 
 module.exports = router;

@@ -4,7 +4,6 @@ const FinancialAnalyticsController = require('../controllers/others/statistics/f
 const authenticateJWT = require('../middlewares/security/authMiddleware');
 const csrfProtection = require('../configs/security/csrfProtectionConfigs');
 const sanitizeMiddleware = require('../middlewares/security/sanitizeMiddleware');
-const { limiter } = require('../configs/security/rateLimiterConfig'); // Importação corrigida
 
 // Middlewares globais
 router.use(authenticateJWT);
@@ -15,10 +14,10 @@ router.use(csrfProtection);
 router.get('/revenue-by-period', (req, res, next) =>
   FinancialAnalyticsController.getRevenueByPeriod(req, res, next));
 
-router.get('/revenue-trend', limiter, (req, res, next) =>
+router.get('/revenue-trend', (req, res, next) =>
   FinancialAnalyticsController.getRevenueTrend(req, res, next));
 
-router.get('/payment-methods', limiter, (req, res, next) =>
+router.get('/payment-methods', (req, res, next) =>
   FinancialAnalyticsController.getPaymentMethodAnalysis(req, res, next));
 
 router.get('/conversion-rate', (req, res, next) =>
