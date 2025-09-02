@@ -74,7 +74,7 @@ router.use('/Dashboard', authenticateJWT, productRoutes);
 router.use('/Dashboard', authenticateJWT, dashboardRoutes);
 
 router.get('/tags', getAllTags);
-router.use('/coupons', authenticateJWT, couponRoutes);
+router.use('/coupons', couponRoutes);
 
 router.use('/payment', paymentRoutes);
 

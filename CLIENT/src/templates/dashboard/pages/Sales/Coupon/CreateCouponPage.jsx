@@ -33,7 +33,6 @@ const CreateCouponPage = () => {
   const handleSubmit = async (couponData) => {
     try {
       await axios.post('/coupons', couponData, {
-        withCredentials: true,
         headers: {
           'X-CSRF-Token': csrfToken,
           'Content-Type': 'application/json',

@@ -157,14 +157,18 @@ export default function EditProduct() {
     }
   };
 
-  useEffect(() => {
-    const getProducts = async () => {
-      const productsData = await fetchProducts();
-      setProducts(productsData);
-    };
+  const getProducts = async () => {
+    const productsData = await fetchProducts();
 
-    getProducts();
-  }, []);
+    // Garante que productsData não seja undefined e pega o array corretamente
+    const productsArray = productsData
+      ? Array.isArray(productsData)
+        ? productsData
+        : productsData.data || []
+      : [];
+
+    setProducts(productsArray);
+  };
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -206,7 +210,9 @@ export default function EditProduct() {
           setCachedProducts(productsResponse.data);
         }
 
-        setProducts(productsResponse.data || []);
+        setProducts(
+          Array.isArray(productsResponse.data) ? productsResponse.data : [],
+        );
         setCsrfToken(csrfResponse.data.csrfToken || '');
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
@@ -238,7 +244,7 @@ export default function EditProduct() {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(
-        `/api/Dashboard/editar-produtos${productToDelete._id}`,
+        `/api/Dashboard/editar-produtos/${productToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -263,8 +269,12 @@ export default function EditProduct() {
   };
 
   const filteredProducts = selectedTag
-    ? (products || []).filter((product) => product.tag === selectedTag) // Ensure products is defined before filtering
-    : products || []; // Fallback to an empty array if products is undefined
+    ? (Array.isArray(products) ? products : []).filter(
+        (product) => product.tag === selectedTag,
+      )
+    : Array.isArray(products)
+    ? products
+    : [];
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>

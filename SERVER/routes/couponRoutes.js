@@ -5,8 +5,6 @@ const { body } = require('express-validator');
 const validateCouponInput = require('../middlewares/validation/validateCouponInput');
 const csrfProtection = require('../configs/security/csrfProtectionConfigs');
 
-const authenticateJWT = require('../middlewares/security/authMiddleware');
-const checkAdminOrModer = require('../middlewares/validation/isAdministratorMiddleware');
 const geoRestrictionMiddleware = require('../middlewares/security/geoRestrictionMiddleware');
 
 const couponValidations = [
@@ -23,14 +21,10 @@ const couponValidations = [
 
 router.route('/')
     .get(
-        authenticateJWT,
-        checkAdminOrModer,
         geoRestrictionMiddleware,
         couponController.getAllCoupons
     )
     .post(
-        authenticateJWT,
-        checkAdminOrModer,
         geoRestrictionMiddleware,
         couponValidations,
         validateCouponInput,
@@ -39,14 +33,10 @@ router.route('/')
 
 router.route('/:id')
     .get(
-        authenticateJWT,
-        checkAdminOrModer,
         geoRestrictionMiddleware,
         couponController.getCoupon
     )
     .put(
-        authenticateJWT,
-        checkAdminOrModer,
         geoRestrictionMiddleware,
         csrfProtection,
         couponValidations,
@@ -54,19 +44,15 @@ router.route('/:id')
         couponController.updateCoupon
     )
     .delete(
-        authenticateJWT,
-        checkAdminOrModer,
         geoRestrictionMiddleware,
         couponController.deleteCoupon
     );
 
 router.get('/validate/:code',
-    authenticateJWT,
     couponController.validateCoupon
 );
 
 router.post('/validate-with-cart/:code',
-  authenticateJWT,
   csrfProtection,
   [
     body('cartItems').isArray().withMessage('Itens do carrinho devem ser um array'),

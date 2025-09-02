@@ -53,7 +53,7 @@ function RegisterProducts() {
       const fetchProduct = async () => {
         try {
           const response = await apiCSRFToken.get(
-            `/Dashboard/produtos/${productId}`,
+            `/api/produtos/${productId}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -263,8 +263,8 @@ function RegisterProducts() {
 
       try {
         const url = productId
-          ? `https://allowing-llama-seemingly.ngrok-free.app/Dashboard/editar-produtos/${productId}`
-          : 'https://allowing-llama-seemingly.ngrok-free.app/Dashboard/cadastrar';
+          ? `https://allowing-llama-seemingly.ngrok-free.app/api/editar-produtos/${productId}`
+          : 'https://allowing-llama-seemingly.ngrok-free.app/api/cadastrar';
         const method = productId ? 'PUT' : 'POST';
 
         const response = await fetch(url, {
