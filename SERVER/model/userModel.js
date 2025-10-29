@@ -97,6 +97,22 @@ userSchema.pre("save", async function (next) {
     }
 });
 
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password") || this.provider !== 'local') return next();
+
+    if (this.password.length < 6) {
+        return next(new Error('A senha deve ter pelo menos 6 caracteres'));
+    }
+
+    try {
+        const salt = await bcrypt.genSalt(12);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
 userSchema.methods.matchPassword = async function(password) {
     if (this.provider !== 'local') return false;
     return bcrypt.compare(password, this.password);

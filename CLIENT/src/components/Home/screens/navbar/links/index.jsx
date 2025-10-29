@@ -15,7 +15,7 @@ const Links = () => {
           <Anchor href={'#'} text={'Depoimentos'} />
         </li>
         <li className="header-bar__inner__menu__list__item">
-          <Anchor href={'/authentication/registrar'} text={'Login'} />
+          <Anchor href={'/authentication/login'} text={'Login'} />
         </li>
       </ul>
     </nav>

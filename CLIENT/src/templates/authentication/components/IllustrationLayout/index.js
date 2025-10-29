@@ -28,7 +28,6 @@ function IllustrationLayout({
         routes="teste"
         action={{
           type: 'external',
-          route: 'https://creative-tim.com/product/soft-ui-dashboard-pro-react',
           label: 'buy now',
         }}
       />

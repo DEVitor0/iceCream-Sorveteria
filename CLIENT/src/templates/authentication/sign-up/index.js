@@ -103,9 +103,45 @@ export default function HorizontalSignUp() {
     password: '',
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateStep = () => {
+    const newErrors = {};
+
+    if (step === 1) {
+      if (!formData.name.trim()) {
+        newErrors.name = 'Nome é obrigatório';
+      } else if (formData.name.trim().length < 3) {
+        newErrors.name = 'Nome deve ter pelo menos 3 caracteres';
+      }
+    }
+
+    if (step === 2) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!formData.email.trim()) {
+        newErrors.email = 'Email é obrigatório';
+      } else if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Email inválido';
+      }
+    }
+
+    if (step === 3) {
+      if (!formData.password.trim()) {
+        newErrors.password = 'Senha é obrigatória';
+      }
+      if (!acceptedTerms) {
+        newErrors.terms = 'Você deve aceitar os termos e condições';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (validateStep() && step < 3) {
+      setStep(step + 1);
+    }
   };
 
   const handleBack = () => {
@@ -114,6 +150,15 @@ export default function HorizontalSignUp() {
 
   const handleChange = (field) => (e) => {
     setFormData({ ...formData, [field]: e.target.value });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' });
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleNext();
+    }
   };
 
   return (
@@ -135,8 +180,24 @@ export default function HorizontalSignUp() {
           >
             Crie sua conta
           </motion.h1>
-          <motion.p style={{ color: '#666', ...fontStyle }}>
-            Preencha seus dados para começar
+          <motion.p
+            style={{
+              textAlign: 'left',
+              color: '#666',
+              ...fontStyle,
+            }}
+          >
+            Já possui uma conta?{' '}
+            <a
+              href="https://allowing-llama-seemingly.ngrok-free.app/authentication/login"
+              style={{
+                color: '#8C4FED',
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Faça login aqui
+            </a>
           </motion.p>
         </Box>
 
@@ -151,11 +212,26 @@ export default function HorizontalSignUp() {
             >
               <CustomInput
                 type="text"
-                placeholder="Nome completo"
+                placeholder="Digite seu nome completo"
                 value={formData.name}
                 onChange={handleChange('name')}
+                onKeyPress={handleKeyPress}
                 whileFocus={{ scale: 1.01 }}
               />
+              {errors.name && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    color: '#ff4757',
+                    fontSize: '0.9rem',
+                    marginTop: '-1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {errors.name}
+                </motion.p>
+              )}
 
               <motion.div
                 whileHover={{ scale: 1.01 }}
@@ -196,11 +272,26 @@ export default function HorizontalSignUp() {
             >
               <CustomInput
                 type="email"
-                placeholder="Email"
+                placeholder="Digite seu email"
                 value={formData.email}
                 onChange={handleChange('email')}
+                onKeyPress={handleKeyPress}
                 whileFocus={{ scale: 1.01 }}
               />
+              {errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    color: '#ff4757',
+                    fontSize: '0.9rem',
+                    marginTop: '-1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {errors.email}
+                </motion.p>
+              )}
 
               <Box sx={{ display: 'flex', gap: '1rem' }}>
                 <motion.button
@@ -259,29 +350,44 @@ export default function HorizontalSignUp() {
               <Box sx={{ position: 'relative' }}>
                 <CustomInput
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Senha"
+                  placeholder="Digite sua senha"
                   value={formData.password}
                   onChange={handleChange('password')}
+                  onKeyPress={handleKeyPress}
                   whileFocus={{ scale: 1.01 }}
-                  style={{ paddingRight: '4.5rem' }} // Aumentado para dar mais espaço
+                  style={{ paddingRight: '4.5rem' }}
                 />
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
                   edge="end"
                   sx={{
                     position: 'absolute',
-                    right: '0.8rem', // Ajustado para descolar mais da direita
+                    right: '0.8rem',
                     top: '0.7rem',
                     color: '#8C4FED',
-                    padding: '0.5rem', // Aumenta a área clicável
+                    padding: '0.5rem',
                     '& svg': {
-                      fontSize: '1.5rem', // Aumenta o tamanho do ícone
+                      fontSize: '1.5rem',
                     },
                   }}
                 >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </Box>
+              {errors.password && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    color: '#ff4757',
+                    fontSize: '0.9rem',
+                    marginTop: '-1rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {errors.password}
+                </motion.p>
+              )}
 
               <Box
                 sx={{
@@ -291,7 +397,12 @@ export default function HorizontalSignUp() {
                   cursor: 'pointer',
                   ...fontStyle,
                 }}
-                onClick={() => setAcceptedTerms(!acceptedTerms)}
+                onClick={() => {
+                  setAcceptedTerms(!acceptedTerms);
+                  if (errors.terms) {
+                    setErrors({ ...errors, terms: '' });
+                  }
+                }}
               >
                 <CustomCheckbox checked={acceptedTerms} />
                 <Box
@@ -304,6 +415,20 @@ export default function HorizontalSignUp() {
                   Eu aceito os termos e condições
                 </Box>
               </Box>
+              {errors.terms && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    color: '#ff4757',
+                    fontSize: '0.9rem',
+                    marginTop: '-1.5rem',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {errors.terms}
+                </motion.p>
+              )}
 
               <Box sx={{ display: 'flex', gap: '1rem' }}>
                 <motion.button
@@ -326,6 +451,7 @@ export default function HorizontalSignUp() {
                 </motion.button>
 
                 <motion.button
+                  onClick={handleNext}
                   style={{
                     flex: 1,
                     padding: '1rem',

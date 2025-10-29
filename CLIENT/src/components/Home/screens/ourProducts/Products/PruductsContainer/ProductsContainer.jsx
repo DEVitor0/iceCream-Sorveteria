@@ -26,7 +26,6 @@ const decryptData = (ciphertext) => {
   }
 };
 
-// 🔐 Cache com criptografia
 const CACHE_PREFIX = 'icecream_products_';
 
 const getCachedProducts = (tag) => {

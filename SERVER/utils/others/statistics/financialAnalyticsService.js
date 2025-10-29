@@ -1,6 +1,4 @@
 const Order = require('../../../model/orderModel');
-const DailyStatistics = require('../../../model/dailyStatisticsModel');
-const mongoose = require('mongoose');
 
 class FinancialAnalyticsService {
   // Receita total por período

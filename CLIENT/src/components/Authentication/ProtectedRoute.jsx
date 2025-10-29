@@ -3,16 +3,24 @@ import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/Authentication/UseAuth';
 import styles from './ProtectedRoute.module.scss';
 
-const ProtectedRoute = ({ children, authType = 'login' }) => {
+const ProtectedRoute = ({
+  children,
+  authType = 'login',
+  requireAdmin = false,
+}) => {
   const [authState, setAuthState] = useState({
     loading: true,
     token: null,
     isAuthenticated: false,
+    userRole: null,
   });
 
   const location = useLocation();
-  const { isAuthenticated: isAuthFromHook, loading: loadingFromHook } =
-    useAuth();
+  const {
+    isAuthenticated: isAuthFromHook,
+    user: userData,
+    loading: loadingFromHook,
+  } = useAuth();
 
   useEffect(() => {
     const getCookie = (name) => {
@@ -28,11 +36,26 @@ const ProtectedRoute = ({ children, authType = 'login' }) => {
       console.log('Token encontrado:', token);
 
       if (token) {
-        setAuthState({
-          loading: false,
-          token,
-          isAuthenticated: true,
-        });
+        // Decodificar o token JWT para pegar a role (gambiarra)
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log('[ProtectedRoute] Role do usuário:', payload.role);
+
+          setAuthState({
+            loading: false,
+            token,
+            isAuthenticated: true,
+            userRole: payload.role,
+          });
+        } catch (error) {
+          console.error('Erro ao decodificar token:', error);
+          setAuthState({
+            loading: false,
+            token,
+            isAuthenticated: true,
+            userRole: null,
+          });
+        }
         return;
       }
 
@@ -40,18 +63,42 @@ const ProtectedRoute = ({ children, authType = 'login' }) => {
         const finalToken = getCookie('jwt');
         console.log('Token após delay:', finalToken);
 
+        let userRole = null;
+        if (finalToken) {
+          try {
+            const payload = JSON.parse(atob(finalToken.split('.')[1]));
+            userRole = payload.role;
+            console.log('[ProtectedRoute] Role do usuário (delay):', userRole);
+          } catch (error) {
+            console.error('Erro ao decodificar token no delay:', error);
+          }
+        }
+
         setAuthState({
           loading: false,
           token: finalToken,
           isAuthenticated: !!finalToken || isAuthFromHook,
+          userRole: userRole || userData?.role || null,
         });
       }, 50);
     };
 
     checkAuth();
-  }, [location.pathname, isAuthFromHook]);
+  }, [location.pathname, isAuthFromHook, userData]);
 
   const isLoading = authState.loading || loadingFromHook;
+
+  // GAMBIARRA: Bloquear acesso ao Dashboard para usuários com role 'user'
+  const isDashboardRoute =
+    location.pathname === '/Dashboard' ||
+    location.pathname.startsWith('/Dashboard/');
+
+  if (isDashboardRoute && authState.userRole === 'user') {
+    console.log(
+      '[ProtectedRoute] GAMBIARRA: Usuário comum tentou acessar Dashboard, redirecionando...',
+    );
+    return <Navigate to="/" replace />; // ou para outra página como /acesso-negado
+  }
 
   if (isLoading) {
     console.log('[ProtectedRoute] Exibindo tela de carregamento');

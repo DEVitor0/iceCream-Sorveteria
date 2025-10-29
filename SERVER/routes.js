@@ -33,6 +33,7 @@ const salesAnalyticsRoutes = require('./routes/salesAnalyticsRoutes');
 const couponAnalyticsRoutes = require('./routes/couponAnalyticsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 const userRoutes = require('./routes/changePermission.js');
+const userCreationRoutes = require('./routes/userCreationRoutes');
 
 router.use('/api', stockAlertRoutes);
 
@@ -49,13 +50,15 @@ router.use('/api', require('./routes/productRoutes.js'));
 router.use('/api', geoRoutes);
 router.use('/api/emails', emailRoutes);
 router.use('/api/orders', authenticateJWT, require('./routes/orderRoutes'));
+router.use('/api', require('./routes/statusCheckRoute'));
 router.use('/api/Dashboard', authenticateJWT, productRoutes);
 router.use('/api/analytics/financial', financialAnalyticsRoutes);
 router.use('/api/analytics/sales', salesAnalyticsRoutes);
 router.use('/api/analytics/coupons', couponAnalyticsRoutes);
 router.use('/api/stats/daily', authenticateJWT, dailyStatsRoutes);
-router.use('/api/analytics/export', authenticateJWT, exportRoutes);
+router.use('/api/analtics/export', authenticateJWT, financialAnalyticsRoutes, salesAnalyticsRoutes, couponAnalyticsRoutes, dailyStatsRoutes, exportRoutes);
 router.use('/api/admin', clientAdminRoutes);
+router.use('/api/user-creation', userCreationRoutes);
 router.use('/api/users', userRoutes);
 
 router.use('/auth', googleAuthRoutes);
@@ -98,6 +101,8 @@ router.get('/api/stats/weekly-orders', authenticateJWT, async (req, res, next) =
     next(error);
   }
 });
+
+router.use('/api/analytics/export', authenticateJWT, exportRoutes);
 
 router.get('/api/stats/top-categories-yearly',
   authenticateJWT,

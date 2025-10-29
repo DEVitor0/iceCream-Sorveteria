@@ -208,7 +208,6 @@ function Configurator() {
           <SoftBox mb={2}>
             <SoftButton
               component={Link}
-              href="https://www.creative-tim.com/product/soft-ui-dashboard-react"
               target="_blank"
               rel="noreferrer"
               color="dark"
@@ -220,7 +219,6 @@ function Configurator() {
           </SoftBox>
           <SoftButton
             component={Link}
-            href="https://www.creative-tim.com/learning-lab/react/quick-start/soft-ui-dashboard/"
             target="_blank"
             rel="noreferrer"
             color="dark"
@@ -233,11 +231,9 @@ function Configurator() {
         <SoftBox display="flex" justifyContent="center">
           <a
             className="github-button"
-            href="https://github.com/creativetimofficial/soft-ui-dashboard-react"
             data-icon="octicon-star"
             data-size="large"
             data-show-count="true"
-            aria-label="Star creativetimofficial/soft-ui-dashboard-react on GitHub"
           >
             Star
           </a>
@@ -251,7 +247,6 @@ function Configurator() {
             <SoftBox mr={1.5}>
               <SoftButton
                 component={Link}
-                href="//twitter.com/intent/tweet?text=Check%20Soft%20UI%20Dashboard%20React%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23react%23mui&url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard-react"
                 target="_blank"
                 rel="noreferrer"
                 color="dark"
@@ -262,7 +257,6 @@ function Configurator() {
             </SoftBox>
             <SoftButton
               component={Link}
-              href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/soft-ui-dashboard-react"
               target="_blank"
               rel="noreferrer"
               color="dark"

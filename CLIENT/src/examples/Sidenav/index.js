@@ -160,7 +160,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         <SoftBox mt={2}>
           <SoftButton
             component="a"
-            href="https://creative-tim.com/product/soft-ui-dashboard-pro-react"
             target="_blank"
             rel="noreferrer"
             variant="gradient"

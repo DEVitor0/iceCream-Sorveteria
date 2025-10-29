@@ -4,8 +4,8 @@ import ErrorBoundary from '../../../../errors/ErrorBoundryIcons/ErrorBoundryIcon
 import IconContext from '../../../../contexts/IconsContext/IconContext/index';
 import './styles.scss';
 
-describe('MainScreen Complex Test', () => {
-  test('should render all components and interact with them correctly', async () => {
+describe('Teste da tela principal', () => {
+  test('Todos os componentes devem renderizar corretamente', async () => {
     const { asFragment } = render(
       <IconContext.Provider value={{ iconType: 'default' }}>
         <MainScreen />
@@ -13,11 +13,11 @@ describe('MainScreen Complex Test', () => {
     );
     expect(asFragment()).toMatchSnapshot();
 
-    const titleElement = screen.queryByText(/Enjoy our menu!/i);
+    const titleElement = screen.queryByText(/teste de texto no menu!/i);
     if (titleElement) {
       expect(titleElement).toBeInTheDocument();
     } else {
-      console.log('Title text not found, skipping test for title');
+      console.log('O texto não foi exibido na tela');
     }
 
     const subtitle = screen.queryByText(

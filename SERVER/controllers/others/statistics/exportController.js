@@ -5,14 +5,12 @@ class ExportController {
   static async exportAllData(req, res, next) {
     try {
       const workbook = new ExcelJS.Workbook();
-      workbook.creator = 'Admin System';
+      workbook.creator = 'admin do sitema';
       workbook.created = new Date();
 
-      // Obter período de análise da requisição ou usar padrão (últimos 12 meses)
       const { startDate = moment().subtract(12, 'months').format('YYYY-MM-DD'),
               endDate = moment().format('YYYY-MM-DD') } = req.query;
 
-      // Adiciona todas as planilhas com dados fictícios
       await Promise.all([
         this.addCouponDataSheet(workbook, startDate, endDate),
         this.addFinancialDataSheet(workbook, startDate, endDate),

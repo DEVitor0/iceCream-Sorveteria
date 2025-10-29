@@ -22,6 +22,7 @@ const useAuth = () => {
 
         if (response.ok) {
           const userData = await response.json();
+          console.log('[useAuth] Dados do usuário:', userData); // Para debug
           setState({
             isAuthenticated: true,
             user: userData,
@@ -35,6 +36,7 @@ const useAuth = () => {
           });
         }
       } catch (error) {
+        console.error('[useAuth] Erro:', error);
         setState({
           isAuthenticated: false,
           user: null,
